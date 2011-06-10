@@ -128,7 +128,7 @@ $GLOBALS['TL_DCA']['tl_lead_groups'] = array
 		(
 			'label'						=> &$GLOBALS['TL_LANG']['tl_lead_groups']['label'],
 			'inputType'					=> 'textarea',
-			'eval'						=> array('mandatory'=>true, 'decodeEntities'=>true, 'style'=>'height:60px', 'tl_class'=>'clr'),
+			'eval'						=> array('mandatory'=>true, 'decodeEntities'=>true, 'style'=>'height:60px', 'allowHtml'=>true, 'tl_class'=>'clr'),
 		),
 		'fields' => array
 		(

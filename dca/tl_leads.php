@@ -75,6 +75,13 @@ $GLOBALS['TL_DCA']['tl_leads'] = array
 				'class'					=> 'header_lead_fields',
 				'attributes'			=> 'onclick="Backend.getScrollOffset();"'
 			),
+			'export_csv' => array
+			(
+				'label'					=> &$GLOBALS['TL_LANG']['tl_leads']['export_csv'],
+				'href'					=> 'key=export_csv',
+				'class'					=> 'header_export_csv',
+				'attributes'			=> 'onclick="Backend.getScrollOffset();"'
+			),
 			'all' => array
 			(
 				'label'					=> &$GLOBALS['TL_LANG']['MSC']['all'],
@@ -131,6 +138,7 @@ $GLOBALS['TL_DCA']['tl_leads'] = array
 		'group_id' => array
 		(
 			'label'						=> &$GLOBALS['TL_LANG']['tl_leads']['group_id'],
+			'filter'					=> true,
 			'inputType'					=> 'text',
 			'foreignKey'				=> 'tl_lead_groups.name',
 			'eval'						=> array('disabled'=>true, 'doNotSaveEmpty'=>true, 'tl_class'=>'w50'),
@@ -142,6 +150,7 @@ $GLOBALS['TL_DCA']['tl_leads'] = array
 		'form_id' => array
 		(
 			'label'						=> &$GLOBALS['TL_LANG']['tl_leads']['form_id'],
+			'filter'					=> true,
 			'inputType'					=> 'text',
 			'foreignKey'				=> 'tl_form.title',
 			'eval'						=> array('disabled'=>true, 'doNotSaveEmpty'=>true, 'tl_class'=>'w50'),
@@ -168,7 +177,7 @@ class tl_leads extends Backend
 		
 		$objGroup = $arrGroups[$row['group_id']];
 
-		return $this->parseSimpleTokens($objGroup->label, $row);
+		return $this->parseSimpleTokens(nl2br($objGroup->label), $row);
 	}
 	
 	

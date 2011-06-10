@@ -231,5 +231,11 @@ class Leads extends Backend
 			}
 		}
 	}
+	
+	
+	public function exportToCSV($dc)
+	{
+		return '<p class="tl_gerror">TBD</p>';
+	}
 }
 
