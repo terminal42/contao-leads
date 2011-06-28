@@ -187,7 +187,7 @@ class tl_leads extends Backend
 		
 		if ($objGroup->numRows)
 		{
-			return $objGroup->name;
+			return $objGroup->name . ' (ID ' . $varValue . ')';
 		}
 		else
 		{
@@ -202,7 +202,7 @@ class tl_leads extends Backend
 		
 		if ($objForm->numRows)
 		{
-			return $objForm->title;
+			return $objForm->title . ' (ID ' . $varValue . ')';
 		}
 		else
 		{

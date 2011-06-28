@@ -100,13 +100,13 @@ class Leads extends Backend
 			}
 			else
 			{
-				$arrData['options'] = array();
-				$arrData['reference'] = array();
-
 				$arrOptions = deserialize($objFields->options);
 				
 				if (is_array($arrOptions) && count($arrOptions))
 				{
+					$arrData['options'] = array();
+					$arrData['reference'] = array();
+
 					$strGroup = '';
 					foreach ($arrOptions as $option)
 					{
