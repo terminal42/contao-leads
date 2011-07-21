@@ -235,7 +235,87 @@ class Leads extends Backend
 	
 	public function exportToCSV($dc)
 	{
-		return '<p class="tl_gerror">TBD</p>';
+		$arrWhere = array();
+		$arrSession = $_SESSION['BE_DATA']['filter']['tl_leads'];
+		$strQuery = 'SELECT * FROM tl_leads';
+
+		if ($arrSession['group_id'] != '')
+		{
+			$arrWhere[] = 'group_id = ' . $arrSession['group_id'];
+		}
+
+		if ($arrSession['form_id'] != '')
+		{
+			$arrWhere[] = 'group_id = ' . $arrSession['form_id'];
+		}
+
+		// add all where parts
+		if (count($arrWhere) > 0)
+		{
+			$strQuery .= ' WHERE ' . implode(' AND ', $arrWhere);
+		}
+
+		// limit with the user settings
+		if ($arrSession['limit'] != '')
+		{
+			$strQuery .= ' LIMIT ' . $arrSession['limit'];
+		}
+
+		$objExport = $this->Database->query($strQuery);
+
+		// get all field names
+		$arrFieldsLeads = $this->Database->listFields('tl_leads');
+		foreach ($arrFieldsLeads as $v)
+		{
+			$arrFieldsLeadsNames[] = $v['name'];
+		}
+
+		$objRgxp = $this->Database->query('SELECT field_name,rgxp FROM tl_lead_fields WHERE FIND_IN_SET(field_name, "' . implode(',', $arrFieldsLeadsNames) . '") AND rgxp!=""');
+		while($objRgxp->next())
+		{
+			$arrRgxpLookup[$objRgxp->field_name] = $objRgxp->rgxp;
+		}
+
+
+		header('Content-Type: text/plain, charset=UTF-16LE; encoding=UTF-16LE');
+		header("Content-Disposition: attachment; filename=leads.csv");
+
+		foreach ($objExport->fetchAllAssoc() as $arrRow)
+		{
+			foreach ($arrRow as $k=>$v)
+			{
+				// handle rgxp datim
+				if (array_key_exists($k, $arrRgxpLookup) && $arrRgxpLookup[$k] == 'datim')
+				{
+					$arrRow[$k] = $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $v);
+				}
+
+				// handle rgxp date
+				if (array_key_exists($k, $arrRgxpLookup) && $arrRgxpLookup[$k] == 'datim')
+				{
+					$arrRow[$k] = $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $v);
+				}
+			}
+
+			array_walk($arrRow, array($this, 'escapeRow'));
+			$strCSV .= '"' . implode('"' . ';' . '"', $arrRow) . '"'.  ';' . "\n";
+		}
+
+		echo chr(255).chr(254).mb_convert_encoding($strCSV, 'UTF-16LE', 'UTF-8');
+		exit;
+
+
+	}
+
+	/**
+	 * Escape an entry
+	 * 
+	 * @param reference $varValue
+	 * @return reference
+	 */
+	protected function escapeRow(&$varValue)
+	{
+		$varValue = str_replace('"', '""', $varValue);
 	}
 }
 
