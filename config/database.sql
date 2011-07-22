@@ -93,6 +93,7 @@ CREATE TABLE `tl_leads` (
   `city` varchar(255) NOT NULL default '',
   `message` text NULL,
   `email` varchar(255) NOT NULL default '',
+  `ln` varchar(255) NOT NULL default '',
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- LEAD FIELDS STOP --
 
