@@ -275,9 +275,20 @@ class Leads extends Backend
 		}
 
 		$objExport = $this->Database->query($strQuery);
-		
+
 		header('Content-Type: text/plain, charset=UTF-16LE; encoding=UTF-16LE');
 		header("Content-Disposition: attachment; filename=leads.csv");
+
+		// add the header fields
+		foreach ($arrFields as $v)
+		{
+			$arrLabels[] = $GLOBALS['TL_DCA']['tl_leads']['fields'][$v]['label'][0];
+		}
+
+		array_walk($arrLabels, array($this, 'escapeRow'));
+		$strCSV .= '"' . implode('"' . ';' . '"', $arrLabels) . '"'.  ';' . "\n";
+
+
 
 		foreach ($objExport->fetchAllAssoc() as $arrRow)
 		{
