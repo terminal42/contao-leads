@@ -85,15 +85,6 @@ CREATE TABLE `tl_form_field` (
 -- --------------------------------------------------------
 
 -- LEAD FIELDS START --
-CREATE TABLE `tl_leads` (
-  `firstname` varchar(255) NOT NULL default '',
-  `lastname` varchar(255) NOT NULL default '',
-  `street` varchar(255) NOT NULL default '',
-  `postal` varchar(255) NOT NULL default '',
-  `city` varchar(255) NOT NULL default '',
-  `message` text NULL,
-  `email` varchar(255) NOT NULL default '',
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 -- LEAD FIELDS STOP --
 
 
