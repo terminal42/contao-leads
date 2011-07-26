@@ -44,6 +44,7 @@ $GLOBALS['TL_DCA']['tl_lead_fields'] = array
 		(
 			array('Leads', 'allowEditing'),
 			array('tl_lead_fields', 'disableFieldName'),
+			array('tl_lead_fields', 'repairDatabaseFile'),
 		),
 		'onsubmit_callback' => array
 		(
@@ -361,6 +362,19 @@ class tl_lead_fields extends Backend
 		}
 
 		return $varValue;
+	}
+	
+	
+	public function repairDatabaseFile($dc)
+	{
+		$this->import('LeadDatabase');
+		$objFields = $this->Database->execute("SELECT * FROM tl_lead_fields");
+		
+		while( $objFields->next() )
+		{
+			$strType = strlen($GLOBALS['LEAD_FFL'][$objFields->type]['sql']) ? $objFields->type : 'text';
+			$this->LeadDatabase->add($objFields->field_name, $GLOBALS['LEAD_FFL'][$strType]['sql']);
+		}
 	}
 }
 

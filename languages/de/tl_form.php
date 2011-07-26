@@ -29,48 +29,7 @@
 
 
 /**
- * Backend modules
+ * Fields
  */
-$GLOBALS['BE_MOD']['content']['leads'] = array
-(
-	'tables'			=> array('tl_leads', 'tl_lead_groups', 'tl_lead_fields'),
-	'icon'				=> 'system/modules/leads/html/icon.png',
-	'stylesheet'		=> 'system/modules/leads/html/style.css',
-	'export_csv'		=> array('Leads', 'exportToCSV'),
-	'export_excel'		=> array('Leads', 'exportToExcel'),
-);
+$GLOBALS['TL_LANG']['tl_form']['leadGroup']	= array('Anfrage-Gruppe', 'Wählen Sie eine Gruppe um diese Formulardaten in den Anfragen zu speichern.');
 
-
-/**
- * Hooks
- */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('Leads', 'loadFields');
-$GLOBALS['TL_HOOKS']['processFormData'][] = array('Leads', 'processFormData');
-
-
-/**
- * Lead field types
- */
-$GLOBALS['LEAD_FFL'] = array
-(
-	'text' => array
-	(
-		'sql'		=> "varchar(255) NOT NULL default ''",
-	),
-	'textarea' => array
-	(
-		'sql'		=> "text NULL",
-	),
-	'select' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'radio' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'checkbox' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-);

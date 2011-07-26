@@ -45,7 +45,8 @@ $GLOBALS['TL_LANG']['tl_leads']['delete']		= array('Delete lead', 'Delete page I
 $GLOBALS['TL_LANG']['tl_leads']['show']			= array('Lead details', 'Show details of page ID %s');
 $GLOBALS['TL_LANG']['tl_leads']['groups']		= array('Groups', 'Create groups to combine leads');
 $GLOBALS['TL_LANG']['tl_leads']['fields']		= array('Fields', 'Create custom lead fields');
-$GLOBALS['TL_LANG']['tl_leads']['export_csv']	= array('CSV Export', 'Export currently filtered leads to CSV.');
+$GLOBALS['TL_LANG']['tl_leads']['export_csv']	= array('CSV Export', 'Export selected leads to CSV.');
+$GLOBALS['TL_LANG']['tl_leads']['export_excel']	= array('Excel Export', 'Export selected leads to Excel.');
 
 
 /**

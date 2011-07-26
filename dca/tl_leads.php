@@ -82,6 +82,13 @@ $GLOBALS['TL_DCA']['tl_leads'] = array
 				'class'					=> 'header_export_csv',
 				'attributes'			=> 'onclick="Backend.getScrollOffset();"'
 			),
+			'export_excel' => array
+			(
+				'label'					=> &$GLOBALS['TL_LANG']['tl_leads']['export_excel'],
+				'href'					=> 'key=export_excel',
+				'class'					=> 'header_export_excel',
+				'attributes'			=> 'onclick="Backend.getScrollOffset();"'
+			),
 			'all' => array
 			(
 				'label'					=> &$GLOBALS['TL_LANG']['MSC']['all'],

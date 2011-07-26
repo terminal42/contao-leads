@@ -29,48 +29,25 @@
 
 
 /**
- * Backend modules
+ * Fields
  */
-$GLOBALS['BE_MOD']['content']['leads'] = array
-(
-	'tables'			=> array('tl_leads', 'tl_lead_groups', 'tl_lead_fields'),
-	'icon'				=> 'system/modules/leads/html/icon.png',
-	'stylesheet'		=> 'system/modules/leads/html/style.css',
-	'export_csv'		=> array('Leads', 'exportToCSV'),
-	'export_excel'		=> array('Leads', 'exportToExcel'),
-);
+$GLOBALS['TL_LANG']['tl_lead_groups']['name']			= array('Gruppenname', 'Geben Sie einen Namen für diese Gruppe ein.');
+$GLOBALS['TL_LANG']['tl_lead_groups']['label']			= array('Bezeichnung', 'Geben Sie eine Formattierung für Anfragen dieser Gruppe ein.');
+$GLOBALS['TL_LANG']['tl_lead_groups']['fields']			= array('Gruppenfelder', 'Aktivieren und sortieren Sie Felder für diese Gruppe.');
 
 
 /**
- * Hooks
+ * Buttons
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('Leads', 'loadFields');
-$GLOBALS['TL_HOOKS']['processFormData'][] = array('Leads', 'processFormData');
+$GLOBALS['TL_LANG']['tl_lead_groups']['new']			= array('Neue Gruppe', 'Eine neue Anfragegruppe hinzufügen');
+$GLOBALS['TL_LANG']['tl_lead_groups']['edit']			= array('Gruppe bearbeiten', 'Gruppe ID %s bearbeiten');
+$GLOBALS['TL_LANG']['tl_lead_groups']['delete']			= array('Gruppe löschen', 'Gruppe ID %s löschen');
+$GLOBALS['TL_LANG']['tl_lead_groups']['show']			= array('Gruppendetails', 'Details der Gruppe ID %s anzeigen');
 
 
 /**
- * Lead field types
+ * Legends
  */
-$GLOBALS['LEAD_FFL'] = array
-(
-	'text' => array
-	(
-		'sql'		=> "varchar(255) NOT NULL default ''",
-	),
-	'textarea' => array
-	(
-		'sql'		=> "text NULL",
-	),
-	'select' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'radio' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'checkbox' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-);
+$GLOBALS['TL_LANG']['tl_lead_groups']['name_legend']	= 'Gruppenname';
+$GLOBALS['TL_LANG']['tl_lead_groups']['fields_legend']	= 'Felder';
+

@@ -233,7 +233,7 @@ class Leads extends Backend
 	}
 	
 	
-	public function exportToCSV($dc)
+	public function exportToCSV($dc, $strTable, $arrModule, $blnExcel=false)
 	{
 		$this->loadDataContainer('tl_leads');
 		$arrWhere = array();
@@ -276,7 +276,7 @@ class Leads extends Backend
 
 		$objExport = $this->Database->query($strQuery);
 
-		header('Content-Type: text/plain, charset=UTF-16LE; encoding=UTF-16LE');
+		header('Content-Type: text/csv, charset=UTF-16LE; encoding=UTF-16LE');
 		header("Content-Disposition: attachment; filename=leads.csv");
 
 		// add the header fields
@@ -284,11 +284,11 @@ class Leads extends Backend
 		{
 			$arrLabels[] = $GLOBALS['TL_DCA']['tl_leads']['fields'][$v]['label'][0];
 		}
+		
+		$strSeparator = $blnExcel ? "\t" : ',';
 
 		array_walk($arrLabels, array($this, 'escapeRow'));
-		$strCSV .= '"' . implode('"' . ';' . '"', $arrLabels) . '"'.  ';' . "\n";
-
-
+		$strCSV .= '"' . implode('"' . $strSeparator . '"', $arrLabels) . '"'.  "\n";
 
 		foreach ($objExport->fetchAllAssoc() as $arrRow)
 		{
@@ -308,13 +308,27 @@ class Leads extends Backend
 			}
 
 			array_walk($arrRow, array($this, 'escapeRow'));
-			$strCSV .= '"' . implode('"' . ';' . '"', $arrRow) . '"'.  ';' . "\n";
+			$strCSV .= '"' . implode('"' . $strSeparator . '"', $arrRow) . '"'.  "\n";
 		}
 
-		echo chr(255).chr(254).mb_convert_encoding($strCSV, 'UTF-16LE', 'UTF-8');
+		if ($blnExcel)
+		{
+			echo chr(255).chr(254).mb_convert_encoding($strCSV, 'UTF-16LE', 'UTF-8');
+		}
+		else
+		{
+			echo $strCSV;
+		}
 		exit;
-
-
+	}
+	
+	
+	/**
+	 * Export in Excel compatible CSV mode
+	 */
+	public function exportToExcel($dc, $strTable, $arrModule)
+	{
+		$this->exportToCSV($dc, $strTable, $arrModule, true);
 	}
 
 	/**
