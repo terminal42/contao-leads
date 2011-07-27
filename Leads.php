@@ -235,54 +235,46 @@ class Leads extends Backend
 	
 	public function exportToCSV($dc, $strTable, $arrModule, $blnExcel=false)
 	{
-		$this->loadDataContainer('tl_leads');
-		$arrWhere = array();
 		$arrSession = $_SESSION['BE_DATA']['filter']['tl_leads'];
+		$arrWhere = array();
+		$arrValues = array();
+
+		$arrFields = array_keys($GLOBALS['TL_DCA']['tl_leads']['fields']);
 
 		// if we have a filter on the group, we only load the fields from the group
 		if ($arrSession['group_id'] != '')
 		{
+			$arrWhere[] = 'group_id=?';
+			$arrValues[] = $arrSession['group_id'];
+			
 			$objGroup = $this->Database->prepare('SELECT fields FROM tl_lead_groups WHERE id=?')
 									   ->limit(1)
 									   ->execute($arrSession['group_id']);
 
-			$objFields = $this->Database->query('SELECT field_name FROM tl_lead_fields WHERE FIND_IN_SET(id, "' . implode(',', deserialize($objGroup->fields)). '")');
-			$arrFields = $objFields->fetchEach('field_name');
-			$strFields = implode(',', $arrFields);
-		}
-		else
-		{
-			$arrFields = array_keys($GLOBALS['TL_DCA']['tl_leads']['fields']);
-			$strFields = implode(',', $arrFields);
-		}
-		
-		$strQuery = 'SELECT ' . $strFields . ' FROM tl_leads';
-
-		if ($arrSession['group_id'] != '')
-		{
-			$arrWhere[] = 'group_id = ' . $arrSession['group_id'];
+			$arrGroupFields = deserialize($objGroup->fields);
+			
+			if (is_array($arrGroupFields) && count($arrGroupFields))
+			{
+				$objGroupFields = $this->Database->query('SELECT field_name FROM tl_lead_fields WHERE id IN(' . implode(',', $arrGroupFields). ')');
+				$arrFields = array_merge(array('created','tstamp','group_id','form_id'), $objFields->fetchEach('field_name'));
+			}
 		}
 
 		if ($arrSession['form_id'] != '')
 		{
-			$arrWhere[] = 'form_id = ' . $arrSession['form_id'];
+			$arrWhere[] = 'form_id=?';
+			$arrValues[] = $arrSession['form_id'];
 		}
 
-		// add all where parts
-		if (count($arrWhere) > 0)
-		{
-			$strQuery .= ' WHERE ' . implode(' AND ', $arrWhere);
-		}
-
-		$objExport = $this->Database->query($strQuery);
+		$objExport = $this->Database->prepare("SELECT " . implode(',', $arrFields) . " FROM tl_leads" . (count($arrWhere) > 0 ? (' WHERE ' . implode(' AND ', $arrWhere)) : ''))->execute($arrValues);
 
 		header('Content-Type: text/csv, charset=UTF-16LE; encoding=UTF-16LE');
-		header("Content-Disposition: attachment; filename=leads.csv");
+		header('Content-Disposition: attachment; filename=leads_'.date('Ymd').'.csv');
 
 		// add the header fields
-		foreach ($arrFields as $v)
+		foreach ($arrFields as $field)
 		{
-			$arrLabels[] = $GLOBALS['TL_DCA']['tl_leads']['fields'][$v]['label'][0];
+			$arrLabels[] = $GLOBALS['TL_DCA']['tl_leads']['fields'][$field]['label'][0] ? $GLOBALS['TL_DCA']['tl_leads']['fields'][$field]['label'][0] : $field;
 		}
 		
 		$strSeparator = $blnExcel ? "\t" : ',';
@@ -290,21 +282,11 @@ class Leads extends Backend
 		array_walk($arrLabels, array($this, 'escapeRow'));
 		$strCSV .= '"' . implode('"' . $strSeparator . '"', $arrLabels) . '"'.  "\n";
 
-		foreach ($objExport->fetchAllAssoc() as $arrRow)
+		foreach( $objExport->fetchAllAssoc() as $arrRow )
 		{
-			foreach ($arrRow as $k=>$v)
+			foreach ( $arrRow as $k => $v )
 			{
-				// handle rgxp datim
-				if ($GLOBALS['TL_DCA']['tl_leads']['fields'][$k]['eval']['rgxp'] == 'datim')
-				{
-					$arrRow[$k] = $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $v);
-				}
-
-				// handle rgxp date
-				if ($GLOBALS['TL_DCA']['tl_leads']['fields'][$k]['eval']['rgxp'] == 'date')
-				{
-					$arrRow[$k] = $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $v);
-				}
+				$arrRow[$k] = $this->formatValue($k, $v);
 			}
 
 			array_walk($arrRow, array($this, 'escapeRow'));
@@ -340,6 +322,77 @@ class Leads extends Backend
 	protected function escapeRow(&$varValue)
 	{
 		$varValue = str_replace('"', '""', $varValue);
+	}
+	
+	
+	/**
+	 * Format value (based on DC_Table::show(), Contao 2.9.0)
+	 * @param  mixed
+	 * @param  string
+	 * @param  string
+	 * @return string
+	 */
+	protected function formatValue($field, $value)
+	{
+		$table = 'tl_leads';
+		$value = deserialize($value);
+
+		// Get field value
+		if (strlen($GLOBALS['TL_DCA'][$table]['fields'][$field]['foreignKey']))
+		{
+			$temp = array();
+			$chunks = explode('.', $GLOBALS['TL_DCA'][$table]['fields'][$field]['foreignKey'], 2);
+
+			$objKey = $this->Database->execute("SELECT " . $chunks[1] . " AS value FROM " . $chunks[0] . " WHERE id IN (" . implode(',', array_map('intval', (array)$value)) . ")");
+
+			return implode(', ', $objKey->fetchEach('value'));
+		}
+
+		elseif (is_array($value))
+		{
+			foreach ($value as $kk=>$vv)
+			{
+				if (is_array($vv))
+				{
+					$vals = array_values($vv);
+					$value[$kk] = $vals[0].' ('.$vals[1].')';
+				}
+			}
+
+			return implode(', ', $value);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['rgxp'] == 'date')
+		{
+			return $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $value);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['rgxp'] == 'time')
+		{
+			return $this->parseDate($GLOBALS['TL_CONFIG']['timeFormat'], $value);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['rgxp'] == 'datim' || in_array($GLOBALS['TL_DCA'][$table]['fields'][$field]['flag'], array(5, 6, 7, 8, 9, 10)) || $field == 'tstamp')
+		{
+			return $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $value);
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['inputType'] == 'checkbox' && !$GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['multiple'])
+		{
+			return strlen($value) ? $GLOBALS['TL_LANG']['MSC']['yes'] : $GLOBALS['TL_LANG']['MSC']['no'];
+		}
+
+		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['inputType'] == 'textarea' && ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['allowHtml'] || $GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['preserveTags']))
+		{
+			return specialchars($value);
+		}
+
+		elseif (is_array($GLOBALS['TL_DCA'][$table]['fields'][$field]['reference']))
+		{
+			return isset($GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value]) ? ((is_array($GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value])) ? $GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value][0] : $GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value]) : $value;
+		}
+
+		return $value;
 	}
 }
 
