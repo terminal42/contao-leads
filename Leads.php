@@ -209,6 +209,8 @@ class Leads extends Backend
 	{
 		if ($arrForm['leadGroup'] > 0)
 		{
+			$this->loadDataContainer('tl_leads');
+			
 			$arrSet = array();
 			$objFields = $this->Database->execute("SELECT * FROM tl_form_field WHERE pid={$arrForm['id']} AND leadField!=''");
 			
@@ -216,7 +218,16 @@ class Leads extends Backend
 			{
 				if (isset($arrPost[$objFields->name]))
 				{
-					$arrSet[$objFields->leadField] = $arrPost[$objFields->name];
+					$varValue = $arrPost[$objFields->name];
+					
+					// Convert date formats into timestamps
+					if ($varValue != '' && in_array($GLOBALS['TL_DCA']['tl_leads']['fields'][$objFields->leadField]['eval']['rgxp'], array('date', 'time', 'datim')))
+					{
+						$objDate = new Date($varValue, $GLOBALS['TL_CONFIG'][$GLOBALS['TL_DCA']['tl_leads']['fields'][$objFields->leadField]['eval']['rgxp'] . 'Format']);
+						$varValue = $objDate->tstamp;
+					}
+					
+					$arrSet[$objFields->leadField] = $varValue;
 				}
 			}
 			
