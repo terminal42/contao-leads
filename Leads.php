@@ -279,9 +279,6 @@ class Leads extends Backend
 
 		$objExport = $this->Database->prepare("SELECT " . implode(',', $arrFields) . " FROM tl_leads" . (count($arrWhere) > 0 ? (' WHERE ' . implode(' AND ', $arrWhere)) : ''))->execute($arrValues);
 
-		header('Content-Type: text/csv, charset=UTF-16LE; encoding=UTF-16LE');
-		header('Content-Disposition: attachment; filename=leads_'.date('Ymd').'.csv');
-
 		// add the header fields
 		foreach ($arrFields as $field)
 		{
@@ -306,12 +303,20 @@ class Leads extends Backend
 
 		if ($blnExcel)
 		{
-			echo chr(255).chr(254).mb_convert_encoding($strCSV, 'UTF-16LE', 'UTF-8');
+			$strCSV = chr(255).chr(254).mb_convert_encoding($strCSV, 'UTF-16LE', 'UTF-8');
 		}
-		else
-		{
-			echo $strCSV;
-		}
+		
+		// Open the "save as …" dialogue
+		header('Content-Type: text/csv, charset=UTF-16LE; encoding=UTF-16LE');
+		header('Content-Transfer-Encoding: binary');
+		header('Content-Disposition: attachment; filename="leads_'.date('Ymd').'.csv"');
+		header('Content-Length: ' . strlen($strCSV));
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Pragma: public');
+		header('Expires: 0');
+		
+		echo $strCSV;
+		
 		exit;
 	}
 	
