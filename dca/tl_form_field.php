@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
  * Software Foundation website at <http://www.gnu.org/licenses/>.
@@ -31,21 +31,62 @@
 /**
  * Config
  */
-$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array('Leads', 'injectFieldSelect');
+$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array('tl_form_field_leads', 'injectFieldSelect');
 
 
 /**
  * Fields
  */
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadField'] = array
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreSelect'] = array
 (
-	'label'				=> &$GLOBALS['TL_LANG']['tl_form_field']['leadField'],
+	'label'				=> &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'],
 	'exclude'			=> true,
 	'inputType'			=> 'select',
-	'eval'				=> array('tl_class'=>'w50', 'includeBlankOption'=>true),
+	'eval'				=> array('tl_class'=>'w50', 'includeBlankOption'=>true, 'blankOptionLabel'=>'Feld nicht speichern'),
 	'save_callback'		=> array
 	(
-		array('Leads', 'validateFieldSelect'),
+//		array('Leads', 'validateFieldSelect'),
 	),
 );
+
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreCheckbox'] = array
+(
+	'label'				=> &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox'],
+	'exclude'			=> true,
+	'inputType'			=> 'checkbox',
+	'eval'				=> array('tl_class'=>'w50 m12'),
+);
+
+
+class tl_form_field_leads extends Backend
+{
+
+	public function injectFieldSelect($dc)
+	{
+		if ($this->Input->get('act') != 'edit')
+		{
+			return;
+		}
+
+		$objForm = $this->Database->execute("SELECT * FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id={$dc->id})");
+
+		if ($objForm->leadEnabled)
+		{
+			$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore'] = ($objForm->leadMaster ? $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreSelect'] : $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreCheckbox']);
+
+			foreach( $GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $strName => $strPalette )
+			{
+				if (in_array($strName, array('__selector__', 'submit', 'default', 'headline', 'explanation')))
+				{
+					continue;
+				}
+
+				$GLOBALS['TL_DCA']['tl_form_field']['palettes'][$strName] = str_replace(',type,', ',type,leadStore,', $strPalette);
+			}
+
+			$GLOBALS['TL_DCA']['tl_form_field']['fields']['type']['eval']['tl_class'] = 'w50';
+		}
+
+	}
+}
 

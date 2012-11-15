@@ -29,22 +29,9 @@
 
 
 /**
- * Backend modules
- */
-$GLOBALS['BE_MOD']['content']['leads'] = array
-(
-	'tables'			=> array('tl_leads', 'tl_lead_groups', 'tl_lead_fields'),
-	'icon'				=> 'system/modules/leads/html/icon.png',
-	'stylesheet'		=> 'system/modules/leads/html/style.css',
-	'export_csv'		=> array('Leads', 'exportToCSV'),
-	'export_excel'		=> array('Leads', 'exportToExcel'),
-);
-
-
-/**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('Leads', 'loadFields');
+$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
 $GLOBALS['TL_HOOKS']['processFormData'][] = array('Leads', 'processFormData');
 
 
