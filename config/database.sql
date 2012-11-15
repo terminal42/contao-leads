@@ -36,7 +36,7 @@ CREATE TABLE `tl_lead_data` (
   `field_id` int(10) unsigned NOT NULL default '0',
   `name` varchar(64) NOT NULL default '',
   `value` text NULL,
-  `label` varchar(255) NOT NULL default '',
+  `label` text NULL,
   PRIMARY KEY  (`id`),
   KEY `pid` (`pid`),
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
