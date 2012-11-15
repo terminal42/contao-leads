@@ -47,6 +47,22 @@ class Leads extends Controller
 
 
 	/**
+	 * Dynamically load the name for the current lead view
+	 * @param string
+	 * @param string
+	 */
+	public function loadLeadName($strName, $strLanguage)
+	{
+		if ($strName == 'modules' && $this->Input->get('do') == 'lead')
+		{
+			$objForm = $this->Database->prepare("SELECT * FROM tl_form WHERE id=?")->execute($this->Input->get('master'));
+
+			$GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ? $objForm->leadMenuLabel : $objForm->title;
+		}
+	}
+
+
+	/**
 	 * Add leads to the backend navigation
 	 * @param array
 	 * @param bool
@@ -59,9 +75,8 @@ class Leads extends Controller
 		if ($objForms->numRows)
 		{
 			$arrSession = $this->Session->get('backend_modules');
-			$arrModules['leads']['modules'] = array();
-
 			$blnOpen = $arrSession['leads'] || $blnShowAll;
+			$arrModules['leads']['modules'] = array();
 
 			if ($blnOpen)
 			{
