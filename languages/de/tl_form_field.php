@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
  * version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program. If not, please visit the Free
  * Software Foundation website at <http://www.gnu.org/licenses/>.
@@ -31,5 +31,6 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['leadField'] = array('Anfrage-Feld', 'Definieren Sie in welchem Feld diese Werte gespeichert werden sollen.');
+$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'] = array('Speichern in', 'Wählen Sie in welchem Hauptfeld dieses Feld gespeichert werden soll.', 'Nicht speichern');
+$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox'] = array('Feld speichern', 'Klicken Sie hier um dieses Feld in Anfragen speichern.');
 
