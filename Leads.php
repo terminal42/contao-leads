@@ -30,6 +30,9 @@
 class Leads extends Controller
 {
 
+	/**
+	 * Construct object and import frontend user
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -43,6 +46,12 @@ class Leads extends Controller
 	}
 
 
+	/**
+	 * Add leads to the backend navigation
+	 * @param array
+	 * @param bool
+	 * @return array
+	 */
 	public function loadBackendModules($arrModules, $blnShowAll)
 	{
 		$objForms = $this->Database->execute("SELECT *, IF(leadMenuLabel='', title, leadMenuLabel) AS leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 ORDER BY leadMenuLabel");
@@ -82,6 +91,12 @@ class Leads extends Controller
 	}
 
 
+	/**
+	 * Process data submitted through the form generator
+	 * @param array
+	 * @param array
+	 * @param array
+	 */
 	public function processFormData($arrPost, $arrForm, $arrFiles)
 	{
 		if ($arrForm['leadEnabled'])
@@ -143,6 +158,11 @@ class Leads extends Controller
 	}
 
 
+	/**
+	 * Prepare a form value for storage in lead table
+	 * @param mixed
+	 * @param Database_Result
+	 */
 	protected function prepareValue($varValue, $objField)
 	{
 		// Run for all values in an array
@@ -167,6 +187,12 @@ class Leads extends Controller
 	}
 
 
+	/**
+	 * Get the label for a form value to store in lead table
+	 * @param mixed
+	 * @param array
+	 * @param Database_Result
+	 */
 	protected function prepareLabel($varValue, $arrOptions, $objField)
 	{
 		// Run for all values in an array

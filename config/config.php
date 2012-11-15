@@ -31,32 +31,6 @@
  * Hooks
  */
 $GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
+//$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('Leads', 'loadFields');
 $GLOBALS['TL_HOOKS']['processFormData'][] = array('Leads', 'processFormData');
 
-
-/**
- * Lead field types
- */
-$GLOBALS['LEAD_FFL'] = array
-(
-	'text' => array
-	(
-		'sql'		=> "varchar(255) NOT NULL default ''",
-	),
-	'textarea' => array
-	(
-		'sql'		=> "text NULL",
-	),
-	'select' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'radio' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'checkbox' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-);
