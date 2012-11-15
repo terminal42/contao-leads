@@ -79,7 +79,111 @@ class Leads extends Controller
 
 	public function processFormData($arrPost, $arrForm, $arrFiles)
 	{
+		if ($arrForm['leadEnabled'])
+		{
+			$time = time();
 
+			$intLead = $this->Database->prepare("INSERT INTO tl_lead (tstamp,created,form_id,master_id,member_id) VALUES (?,?,?,?,?)")
+									  ->executeUncached($time, $time, $arrForm['id'], ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']), (FE_USER_LOGGED_IN ? $this->User->id : 0))
+									  ->insertId;
+
+
+			// Fetch master form fields
+			if ($arrForm['leadMaster'] > 0)
+			{
+				$objFields = $this->Database->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' ORDER BY f2.sorting")->execute($arrForm['leadMaster']);
+			}
+			else
+			{
+				$objFields = $this->Database->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' ORDER BY sorting")->execute($arrForm['id']);
+			}
+
+			while ($objFields->next())
+			{
+				if (isset($arrPost[$objFields->postName]))
+				{
+					$varLabel = '';
+					$varValue = $arrPost[$objFields->postName];
+
+					if ($objFields->options != '')
+					{
+						$arrOptions = deserialize($objFields->options, true);
+						$varLabel = $this->prepareLabel($varValue, $arrOptions, $objFields);
+					}
+
+					$varValue = $this->prepareValue($varValue, $objFields);
+
+					$arrSet = array
+					(
+						'pid'			=> $intLead,
+						'sorting'		=> $objFields->sorting,
+						'tstamp'		=> $time,
+						'master_id'		=> $objFields->master_id,
+						'field_id'		=> $objFields->id,
+						'name'			=> $objFields->name,
+						'value'			=> $varValue,
+						'label'			=> $varLabel,
+					);
+
+
+					// @todo Trigger hook
+
+
+					$this->Database->prepare("INSERT INTO tl_lead_data %s")
+								   ->set($arrSet)
+								   ->executeUncached();
+				}
+			}
+		}
+	}
+
+
+	protected function prepareValue($varValue, $objField)
+	{
+		// Run for all values in an array
+		if (is_array($varValue))
+		{
+			foreach ($varValue as $k => $v)
+			{
+				$varValue[$k] = $this->prepareValue($v, $objField);
+			}
+
+			return $varValue;
+		}
+
+		// Convert date formats into timestamps
+		if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim')))
+		{
+			$objDate = new Date($varValue, $GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format']);
+			$varValue = $objDate->tstamp;
+		}
+
+		return $varValue;
+	}
+
+
+	protected function prepareLabel($varValue, $arrOptions, $objField)
+	{
+		// Run for all values in an array
+		if (is_array($varValue))
+		{
+			foreach ($varValue as $k => $v)
+			{
+				$varValue[$k] = $this->prepareLabel($v, $arrOptions, $objField);
+			}
+
+			return $varValue;
+		}
+
+		foreach ($arrOptions as $arrOption)
+		{
+			if ($arrOption['value'] == $varValue && $arrOption['label'] != '')
+			{
+				return $arrOption['label'];
+			}
+		}
+
+		return $varValue;
 	}
 }
 
