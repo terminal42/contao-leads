@@ -42,11 +42,8 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreSelect'] = array
 	'label'				=> &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'],
 	'exclude'			=> true,
 	'inputType'			=> 'select',
-	'eval'				=> array('tl_class'=>'w50', 'includeBlankOption'=>true, 'blankOptionLabel'=>'Feld nicht speichern'),
-	'save_callback'		=> array
-	(
-//		array('Leads', 'validateFieldSelect'),
-	),
+	'options_callback'	=> array('tl_form_field_leads', 'getMasterFields'),
+	'eval'				=> array('tl_class'=>'w50', 'includeBlankOption'=>true, 'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'][2]),
 );
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreCheckbox'] = array
@@ -86,7 +83,25 @@ class tl_form_field_leads extends Backend
 
 			$GLOBALS['TL_DCA']['tl_form_field']['fields']['type']['eval']['tl_class'] = 'w50';
 		}
+	}
 
+
+	public function getMasterFields($dc)
+	{
+		$arrFields = array();
+		$objForm = $this->Database->execute("SELECT * FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id={$dc->id})");
+
+		if ($objForm->leadEnabled && $objForm->leadMaster > 0)
+		{
+			$objFields = $this->Database->prepare("SELECT * FROM tl_form_field WHERE name!='' AND pid=? AND leadStore='1' AND id NOT IN (SELECT leadStore FROM tl_form_field WHERE pid=? AND id!=?)")->execute($objForm->leadMaster, $objForm->id, $dc->activeRecord->id);
+
+			while ($objFields->next())
+			{
+				$arrFields[$objFields->id] = $objFields->label == '' ? $objFields->name : ($objFields->label . ' (' . $objFields->name . ')');
+			}
+		}
+
+		return $arrFields;
 	}
 }
 
