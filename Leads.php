@@ -59,29 +59,22 @@ class Leads extends Controller
 		if ($objForms->numRows)
 		{
 			$arrSession = $this->Session->get('backend_modules');
-			$blnOpen = $arrSession['leads'] || $blnShowAll;
+			$arrModules['leads']['modules'] = array();
 
-			array_insert($arrModules, 1, array('leads' => array
-			(
-				'icon'	=> ($blnOpen ? 'modMinus.gif' : 'modPlus.gif'),
-				'title'	=> ($blnOpen ? $GLOBALS['TL_LANG']['MSC']['collapseNode'] : $GLOBALS['TL_LANG']['MSC']['expandNode']),
-				'label'	=> $GLOBALS['TL_LANG']['MOD']['leads'][0],
-				'href'	=> 'contao/main.php?do=leads&amp;master=2&amp;mtg=leads',
-				'modules' => array(),
-			)));
+			$blnOpen = $arrSession['leads'] || $blnShowAll;
 
 			if ($blnOpen)
 			{
 				while ($objForms->next())
 				{
-					$arrModules['leads']['modules']['leads_'.$objForms->id] = array
+					$arrModules['leads']['modules']['lead_'.$objForms->id] = array
 					(
-						'tables'	=> array(),
+						'tables'	=> array('tl_lead'),
 						'title'		=> specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $objForms->title)),
 		                'label'		=> $objForms->leadMenuLabel,
 		                'icon'		=> 'style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
 		                'class'		=> 'navigation leads',
-		                'href'		=> 'contao/main.php?do=leads&master='.$objForms->id,
+		                'href'		=> 'contao/main.php?do=lead&master='.$objForms->id,
 					);
 				}
 			}
