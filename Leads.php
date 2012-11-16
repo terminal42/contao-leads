@@ -72,26 +72,28 @@ class Leads extends Controller
 	{
 		$objForms = $this->Database->execute("SELECT *, IF(leadMenuLabel='', title, leadMenuLabel) AS leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 ORDER BY leadMenuLabel");
 
-		if ($objForms->numRows)
+		if (!$objForms->numRows)
 		{
-			$arrSession = $this->Session->get('backend_modules');
-			$blnOpen = $arrSession['leads'] || $blnShowAll;
-			$arrModules['leads']['modules'] = array();
+			unset($arrModules['leads']);
+		}
 
-			if ($blnOpen)
+		$arrSession = $this->Session->get('backend_modules');
+		$blnOpen = $arrSession['leads'] || $blnShowAll;
+		$arrModules['leads']['modules'] = array();
+
+		if ($blnOpen)
+		{
+			while ($objForms->next())
 			{
-				while ($objForms->next())
-				{
-					$arrModules['leads']['modules']['lead_'.$objForms->id] = array
-					(
-						'tables'	=> array('tl_lead'),
-						'title'		=> specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $objForms->title)),
-		                'label'		=> $objForms->leadMenuLabel,
-		                'icon'		=> 'style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
-		                'class'		=> 'navigation leads',
-		                'href'		=> 'contao/main.php?do=lead&master='.$objForms->id,
-					);
-				}
+				$arrModules['leads']['modules']['lead_'.$objForms->id] = array
+				(
+					'tables'	=> array('tl_lead'),
+					'title'		=> specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $objForms->title)),
+	                'label'		=> $objForms->leadMenuLabel,
+	                'icon'		=> 'style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
+	                'class'		=> 'navigation leads',
+	                'href'		=> 'contao/main.php?do=lead&master='.$objForms->id,
+				);
 			}
 		}
 
