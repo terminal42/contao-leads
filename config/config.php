@@ -35,6 +35,7 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 	'lead' => array
 	(
 		'tables'	=> array('tl_lead'),
+		'show'		=> array('tl_lead', 'show'),
 	),
 )));
 

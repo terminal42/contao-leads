@@ -68,7 +68,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 			'show' => array
 			(
 				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['show'],
-				'href'					=> 'act=show',
+				'href'					=> 'key=show',
 				'icon'					=> 'show.gif'
 			),
 		)
@@ -129,6 +129,74 @@ class tl_lead extends Backend
 		}
 
 		return $this->parseSimpleTokens($objForm->leadLabel, $arrTokens);
+	}
+
+
+	public function show($dc)
+	{
+		$objData = $this->Database->prepare("SELECT d.*, l.created, f.title AS form_title, IFNULL(ff.label, d.name) AS name FROM tl_lead l LEFT JOIN tl_lead_data d ON l.id=d.pid LEFT OUTER JOIN tl_form f ON l.master_id=f.id LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id WHERE l.id=? ORDER BY d.sorting")->execute($dc->id);
+
+		if (!$objData->numRows)
+		{
+			$this->redirect('contao/main.php?act=error');
+		}
+
+		$i = 0;
+		$rows = '';
+
+		while ($objData->next())
+		{
+			$strValue = implode(', ', deserialize($objData->value, true));
+
+			if ($objData->label != '')
+			{
+				$strLabel = $objData->label;
+				$arrLabel = deserialize($objData->label);
+
+				if (is_array($arrLabel) && !empty($arrLabel))
+				{
+					$strLabel = implode(', ', $arrLabel);
+				}
+
+				$strValue = $strLabel . ' (' . $strValue . ')';
+			}
+
+			$rows .= '
+  <tr>
+    <td' . ($i%2 ? ' class="tl_bg"' : '') . '><span class="tl_label">' . $objData->name . ': </span></td>
+    <td' . ($i%2 ? ' class="tl_bg"' : '') . '>' . $strValue . '</td>
+  </tr>';
+
+  			++$i;
+		}
+
+
+		return '
+<div id="tl_buttons">
+<a href="' . $this->getReferer(true) . '" class="header_back" title="' . $GLOBALS['TL_LANG']['MSC']['backBT'] . '" accesskey="b" onclick="Backend.getScrollOffset()">' . $GLOBALS['TL_LANG']['MSC']['backBT'] . '</a>
+</div>
+
+<h2 class="sub_headline">' . sprintf($GLOBALS['TL_LANG']['MSC']['showRecord'], 'ID ' . $dc->id) . '</h2>
+
+<table class="tl_show">
+  <tbody><tr>
+    <td><span class="tl_label">ID: </span></td>
+    <td>' . $dc->id . '</td>
+  </tr>
+  <tr>
+    <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['created'][0] . ': </span></td>
+    <td class="tl_bg">' . $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $objData->created) . '</td>
+  </tr>
+  <tr>
+    <td><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['form_id'][0] . ': </span></td>
+    <td>' . $objData->form_title . '</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>' . $rows . '
+</tbody></table>
+';
 	}
 }
 

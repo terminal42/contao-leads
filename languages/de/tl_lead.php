@@ -31,4 +31,5 @@
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_lead']['form_id'] = array('Quellformular');
+$GLOBALS['TL_LANG']['tl_lead']['created'] = array('Erhalten');
 
