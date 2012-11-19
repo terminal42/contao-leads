@@ -88,6 +88,12 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 				'href'					=> 'key=show',
 				'icon'					=> 'show.gif'
 			),
+			'data' => array
+			(
+				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['data'],
+				'href'					=> 'table=tl_lead_data',
+				'icon'					=> 'system/modules/leads/assets/field.png'
+			),
 		)
 	),
 

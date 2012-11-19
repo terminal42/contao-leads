@@ -21,29 +21,61 @@
  * Software Foundation website at <http://www.gnu.org/licenses/>.
  *
  * PHP version 5
- * @copyright  terminal42 gmbh 2011-2012
+ * @copyright  terminal42 gmbh 2012
  * @author     Andreas Schempp <andreas.schempp@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html
  */
 
 
 /**
- * Fake back end module
+ * Table tl_lead_data
  */
-array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
+$GLOBALS['TL_DCA']['tl_lead_data'] = array
 (
-	'lead' => array
+
+	// Config
+	'config' => array
 	(
-		'tables'	=> array('tl_lead', 'tl_lead_data'),
-		'show'		=> array('tl_lead', 'show'),
+		'dataContainer'					=> 'Table',
+		'enableVersioning'				=> true,
+		'closed'						=> true,
+		'notEditable'					=> true,
+		'notDeletable'					=> true,
+		'ptable'						=> 'tl_lead',
 	),
-)));
+
+	// List
+	'list' => array
+	(
+		'sorting' => array
+		(
+			'mode'						=> 4,
+			'fields'					=> array('sorting'),
+			'flag'						=> 1,
+			'panelLayout'				=> 'filter;search,limit',
+			'headerFields'				=> array('created', 'form_id'),
+			'child_record_callback'		=> array('tl_lead_data', 'listRows'),
+			'disableGrouping'			=> true,
+		),
+	),
+
+	// Fields
+	'fields' => array()
+);
 
 
-/**
- * Hooks
- */
-$GLOBALS['TL_HOOKS']['loadLanguageFile'][] = array('Leads', 'loadLeadName');
-$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
-$GLOBALS['TL_HOOKS']['processFormData'][] = array('Leads', 'processFormData');
+class tl_lead_data extends Backend
+{
+
+	/**
+	 * Add an image to each record
+	 * @param array
+	 * @param string
+	 * @return string
+	 */
+	public function listRows($row)
+	{
+		return $row['name'] . ': ' . Leads::formatValue((object) $row);
+	}
+}
 
