@@ -30,6 +30,27 @@
 class Leads extends Controller
 {
 
+	public static function formatValue($objData)
+	{
+		$strValue = implode(', ', deserialize($objData->value, true));
+
+		if ($objData->label != '')
+		{
+			$strLabel = $objData->label;
+			$arrLabel = deserialize($objData->label);
+
+			if (is_array($arrLabel) && !empty($arrLabel))
+			{
+				$strLabel = implode(', ', $arrLabel);
+			}
+
+			$strValue = $strLabel . ' (' . $strValue . ')';
+		}
+
+		return $strValue;
+	}
+
+
 	/**
 	 * Construct object and import frontend user
 	 */

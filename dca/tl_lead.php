@@ -163,25 +163,10 @@ class tl_lead extends Backend
 
 		while ($objData->next())
 		{
-			$strValue = implode(', ', deserialize($objData->value, true));
-
-			if ($objData->label != '')
-			{
-				$strLabel = $objData->label;
-				$arrLabel = deserialize($objData->label);
-
-				if (is_array($arrLabel) && !empty($arrLabel))
-				{
-					$strLabel = implode(', ', $arrLabel);
-				}
-
-				$strValue = $strLabel . ' (' . $strValue . ')';
-			}
-
 			$rows .= '
   <tr>
     <td' . ($i%2 ? ' class="tl_bg"' : '') . '><span class="tl_label">' . $objData->name . ': </span></td>
-    <td' . ($i%2 ? ' class="tl_bg"' : '') . '>' . $strValue . '</td>
+    <td' . ($i%2 ? ' class="tl_bg"' : '') . '>' . Leads::formatValue($objData) . '</td>
   </tr>';
 
   			++$i;
