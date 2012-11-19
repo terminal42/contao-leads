@@ -34,6 +34,12 @@ $GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = array('tl_form_le
 
 
 /**
+ * Palettes
+ */
+$GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'leadEnabled';
+$GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'leadMaster';
+
+/**
  * Fields
  */
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadEnabled'] = array
@@ -93,8 +99,6 @@ class tl_form_lead extends Backend
 		}
 
 		$GLOBALS['TL_DCA']['tl_form']['palettes']['default'] = str_replace('storeValues', 'storeValues,'.$strPalette, $GLOBALS['TL_DCA']['tl_form']['palettes']['default']);
-		$GLOBALS['TL_DCA']['tl_form']['subpalettes']['leadEnabled'] = 'leadMaster,leadMenuLabel,leadLabel';
-
 	}
 
 
