@@ -30,6 +30,71 @@
 class Leads extends Controller
 {
 
+	/**
+	 * Prepare a form value for storage in lead table
+	 * @param mixed
+	 * @param Database_Result
+	 */
+	public static function prepareValue($varValue, $objField)
+	{
+		// Run for all values in an array
+		if (is_array($varValue))
+		{
+			foreach ($varValue as $k => $v)
+			{
+				$varValue[$k] = self::prepareValue($v, $objField);
+			}
+
+			return $varValue;
+		}
+
+		// Convert date formats into timestamps
+		if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim')))
+		{
+			$objDate = new Date($varValue, $GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format']);
+			$varValue = $objDate->tstamp;
+		}
+
+		return $varValue;
+	}
+
+
+	/**
+	 * Get the label for a form value to store in lead table
+	 * @param mixed
+	 * @param array
+	 * @param Database_Result
+	 */
+	public static function prepareLabel($varValue, $arrOptions, $objField)
+	{
+		// Run for all values in an array
+		if (is_array($varValue))
+		{
+			foreach ($varValue as $k => $v)
+			{
+				$varValue[$k] = self::prepareLabel($v, $arrOptions, $objField);
+			}
+
+			return $varValue;
+		}
+
+		foreach ($arrOptions as $arrOption)
+		{
+			if ($arrOption['value'] == $varValue && $arrOption['label'] != '')
+			{
+				return $arrOption['label'];
+			}
+		}
+
+		return $varValue;
+	}
+
+
+	/**
+	 * Format a lead field for list view
+	 * @param object
+	 * @return string
+	 */
 	public static function formatValue($objData)
 	{
 		$strValue = implode(', ', deserialize($objData->value, true));
@@ -162,10 +227,10 @@ class Leads extends Controller
 					if ($objFields->options != '')
 					{
 						$arrOptions = deserialize($objFields->options, true);
-						$varLabel = $this->prepareLabel($varValue, $arrOptions, $objFields);
+						$varLabel = Leads::prepareLabel($varValue, $arrOptions, $objFields);
 					}
 
-					$varValue = $this->prepareValue($varValue, $objFields);
+					$varValue = Leads::prepareValue($varValue, $objFields);
 
 					$arrSet = array
 					(
@@ -189,66 +254,6 @@ class Leads extends Controller
 				}
 			}
 		}
-	}
-
-
-	/**
-	 * Prepare a form value for storage in lead table
-	 * @param mixed
-	 * @param Database_Result
-	 */
-	protected function prepareValue($varValue, $objField)
-	{
-		// Run for all values in an array
-		if (is_array($varValue))
-		{
-			foreach ($varValue as $k => $v)
-			{
-				$varValue[$k] = $this->prepareValue($v, $objField);
-			}
-
-			return $varValue;
-		}
-
-		// Convert date formats into timestamps
-		if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim')))
-		{
-			$objDate = new Date($varValue, $GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format']);
-			$varValue = $objDate->tstamp;
-		}
-
-		return $varValue;
-	}
-
-
-	/**
-	 * Get the label for a form value to store in lead table
-	 * @param mixed
-	 * @param array
-	 * @param Database_Result
-	 */
-	protected function prepareLabel($varValue, $arrOptions, $objField)
-	{
-		// Run for all values in an array
-		if (is_array($varValue))
-		{
-			foreach ($varValue as $k => $v)
-			{
-				$varValue[$k] = $this->prepareLabel($v, $arrOptions, $objField);
-			}
-
-			return $varValue;
-		}
-
-		foreach ($arrOptions as $arrOption)
-		{
-			if ($arrOption['value'] == $varValue && $arrOption['label'] != '')
-			{
-				return $arrOption['label'];
-			}
-		}
-
-		return $varValue;
 	}
 }
 
