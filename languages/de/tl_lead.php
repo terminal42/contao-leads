@@ -33,3 +33,16 @@
 $GLOBALS['TL_LANG']['tl_lead']['form_id'] = array('Quellformular');
 $GLOBALS['TL_LANG']['tl_lead']['created'] = array('Erhalten');
 
+
+/**
+ * Buttons
+ */
+$GLOBALS['TL_LANG']['tl_lead']['delete'] = array('Anfrage löschen', 'Anfrage ID %s löschen');
+$GLOBALS['TL_LANG']['tl_lead']['show']   = array('Anfragedetails', 'Details der Anfrage ID %s anzeigen');
+
+
+/**
+ * References
+ */
+$GLOBALS['TL_LANG']['tl_lead']['label_format'] = 'Anfrage vom %s';
+

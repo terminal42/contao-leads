@@ -91,7 +91,10 @@ class Leads extends Controller
 	 */
 	public function loadBackendModules($arrModules, $blnShowAll)
 	{
-		$objForms = $this->Database->execute("SELECT *, IF(leadMenuLabel='', title, leadMenuLabel) AS leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 ORDER BY leadMenuLabel");
+		$objForms = $this->Database->execute("SELECT f.id, f.title, IF(f.leadMenuLabel='', f.title, f.leadMenuLabel) AS leadMenuLabel FROM tl_form f LEFT JOIN tl_lead l ON l.master_id=f.id WHERE leadEnabled='1' AND leadMaster=0
+											  UNION
+											  SELECT l.master_id AS id, IFNULL(f.title, CONCAT('ID ', l.master_id)) AS title, IFNULL(IF(f.leadMenuLabel='', f.title, f.leadMenuLabel), CONCAT('ID ', l.master_id)) AS leadMenuLabel FROM tl_lead l LEFT JOIN tl_form f ON l.master_id=f.id WHERE ISNULL(f.id)
+											  ORDER BY leadMenuLabel");
 
 		if (!$objForms->numRows)
 		{

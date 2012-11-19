@@ -59,8 +59,8 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 		),
 		'label' => array
 		(
-			'fields'					=> array('form_id'),
-			'format'					=> '%s',
+			'fields'					=> array('created'),
+			'format'					=> &$GLOBALS['TL_LANG']['tl_lead']['label_format'],
 			'label_callback'			=> array('tl_lead', 'getLabel'),
 		),
 		'global_operations' => array
@@ -105,6 +105,10 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['form_id'],
 			'filter'					=> true,
 			'foreignKey'				=> 'tl_form.title',
+		),
+		'created' => array
+		(
+			'flag'						=> 8,
 		),
 	)
 );

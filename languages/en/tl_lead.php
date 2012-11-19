@@ -40,3 +40,9 @@ $GLOBALS['TL_LANG']['tl_lead']['created'] = array('Received');
 $GLOBALS['TL_LANG']['tl_lead']['delete'] = array('Delete lead', 'Delete lead record ID %s');
 $GLOBALS['TL_LANG']['tl_lead']['show']   = array('Lead details', 'Show details of lead ID %s');
 
+
+/**
+ * References
+ */
+$GLOBALS['TL_LANG']['tl_lead']['label_format'] = 'Request from %s';
+
