@@ -56,6 +56,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 			'fields'					=> array('created'),
 			'flag'						=> 8,
 			'panelLayout'				=> 'filter,limit',
+			'filter'					=> array(array('master_id=?', $this->Input->get('master'))),
 		),
 		'label' => array
 		(
