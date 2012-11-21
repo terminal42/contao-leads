@@ -34,8 +34,11 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 (
 	'lead' => array
 	(
-		'tables'	=> array('tl_lead', 'tl_lead_data'),
-		'show'		=> array('tl_lead', 'show'),
+		'tables'		=> array('tl_lead', 'tl_lead_data'),
+		'javascript'	=> 'system/modules/leads/assets/leads.min.js',
+		'stylesheet'	=> 'system/modules/leads/assets/leads.min.css',
+		'show'			=> array('tl_lead', 'show'),
+		'export'		=> array('tl_lead', 'export'),
 	),
 )));
 

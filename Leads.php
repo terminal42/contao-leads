@@ -261,5 +261,77 @@ class Leads extends Controller
 			}
 		}
 	}
+
+
+	/**
+	 * Export data to CSV or excel
+	 */
+	public function export($intMaster)
+	{
+		$objCSV = new CsvWriter();
+		$objCSV->excel = ($this->Input->get('type') == 'excel');
+
+		$arrHeader = array();
+		$arrFields = array();
+
+		$objFields = $this->Database->prepare("SELECT
+													ld.master_id AS id,
+													IFNULL(ff.name, ld.name) AS name,
+													IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label
+												FROM tl_lead_data ld
+												LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
+												WHERE ld.pid IN (SELECT id FROM tl_lead WHERE master_id=?)
+												GROUP BY ld.master_id
+												ORDER BY IFNULL(ff.sorting, ld.sorting)")
+									->executeUncached($intMaster);
+
+		while ($objFields->next())
+		{
+			$arrFields[] = $objFields->id;
+
+			// Add first row containing field labels
+			$arrHeader[] = $objFields->label;
+		}
+
+		// Add base information columns
+		array_unshift($arrHeader, 'Member');
+		array_unshift($arrHeader, 'Source Form');
+		array_unshift($arrHeader, 'Created');
+
+		$objCSV->appendContent($arrHeader);
+
+		$arrData = array();
+		$objData = $this->Database->query("SELECT
+												ld.*,
+												l.created,
+												(SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
+												IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
+											FROM tl_lead_data ld
+											LEFT JOIN tl_lead l ON l.id=ld.pid");
+
+		while ($objData->next())
+		{
+			$arrData[$objData->pid][$objData->master_id] = $objData->row();
+		}
+
+		foreach ($arrData as $arrFieldData)
+		{
+			$arrRow = array();
+
+			$arrFirst = reset($arrFieldData);
+			$arrRow[] = $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']);
+			$arrRow[] = $arrFirst['form_name'];
+			$arrRow[] = $arrFirst['member_name'];
+
+			foreach ($arrFields as $intField)
+			{
+				$arrRow[] = Leads::formatValue((object) $arrFieldData[$intField]);
+			}
+
+			$objCSV->appendContent($arrRow);
+		}
+
+		$objCSV->saveToBrowser();
+	}
 }
 

@@ -66,6 +66,26 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 		),
 		'global_operations' => array
 		(
+			'export' => array
+			(
+				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export'],
+				'class'					=> 'header_leads_export',
+				'attributes'			=> 'onclick="Backend.getScrollOffset();" style="display:none"',
+			),
+			'export_csv' => array
+			(
+				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export_csv'],
+				'href'					=> 'key=export&amp;type=csv',
+				'class'					=> 'leads-export header_export_csv',
+				'attributes'			=> 'onclick="Backend.getScrollOffset();"',
+			),
+			'export_excel' => array
+			(
+				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export_excel'],
+				'href'					=> 'key=export&amp;type=excel',
+				'class'					=> 'leads-export header_export_excel',
+				'attributes'			=> 'onclick="Backend.getScrollOffset();"',
+			),
 			'all' => array
 			(
 				'label'					=> &$GLOBALS['TL_LANG']['MSC']['all'],
@@ -210,6 +230,20 @@ class tl_lead extends Backend
   </tr>' . $rows . '
 </tbody></table>
 ';
+	}
+
+
+	public function export()
+	{
+		$intMaster = $this->Input->get('master');
+
+		if (!$intMaster)
+		{
+			$this->redirect('contao/main.php?act=error');
+		}
+
+		$this->import('Leads');
+		$this->Leads->export($intMaster);
 	}
 }
 
