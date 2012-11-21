@@ -125,7 +125,7 @@ class Leads extends Controller
 
 		$this->import('Database');
 
-		if (FE_USER_LOGGED_IN)
+		if (FE_USER_LOGGED_IN === true)
 		{
 			$this->import('FrontendUser', 'User');
 		}
@@ -203,7 +203,7 @@ class Leads extends Controller
 			$time = time();
 
 			$intLead = $this->Database->prepare("INSERT INTO tl_lead (tstamp,created,form_id,master_id,member_id) VALUES (?,?,?,?,?)")
-									  ->executeUncached($time, $time, $arrForm['id'], ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']), (FE_USER_LOGGED_IN ? $this->User->id : 0))
+									  ->executeUncached($time, $time, $arrForm['id'], ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']), (FE_USER_LOGGED_IN === true ? $this->User->id : 0))
 									  ->insertId;
 
 
