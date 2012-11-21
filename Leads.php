@@ -208,8 +208,8 @@ class Leads extends Controller
 		{
 			$time = time();
 
-			$intLead = $this->Database->prepare("INSERT INTO tl_lead (tstamp,created,form_id,master_id,member_id) VALUES (?,?,?,?,?)")
-									  ->executeUncached($time, $time, $arrForm['id'], ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']), (FE_USER_LOGGED_IN === true ? $this->User->id : 0))
+			$intLead = $this->Database->prepare("INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id) VALUES (?,?,?,?,?,?)")
+									  ->executeUncached($time, $time, $GLOBALS['TL_LANGUAGE'], $arrForm['id'], ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']), (FE_USER_LOGGED_IN === true ? $this->User->id : 0))
 									  ->insertId;
 
 
