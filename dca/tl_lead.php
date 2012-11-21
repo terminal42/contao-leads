@@ -161,7 +161,7 @@ class tl_lead extends Backend
 
 	public function show($dc)
 	{
-		$objData = $this->Database->prepare("SELECT d.*, l.created, f.title AS form_title, IFNULL(ff.label, d.name) AS name FROM tl_lead l LEFT JOIN tl_lead_data d ON l.id=d.pid LEFT OUTER JOIN tl_form f ON l.master_id=f.id LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id WHERE l.id=? ORDER BY d.sorting")->execute($dc->id);
+		$objData = $this->Database->prepare("SELECT d.*, l.created, f.title AS form_title, IF(ff.label IS NULL OR ff.label='', d.name, ff.label) AS name FROM tl_lead l LEFT JOIN tl_lead_data d ON l.id=d.pid LEFT OUTER JOIN tl_form f ON l.master_id=f.id LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id WHERE l.id=? ORDER BY d.sorting")->execute($dc->id);
 
 		if (!$objData->numRows)
 		{
