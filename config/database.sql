@@ -50,7 +50,7 @@ CREATE TABLE `tl_lead_data` (
 CREATE TABLE `tl_form` (
   `leadEnabled` char(1) NOT NULL default '',
   `leadMaster` int(10) unsigned NOT NULL default '0',
-  `leadMenuLabel` varchar(32) NOT NULL default '',
+  `leadMenuLabel` varchar(255) NOT NULL default '',
   `leadLabel` text NULL,
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

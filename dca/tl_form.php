@@ -64,7 +64,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMenuLabel'] = array
 	'label'				=> &$GLOBALS['TL_LANG']['tl_form']['leadMenuLabel'],
 	'exclude'			=> true,
 	'inputType'			=> 'text',
-	'eval'				=> array('maxlength'=>32, 'tl_class'=>'w50'),
+	'eval'				=> array('maxlength'=>255, 'tl_class'=>'w50'),
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = array
