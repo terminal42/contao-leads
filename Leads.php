@@ -294,7 +294,6 @@ class Leads extends Controller
 		}
 
 		// Add base information columns
-		array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['member'][0]);
 		array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['form_id'][0]);
 		array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['created'][0]);
 
@@ -304,8 +303,7 @@ class Leads extends Controller
 		$objData = $this->Database->query("SELECT
 												ld.*,
 												l.created,
-												(SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
-												IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
+												(SELECT title FROM tl_form WHERE id=l.form_id) AS form_name
 											FROM tl_lead_data ld
 											LEFT JOIN tl_lead l ON l.id=ld.pid
 											ORDER BY l.created DESC");
@@ -322,7 +320,6 @@ class Leads extends Controller
 			$arrFirst = reset($arrFieldData);
 			$arrRow[] = $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']);
 			$arrRow[] = $arrFirst['form_name'];
-			$arrRow[] = $arrFirst['member_name'];
 
 			foreach ($arrFields as $intField)
 			{
