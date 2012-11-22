@@ -307,7 +307,8 @@ class Leads extends Controller
 												(SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
 												IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
 											FROM tl_lead_data ld
-											LEFT JOIN tl_lead l ON l.id=ld.pid");
+											LEFT JOIN tl_lead l ON l.id=ld.pid
+											ORDER BY l.created DESC");
 
 		while ($objData->next())
 		{
