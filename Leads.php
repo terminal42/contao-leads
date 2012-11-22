@@ -294,9 +294,9 @@ class Leads extends Controller
 		}
 
 		// Add base information columns
-		array_unshift($arrHeader, 'Member');
-		array_unshift($arrHeader, 'Source Form');
-		array_unshift($arrHeader, 'Created');
+		array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['member'][0]);
+		array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['form_id'][0]);
+		array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['created'][0]);
 
 		$objCSV->appendContent($arrHeader);
 

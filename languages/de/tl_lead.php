@@ -32,6 +32,7 @@
  */
 $GLOBALS['TL_LANG']['tl_lead']['form_id'] = array('Quellformular');
 $GLOBALS['TL_LANG']['tl_lead']['created'] = array('Erhalten');
+$GLOBALS['TL_LANG']['tl_lead']['member'] = array('Mitglied');
 
 
 /**
