@@ -167,7 +167,7 @@ class tl_lead extends Backend
 			return $label;
 		}
 
-		$arrTokens = array();
+		$arrTokens = array('created'=>$this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']));
 		$objData = $this->Database->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
 
 		while ($objData->next())
