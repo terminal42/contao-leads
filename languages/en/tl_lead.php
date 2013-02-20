@@ -37,11 +37,12 @@ $GLOBALS['TL_LANG']['tl_lead']['created'] = array('Received');
 /**
  * Buttons
  */
-$GLOBALS['TL_LANG']['tl_lead']['delete']       = array('Delete lead', 'Delete lead record ID %s');
-$GLOBALS['TL_LANG']['tl_lead']['show']         = array('Lead details', 'Show details of lead ID %s');
-$GLOBALS['TL_LANG']['tl_lead']['export']       = array('Export', 'Downloads leads as file');
-$GLOBALS['TL_LANG']['tl_lead']['export_csv']   = array('as CSV', '');
-$GLOBALS['TL_LANG']['tl_lead']['export_excel'] = array('as Excel document', '');
+$GLOBALS['TL_LANG']['tl_lead']['delete']        = array('Delete lead', 'Delete lead record ID %s');
+$GLOBALS['TL_LANG']['tl_lead']['show']          = array('Lead details', 'Show details of lead ID %s');
+$GLOBALS['TL_LANG']['tl_lead']['export']        = array('Export', 'Downloads leads as file');
+$GLOBALS['TL_LANG']['tl_lead']['export_csv']    = array('as CSV', '');
+$GLOBALS['TL_LANG']['tl_lead']['export_excel']  = array('as Excel document', '');
+$GLOBALS['TL_LANG']['tl_lead']['export_choice'] = array('export choice', '');
 
 
 /**

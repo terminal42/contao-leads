@@ -272,11 +272,15 @@ class Leads extends Controller
 
 	/**
 	 * Export data to CSV or excel
+	 * @param int master id
+	 * @param string type (excel or csv [default])
+	 * @param array lead data ids (optional)
+	 *
 	 */
-	public function export($intMaster)
+	public function export($intMaster, $strType='csv', $arrDataIds=null)
 	{
 		$objCSV = new CsvWriter();
-		$objCSV->excel = ($this->Input->get('type') == 'excel');
+		$objCSV->excel = $strType === 'excel';
 
 		$arrHeader = array();
 		$arrFields = array();
@@ -306,14 +310,20 @@ class Leads extends Controller
 
 		$objCSV->appendContent($arrHeader);
 
+		$strWhere = '';
+		if (is_array($arrDataIds) && !empty($arrDataIds))
+		{
+			$strWhere = ' WHERE ld.id IN(' . implode(',', $arrDataIds) . ')';
+		}
+
 		$arrData = array();
-		$objData = $this->Database->query("SELECT
+		$objData = $this->Database->query('SELECT
 												ld.*,
 												l.created,
 												(SELECT title FROM tl_form WHERE id=l.form_id) AS form_name
 											FROM tl_lead_data ld
-											LEFT JOIN tl_lead l ON l.id=ld.pid
-											ORDER BY l.created DESC");
+											LEFT JOIN tl_lead l ON l.id=ld.pid' . $strWhere . '
+											ORDER BY l.created DESC');
 
 		while ($objData->next())
 		{

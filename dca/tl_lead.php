@@ -86,6 +86,13 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 				'class'					=> 'leads-export header_export_excel',
 				'attributes'			=> 'onclick="Backend.getScrollOffset();"',
 			),
+			'export_choice' => array
+			(
+				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export_choice'],
+				'href'					=> 'key=export_choice',
+				'class'					=> 'leads-export header_export_choice',
+				'attributes'			=> 'onclick="Backend.getScrollOffset();"',
+			),
 			'all' => array
 			(
 				'label'					=> &$GLOBALS['TL_LANG']['MSC']['all'],
@@ -243,7 +250,43 @@ class tl_lead extends Backend
 		}
 
 		$this->import('Leads');
-		$this->Leads->export($intMaster);
+		$this->Leads->export($intMaster, $this->Input->get('type'));
+	}
+
+	public function exportChoice(DataContainer $dc)
+	{
+		if ($this->Input->get('key') != 'export_choice')
+		{
+			$this->redirect($this->getReferer());
+		}
+
+		// Form buttons
+		$arrButtons = array
+		(
+			array
+			(
+				'name'  => 'csv',
+				'label' => $GLOBALS['TL_LANG']['tl_lead']['export_csv'][0]
+			),
+			array
+			(
+				'name'  => 'excel',
+				'label' => $GLOBALS['TL_LANG']['tl_lead']['export_excel'][0]
+			)
+		);
+
+		$intMaster = $this->Input->get('master');
+		$objSelect = new SelectView($dc->table, $arrButtons);
+
+		if ($objSelect->action)
+		{
+			$this->import('Leads');
+			$arrIds = is_array($objSelect->ids) ? $objSelect->ids : null;
+
+			$this->Leads->export($intMaster, $objSelect->action, $arrIds);
+		}
+
+		return $objSelect->renderView();
 	}
 }
 

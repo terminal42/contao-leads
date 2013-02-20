@@ -38,11 +38,12 @@ $GLOBALS['TL_LANG']['tl_lead']['member'] = array('Mitglied');
 /**
  * Buttons
  */
-$GLOBALS['TL_LANG']['tl_lead']['delete']       = array('Anfrage löschen', 'Anfrage ID %s löschen');
-$GLOBALS['TL_LANG']['tl_lead']['show']         = array('Anfragedetails', 'Details der Anfrage ID %s anzeigen');
-$GLOBALS['TL_LANG']['tl_lead']['export']       = array('Exportieren', 'Anfragen als Datei herunterladen');
-$GLOBALS['TL_LANG']['tl_lead']['export_csv']   = array('als CSV', '');
-$GLOBALS['TL_LANG']['tl_lead']['export_excel'] = array('als Excel-Dokument', '');
+$GLOBALS['TL_LANG']['tl_lead']['delete']        = array('Anfrage löschen', 'Anfrage ID %s löschen');
+$GLOBALS['TL_LANG']['tl_lead']['show']          = array('Anfragedetails', 'Details der Anfrage ID %s anzeigen');
+$GLOBALS['TL_LANG']['tl_lead']['export']        = array('Exportieren', 'Anfragen als Datei herunterladen');
+$GLOBALS['TL_LANG']['tl_lead']['export_csv']    = array('als CSV', '');
+$GLOBALS['TL_LANG']['tl_lead']['export_excel']  = array('als Excel-Dokument', '');
+$GLOBALS['TL_LANG']['tl_lead']['export_choice'] = array('Auswahl exportieren', '');
 
 
 /**
