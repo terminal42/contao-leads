@@ -257,13 +257,29 @@ class Leads extends Controller
 						'label'			=> $varLabel,
 					);
 
-
-					// @todo Trigger hook
-
+					// HOOK: add custom logic
+					if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']))
+					{
+						foreach ($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'] as $callback)
+						{
+							$this->import($callback[0]);
+							$this->$callback[0]->$callback[1]($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
+						}
+					}
 
 					$this->Database->prepare("INSERT INTO tl_lead_data %s")
 								   ->set($arrSet)
 								   ->executeUncached();
+				}
+			}
+
+			// HOOK: add custom logic
+			if (isset($GLOBALS['TL_HOOKS']['storeLeadsData']) && is_array($GLOBALS['TL_HOOKS']['storeLeadsData']))
+			{
+				foreach ($GLOBALS['TL_HOOKS']['storeLeadsData'] as $callback)
+				{
+					$this->import($callback[0]);
+					$this->$callback[0]->$callback[1]($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
 				}
 			}
 		}
