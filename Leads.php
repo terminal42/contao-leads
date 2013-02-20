@@ -156,8 +156,6 @@ class Leads extends Controller
 	 */
 	public function loadBackendModules($arrModules, $blnShowAll)
 	{
-		$arrModules['leads']['modules'] = array();
-
 		if (!$this->Database->tableExists('tl_lead'))
 		{
 			unset($arrModules['leads']);
@@ -172,10 +170,12 @@ class Leads extends Controller
 		if (!$objForms->numRows)
 		{
 			unset($arrModules['leads']);
+			return $arrModules;
 		}
 
 		$arrSession = $this->Session->get('backend_modules');
 		$blnOpen = $arrSession['leads'] || $blnShowAll;
+		$arrModules['leads']['modules'] = array();
 
 		if ($blnOpen)
 		{
@@ -191,6 +191,12 @@ class Leads extends Controller
 	                'href'		=> 'contao/main.php?do=lead&master='.$objForms->id,
 				);
 			}
+		}
+		else
+		{
+			$arrModules['leads']['modules'] = false;
+			$arrModules['leads']['icon'] = 'modPlus.gif';
+			$arrModules['leads']['title'] = specialchars($GLOBALS['TL_LANG']['MSC']['expandNode']);
 		}
 
 		return $arrModules;
