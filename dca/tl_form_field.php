@@ -59,12 +59,24 @@ class tl_form_field_leads extends Backend
 
 	public function injectFieldSelect($dc)
 	{
-		if ($this->Input->get('act') != 'edit')
+		$intId = 0;
+		switch ($this->Input->get('act'))
+		{
+			case 'edit':
+				$intId = $this->Database->execute("SELECT pid FROM tl_form_field WHERE id=$dc->id")->pid;
+				break;
+			case 'editAll':
+			case 'overrideAll':
+				$intId = $this->Input->get('id');
+				break;
+		}
+
+		if ($intId === 0)
 		{
 			return;
 		}
 
-		$objForm = $this->Database->execute("SELECT * FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id={$dc->id})");
+		$objForm = $this->Database->execute("SELECT leadEnabled,leadMaster FROM tl_form WHERE id=$intId");
 
 		if ($objForm->leadEnabled)
 		{
