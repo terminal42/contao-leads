@@ -52,10 +52,10 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 	(
 		'sorting' => array
 		(
-			'mode'						=> 1,
-			'fields'					=> array('created'),
+			'mode'						=> 2,
+			'fields'					=> array('created', 'member_id'),
 			'flag'						=> 8,
-			'panelLayout'				=> 'filter,limit',
+			'panelLayout'				=> 'filter;sort,limit',
 			'filter'					=> array(array('master_id=?', $this->Input->get('master'))),
 		),
 		'label' => array
@@ -136,8 +136,18 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 		),
 		'created' => array
 		(
+			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['created'],
+			'sorting'					=> true,
 			'flag'						=> 8,
 		),
+		'member_id' => array
+		(
+			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['member'],
+			'filter'					=> true,
+			'sorting'					=> true,
+			'flag'						=> 12,
+			'foreignKey'				=> "tl_member.CONCAT(lastname, ' ', firstname)"
+		)
 	)
 );
 
