@@ -156,6 +156,8 @@ class Leads extends Controller
 	 */
 	public function loadBackendModules($arrModules, $blnShowAll)
 	{
+		$arrModules['leads']['modules'] = array();
+
 		if (!$this->Database->tableExists('tl_lead'))
 		{
 			unset($arrModules['leads']);
@@ -174,7 +176,6 @@ class Leads extends Controller
 
 		$arrSession = $this->Session->get('backend_modules');
 		$blnOpen = $arrSession['leads'] || $blnShowAll;
-		$arrModules['leads']['modules'] = array();
 
 		if ($blnOpen)
 		{
