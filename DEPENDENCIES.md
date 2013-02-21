@@ -1,4 +1,4 @@
 Dependencies
 ========
 
-- https://github.com/qzminski/SelectView
+- https://github.com/codefog/contao-selectview
