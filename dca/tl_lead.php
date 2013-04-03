@@ -53,7 +53,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 		'sorting' => array
 		(
 			'mode'						=> 2,
-			'fields'					=> array('created', 'member_id'),
+			'fields'					=> array('created DESC', 'member_id'),
 			'flag'						=> 8,
 			'panelLayout'				=> 'filter;sort,limit',
 			'filter'					=> array(array('master_id=?', $this->Input->get('master'))),
