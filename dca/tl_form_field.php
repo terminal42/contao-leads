@@ -104,7 +104,7 @@ class tl_form_field_leads extends Backend
 
 		if ($objForm->leadEnabled && $objForm->leadMaster > 0)
 		{
-			$objFields = $this->Database->prepare("SELECT * FROM tl_form_field WHERE name!='' AND pid=? AND leadStore='1' AND id NOT IN (SELECT leadStore FROM tl_form_field WHERE pid=? AND id!=?)")->execute($objForm->leadMaster, $objForm->id, $dc->activeRecord->id);
+			$objFields = $this->Database->prepare("SELECT * FROM tl_form_field WHERE name!='' AND pid=? AND leadStore='1' AND id NOT IN (SELECT leadStore FROM tl_form_field WHERE pid=? AND id!=?) ORDER BY sorting")->execute($objForm->leadMaster, $objForm->id, $dc->activeRecord->id);
 
 			while ($objFields->next())
 			{
