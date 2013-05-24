@@ -209,7 +209,7 @@ class Leads extends Controller
 	 * @param array
 	 * @param array
 	 */
-	public function processFormData($arrPost, $arrForm, $arrFiles)
+	public function processFormData(&$arrPost, &$arrForm, &$arrFiles)
 	{
 		if ($arrForm['leadEnabled'])
 		{
