@@ -56,7 +56,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMaster'] = array
 	'exclude'			=> true,
 	'inputType'			=> 'select',
 	'options_callback'	=> array('tl_form_lead', 'getMasterForms'),
-	'eval'				=> array('submitOnChange'=>true, 'includeBlankOption'=>true, 'blankOptionLabel'=>'Dies ist ein Master-Formular', 'tl_class'=>'w50'),
+	'eval'				=> array('submitOnChange'=>true, 'includeBlankOption'=>true, 'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form']['leadMasterBlankOptionLabel'], 'tl_class'=>'w50'),
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadMenuLabel'] = array

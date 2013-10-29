@@ -35,3 +35,8 @@ $GLOBALS['TL_LANG']['tl_form']['leadMaster']	= array('Master configuration', 'Se
 $GLOBALS['TL_LANG']['tl_form']['leadMenuLabel']	= array('Navigation label', 'Enter a custom label for the backend navigation. If you leave this field blank, the form name will be used.');
 $GLOBALS['TL_LANG']['tl_form']['leadLabel']		= array('Record label', 'Enter a label format for lead records. Use simple tokens as placeholder for form fields.');
 
+/**
+ * Other
+ */
+$GLOBALS['TL_LANG']['tl_form']['leadMasterBlankOptionLabel'] = 'This is a master form';
+
