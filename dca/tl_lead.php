@@ -132,7 +132,15 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 		(
 			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['form_id'],
 			'filter'					=> true,
+			'sorting'					=> true,
 			'foreignKey'				=> 'tl_form.title',
+		),
+		'language' => array
+		(
+			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['language'],
+			'filter'					=> true,
+			'sorting'					=> true,
+			'options'				    => $this->getLanguages(),
 		),
 		'created' => array
 		(
@@ -147,7 +155,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 			'sorting'					=> true,
 			'flag'						=> 12,
 			'foreignKey'				=> "tl_member.CONCAT(lastname, ' ', firstname)"
-		)
+		),
 	)
 );
 

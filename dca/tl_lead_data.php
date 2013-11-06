@@ -37,11 +37,12 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = array
 	'config' => array
 	(
 		'dataContainer'					=> 'Table',
-		'enableVersioning'				=> true,
+		'ptable'						=> 'tl_lead',
 		'closed'						=> true,
 		'notEditable'					=> true,
+		'notCopyable'					=> true,
+		'notSortable'					=> true,
 		'notDeletable'					=> true,
-		'ptable'						=> 'tl_lead',
 	),
 
 	// List
