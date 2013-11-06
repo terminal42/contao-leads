@@ -72,6 +72,7 @@ CREATE TABLE `tl_lead` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `tstamp` int(10) unsigned NOT NULL default '0',
   `created` int(10) unsigned NOT NULL default '0',
+  `language` varchar(2) NOT NULL default '',
   `master_id` int(10) unsigned NOT NULL default '0',
   `form_id` int(10) unsigned NOT NULL default '0',
   `member_id` int(10) unsigned NOT NULL default '0',
