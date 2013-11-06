@@ -20,16 +20,13 @@ var Leads =
 		})
 		.setStyle('display', 'inline');
 
-		var div = new Element('div',
-		{
-			'id': 'leadsexportmenu',
-			'styles': {
-				'top': ($$('a.header_leads_export')[0].getPosition().y + 22)
-			}
-		})
+		var div = new Element('div', {'id': 'leadsexportmenu'})
 		.adopt(tools)
 		.inject(document.id(document.body))
-		.setStyle('left', $$('a.header_leads_export')[0].getPosition().x - 7);
+		.setStyles({
+		    'top': ($$('a.header_leads_export')[0].getPosition().y + 22),
+		    'left': ($$('a.header_leads_export')[0].getPosition().x - 7)
+        });
 
 		// Hide context menu
 		document.id(document.body).addEvent('click', function()
@@ -39,7 +36,7 @@ var Leads =
 	}
 };
 
-window.addEvent('domready', function()
+window.addEvent('load', function()
 {
 	Leads.initializeExportMenu();
 });
