@@ -139,6 +139,7 @@ CREATE TABLE `tl_lead_data` (
 
 	private function migrateLeadsData()
 	{
+	    $arrFiles = array();
 		list($arrForms, $arrFields) = $this->getFormConfiguration();
 
 		$objLeads = $this->Database->query("SELECT * FROM tl_leads");
@@ -157,7 +158,7 @@ CREATE TABLE `tl_lead_data` (
 				$arrData[$target] = $objLeads->$source;
 			}
 
-			$this->Leads->processFormData($arrData, $arrForms[$objLeads->form_id], array());
+			$this->Leads->processFormData($arrData, $arrForms[$objLeads->form_id], $arrFiles);
 		}
 	}
 
