@@ -293,7 +293,7 @@ class Leads extends Controller
 	 * @param array lead data ids (optional)
 	 *
 	 */
-	public function export($intMaster, $strType='csv', $arrDataIds=null)
+	public function export($intMaster, $strType='csv', $arrIds=null)
 	{
 		$objCSV = new CsvWriter();
 		$objCSV->excel = $strType === 'excel';
@@ -328,9 +328,9 @@ class Leads extends Controller
 		$objCSV->appendContent($arrHeader);
 
 		$strWhere = '';
-		if (is_array($arrDataIds) && !empty($arrDataIds))
+		if (is_array($arrIds) && !empty($arrIds))
 		{
-			$strWhere = ' WHERE ld.id IN(' . implode(',', $arrDataIds) . ')';
+			$strWhere = ' WHERE l.id IN(' . implode(',', $arrIds) . ')';
 		}
 
 		$arrData = array();
