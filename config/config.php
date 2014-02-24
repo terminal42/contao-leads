@@ -15,20 +15,20 @@
  */
 array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 (
-	'lead' => array
-	(
-		'tables'		=> array('tl_lead', 'tl_lead_data'),
-		'javascript'	=> 'system/modules/leads/assets/leads.min.js',
-		'stylesheet'	=> 'system/modules/leads/assets/leads.min.css',
-		'show'			=> array('tl_lead', 'show'),
-		'export'		=> array('tl_lead', 'export'),
-		'export_choice'	=> array('tl_lead', 'exportChoice')
-	),
+    'lead' => array
+    (
+        'tables'        => array('tl_lead', 'tl_lead_data'),
+        'javascript'    => 'system/modules/leads/assets/leads.min.js',
+        'stylesheet'    => 'system/modules/leads/assets/leads.min.css',
+        'show'          => array('tl_lead', 'show'),
+        'export'        => array('tl_lead', 'export'),
+        'export_choice' => array('tl_lead', 'exportChoice')
+    ),
 )));
 
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadLanguageFile'][] = array('Leads', 'loadLeadName');
+$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads', 'loadLeadName');
 $GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
-$GLOBALS['TL_HOOKS']['processFormData'][] = array('Leads', 'processFormData');
+$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads', 'processFormData');

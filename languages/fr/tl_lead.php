@@ -13,8 +13,8 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_lead']['form_id'] = array('Formulaire ');
-$GLOBALS['TL_LANG']['tl_lead']['created'] = array('Date de réception ');
+$GLOBALS['TL_LANG']['tl_lead']['form_id']       = array('Formulaire ');
+$GLOBALS['TL_LANG']['tl_lead']['created']       = array('Date de réception ');
 
 
 /**
@@ -31,4 +31,4 @@ $GLOBALS['TL_LANG']['tl_lead']['export_choice'] = array('personnalisé', '');
 /**
  * References
  */
-$GLOBALS['TL_LANG']['tl_lead']['label_format'] = 'Requ\ête depuis %s';
+$GLOBALS['TL_LANG']['tl_lead']['label_format']  = 'Requ\ête depuis %s';

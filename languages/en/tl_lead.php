@@ -13,10 +13,10 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_lead']['form_id'] = array('Source form');
-$GLOBALS['TL_LANG']['tl_lead']['language'] = array('Language');
-$GLOBALS['TL_LANG']['tl_lead']['created'] = array('Received');
-$GLOBALS['TL_LANG']['tl_lead']['member'] = array('Member');
+$GLOBALS['TL_LANG']['tl_lead']['form_id']       = array('Source form');
+$GLOBALS['TL_LANG']['tl_lead']['language']      = array('Language');
+$GLOBALS['TL_LANG']['tl_lead']['created']       = array('Received');
+$GLOBALS['TL_LANG']['tl_lead']['member']        = array('Member');
 
 
 /**
@@ -33,4 +33,4 @@ $GLOBALS['TL_LANG']['tl_lead']['export_choice'] = array('export choice', '');
 /**
  * References
  */
-$GLOBALS['TL_LANG']['tl_lead']['label_format'] = 'Request from %s';
+$GLOBALS['TL_LANG']['tl_lead']['label_format']  = 'Request from %s';

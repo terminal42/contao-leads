@@ -13,4 +13,4 @@
 /**
  * Backend modules
  */
-$GLOBALS['TL_LANG']['MOD']['leads']	= array('Anfragen', 'Anfragen für Formular "%s" verwalten.');
+$GLOBALS['TL_LANG']['MOD']['leads'] = array('Anfragen', 'Anfragen für Formular "%s" verwalten.');

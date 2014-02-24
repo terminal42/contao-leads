@@ -13,5 +13,5 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'] = array('Enregistrer dans', 'Sélectionner le champs principal dans lequel ce champs doit être enregistré.', 'Ne pas enregistrer');
-$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox'] = array('Enregistrer le champs avec Leads', 'Cocher pour enregistrer les données de ce champs à l\'aide du module Leads.');
+$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect']     = array('Enregistrer dans', 'Sélectionner le champs principal dans lequel ce champs doit être enregistré.', 'Ne pas enregistrer');
+$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox']   = array('Enregistrer le champs avec Leads', 'Cocher pour enregistrer les données de ce champs à l\'aide du module Leads.');

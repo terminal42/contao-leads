@@ -16,203 +16,203 @@
 $GLOBALS['TL_DCA']['tl_lead'] = array
 (
 
-	// Config
-	'config' => array
-	(
-		'dataContainer'					=> 'Table',
-		'enableVersioning'				=> true,
-		'closed'						=> true,
-		'notEditable'					=> true,
-		'ctable'						=> array('tl_lead_data'),
-		'onload_callback' => array
-		(
-			array('tl_lead', 'checkPermission'),
-		),
-	),
+    // Config
+    'config' => array
+    (
+        'dataContainer'         => 'Table',
+        'enableVersioning'      => true,
+        'closed'                => true,
+        'notEditable'           => true,
+        'ctable'                => array('tl_lead_data'),
+        'onload_callback' => array
+        (
+            array('tl_lead', 'checkPermission'),
+        ),
+    ),
 
-	// List
-	'list' => array
-	(
-		'sorting' => array
-		(
-			'mode'						=> 2,
-			'fields'					=> array('created DESC', 'member_id'),
-			'flag'						=> 8,
-			'panelLayout'				=> 'filter;sort,limit',
-			'filter'					=> array(array('master_id=?', $this->Input->get('master'))),
-		),
-		'label' => array
-		(
-			'fields'					=> array('created'),
-			'format'					=> &$GLOBALS['TL_LANG']['tl_lead']['label_format'],
-			'label_callback'			=> array('tl_lead', 'getLabel'),
-		),
-		'global_operations' => array
-		(
-			'export' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export'],
-				'class'					=> 'header_leads_export',
-				'attributes'			=> 'onclick="Backend.getScrollOffset();" style="display:none"',
-			),
-			'export_csv' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export_csv'],
-				'href'					=> 'key=export&amp;type=csv',
-				'class'					=> 'leads-export header_export_csv',
-				'attributes'			=> 'onclick="Backend.getScrollOffset();"',
-			),
-			'export_excel' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export_excel'],
-				'href'					=> 'key=export&amp;type=excel',
-				'class'					=> 'leads-export header_export_excel',
-				'attributes'			=> 'onclick="Backend.getScrollOffset();"',
-			),
-			'export_choice' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['export_choice'],
-				'href'					=> 'key=export_choice',
-				'class'					=> 'leads-export header_export_choice',
-				'attributes'			=> 'onclick="Backend.getScrollOffset();"',
-			),
-			'all' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['MSC']['all'],
-				'href'					=> 'act=select',
-				'class'					=> 'header_edit_all',
-				'attributes'			=> 'onclick="Backend.getScrollOffset();" accesskey="e"'
-			),
-		),
-		'operations' => array
-		(
-			'delete' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['delete'],
-				'href'					=> 'act=delete',
-				'icon'					=> 'delete.gif',
-				'attributes'			=> 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
-			),
-			'show' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['show'],
-				'href'					=> 'key=show',
-				'icon'					=> 'show.gif'
-			),
-			'data' => array
-			(
-				'label'					=> &$GLOBALS['TL_LANG']['tl_lead']['data'],
-				'href'					=> 'table=tl_lead_data',
-				'icon'					=> 'system/modules/leads/assets/field.png'
-			),
-		)
-	),
+    // List
+    'list' => array
+    (
+        'sorting' => array
+        (
+            'mode'              => 2,
+            'fields'            => array('created DESC', 'member_id'),
+            'flag'              => 8,
+            'panelLayout'       => 'filter;sort,limit',
+            'filter'            => array(array('master_id=?', $this->Input->get('master'))),
+        ),
+        'label' => array
+        (
+            'fields'            => array('created'),
+            'format'            => &$GLOBALS['TL_LANG']['tl_lead']['label_format'],
+            'label_callback'    => array('tl_lead', 'getLabel'),
+        ),
+        'global_operations' => array
+        (
+            'export' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export'],
+                'class'         => 'header_leads_export',
+                'attributes'    => 'onclick="Backend.getScrollOffset();" style="display:none"',
+            ),
+            'export_csv' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_csv'],
+                'href'          => 'key=export&amp;type=csv',
+                'class'         => 'leads-export header_export_csv',
+                'attributes'    => 'onclick="Backend.getScrollOffset();"',
+            ),
+            'export_excel' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_excel'],
+                'href'          => 'key=export&amp;type=excel',
+                'class'         => 'leads-export header_export_excel',
+                'attributes'    => 'onclick="Backend.getScrollOffset();"',
+            ),
+            'export_choice' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_choice'],
+                'href'          => 'key=export_choice',
+                'class'         => 'leads-export header_export_choice',
+                'attributes'    => 'onclick="Backend.getScrollOffset();"',
+            ),
+            'all' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['MSC']['all'],
+                'href'          => 'act=select',
+                'class'         => 'header_edit_all',
+                'attributes'    => 'onclick="Backend.getScrollOffset();" accesskey="e"'
+            ),
+        ),
+        'operations' => array
+        (
+            'delete' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['delete'],
+                'href'          => 'act=delete',
+                'icon'          => 'delete.gif',
+                'attributes'    => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
+            ),
+            'show' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['show'],
+                'href'          => 'key=show',
+                'icon'          => 'show.gif'
+            ),
+            'data' => array
+            (
+                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['data'],
+                'href'          => 'table=tl_lead_data',
+                'icon'          => 'system/modules/leads/assets/field.png'
+            ),
+        )
+    ),
 
-	// Fields
-	'fields' => array
-	(
-		'form_id' => array
-		(
-			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['form_id'],
-			'filter'					=> true,
-			'sorting'					=> true,
-			'foreignKey'				=> 'tl_form.title',
-		),
-		'language' => array
-		(
-			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['language'],
-			'filter'					=> true,
-			'sorting'					=> true,
-			'options'				    => $this->getLanguages(),
-		),
-		'created' => array
-		(
-			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['created'],
-			'sorting'					=> true,
-			'flag'						=> 8,
-		),
-		'member_id' => array
-		(
-			'label'						=> &$GLOBALS['TL_LANG']['tl_lead']['member'],
-			'filter'					=> true,
-			'sorting'					=> true,
-			'flag'						=> 12,
-			'foreignKey'				=> "tl_member.CONCAT(lastname, ' ', firstname)"
-		),
-	)
+    // Fields
+    'fields' => array
+    (
+        'form_id' => array
+        (
+            'label'             => &$GLOBALS['TL_LANG']['tl_lead']['form_id'],
+            'filter'            => true,
+            'sorting'           => true,
+            'foreignKey'        => 'tl_form.title',
+        ),
+        'language' => array
+        (
+            'label'             => &$GLOBALS['TL_LANG']['tl_lead']['language'],
+            'filter'            => true,
+            'sorting'           => true,
+            'options'           => $this->getLanguages(),
+        ),
+        'created' => array
+        (
+            'label'             => &$GLOBALS['TL_LANG']['tl_lead']['created'],
+            'sorting'           => true,
+            'flag'              => 8,
+        ),
+        'member_id' => array
+        (
+            'label'             => &$GLOBALS['TL_LANG']['tl_lead']['member'],
+            'filter'            => true,
+            'sorting'           => true,
+            'flag'              => 12,
+            'foreignKey'        => "tl_member.CONCAT(lastname, ' ', firstname)"
+        ),
+    )
 );
 
 
 class tl_lead extends Backend
 {
 
-	/**
-	 * Check if a user has access to lead data
-	 * @param DataContainer
-	 */
-	public function checkPermission($dc)
-	{
-		if ($this->Input->get('master') == '')
-		{
-			$this->redirect('contao/main.php?act=error');
-		}
-	}
+    /**
+     * Check if a user has access to lead data
+     * @param DataContainer
+     */
+    public function checkPermission($dc)
+    {
+        if ($this->Input->get('master') == '')
+        {
+            $this->redirect('contao/main.php?act=error');
+        }
+    }
 
 
-	/**
-	 * Generate label for this record
-	 * @param array
-	 * @param string
-	 * @return string
-	 */
-	public function getLabel($row, $label)
-	{
-		$objForm = $this->Database->prepare("SELECT * FROM tl_form WHERE id=?")->execute($row['master_id']);
+    /**
+     * Generate label for this record
+     * @param array
+     * @param string
+     * @return string
+     */
+    public function getLabel($row, $label)
+    {
+        $objForm = $this->Database->prepare("SELECT * FROM tl_form WHERE id=?")->execute($row['master_id']);
 
-		// No form found, we can't format the label
-		if (!$objForm->numRows)
-		{
-			return $label;
-		}
+        // No form found, we can't format the label
+        if (!$objForm->numRows)
+        {
+            return $label;
+        }
 
-		$arrTokens = array('created'=>$this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']));
-		$objData = $this->Database->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
+        $arrTokens = array('created'=>$this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']));
+        $objData = $this->Database->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
 
-		while ($objData->next())
-		{
-			$varValue = deserialize($objData->value);
-			$arrTokens[$objData->name] = is_array($varValue) ? implode(', ', $varValue) : $varValue;
-		}
+        while ($objData->next())
+        {
+            $varValue = deserialize($objData->value);
+            $arrTokens[$objData->name] = is_array($varValue) ? implode(', ', $varValue) : $varValue;
+        }
 
-		return $this->parseSimpleTokens($objForm->leadLabel, $arrTokens);
-	}
+        return $this->parseSimpleTokens($objForm->leadLabel, $arrTokens);
+    }
 
 
-	public function show($dc)
-	{
-		$objData = $this->Database->prepare("SELECT d.*, l.created, f.title AS form_title, IF(ff.label IS NULL OR ff.label='', d.name, ff.label) AS name FROM tl_lead l LEFT JOIN tl_lead_data d ON l.id=d.pid LEFT OUTER JOIN tl_form f ON l.master_id=f.id LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id WHERE l.id=? ORDER BY d.sorting")->execute($dc->id);
+    public function show($dc)
+    {
+        $objData = $this->Database->prepare("SELECT d.*, l.created, f.title AS form_title, IF(ff.label IS NULL OR ff.label='', d.name, ff.label) AS name FROM tl_lead l LEFT JOIN tl_lead_data d ON l.id=d.pid LEFT OUTER JOIN tl_form f ON l.master_id=f.id LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id WHERE l.id=? ORDER BY d.sorting")->execute($dc->id);
 
-		if (!$objData->numRows)
-		{
-			$this->redirect('contao/main.php?act=error');
-		}
+        if (!$objData->numRows)
+        {
+            $this->redirect('contao/main.php?act=error');
+        }
 
-		$i = 0;
-		$rows = '';
+        $i = 0;
+        $rows = '';
 
-		while ($objData->next())
-		{
-			$rows .= '
+        while ($objData->next())
+        {
+            $rows .= '
   <tr>
     <td' . ($i%2 ? ' class="tl_bg"' : '') . '><span class="tl_label">' . $objData->name . ': </span></td>
     <td' . ($i%2 ? ' class="tl_bg"' : '') . '>' . Leads::formatValue($objData) . '</td>
   </tr>';
 
-  			++$i;
-		}
+              ++$i;
+        }
 
 
-		return '
+        return '
 <div id="tl_buttons">
 <a href="' . $this->getReferer(true) . '" class="header_back" title="' . $GLOBALS['TL_LANG']['MSC']['backBT'] . '" accesskey="b" onclick="Backend.getScrollOffset()">' . $GLOBALS['TL_LANG']['MSC']['backBT'] . '</a>
 </div>
@@ -238,55 +238,55 @@ class tl_lead extends Backend
   </tr>' . $rows . '
 </tbody></table>
 ';
-	}
+    }
 
 
-	public function export()
-	{
-		$intMaster = $this->Input->get('master');
+    public function export()
+    {
+        $intMaster = $this->Input->get('master');
 
-		if (!$intMaster)
-		{
-			$this->redirect('contao/main.php?act=error');
-		}
+        if (!$intMaster)
+        {
+            $this->redirect('contao/main.php?act=error');
+        }
 
-		$this->import('Leads');
-		$this->Leads->export($intMaster, $this->Input->get('type'));
-	}
+        $this->import('Leads');
+        $this->Leads->export($intMaster, $this->Input->get('type'));
+    }
 
-	public function exportChoice(DataContainer $dc)
-	{
-		if ($this->Input->get('key') != 'export_choice')
-		{
-			$this->redirect($this->getReferer());
-		}
+    public function exportChoice(DataContainer $dc)
+    {
+        if ($this->Input->get('key') != 'export_choice')
+        {
+            $this->redirect($this->getReferer());
+        }
 
-		// Form buttons
-		$arrButtons = array
-		(
-			array
-			(
-				'name'  => 'csv',
-				'label' => $GLOBALS['TL_LANG']['tl_lead']['export_csv'][0]
-			),
-			array
-			(
-				'name'  => 'excel',
-				'label' => $GLOBALS['TL_LANG']['tl_lead']['export_excel'][0]
-			)
-		);
+        // Form buttons
+        $arrButtons = array
+        (
+            array
+            (
+                'name'  => 'csv',
+                'label' => $GLOBALS['TL_LANG']['tl_lead']['export_csv'][0]
+            ),
+            array
+            (
+                'name'  => 'excel',
+                'label' => $GLOBALS['TL_LANG']['tl_lead']['export_excel'][0]
+            )
+        );
 
-		$intMaster = $this->Input->get('master');
-		$objSelect = new SelectView($dc->table, $arrButtons);
+        $intMaster = $this->Input->get('master');
+        $objSelect = new SelectView($dc->table, $arrButtons);
 
-		if ($objSelect->action)
-		{
-			$this->import('Leads');
-			$arrIds = is_array($objSelect->ids) ? $objSelect->ids : null;
+        if ($objSelect->action)
+        {
+            $this->import('Leads');
+            $arrIds = is_array($objSelect->ids) ? $objSelect->ids : null;
 
-			$this->Leads->export($intMaster, $objSelect->action, $arrIds);
-		}
+            $this->Leads->export($intMaster, $objSelect->action, $arrIds);
+        }
 
-		return $objSelect->renderView();
-	}
+        return $objSelect->renderView();
+    }
 }

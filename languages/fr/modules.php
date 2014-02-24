@@ -13,4 +13,4 @@
 /**
  * Backend modules
  */
-$GLOBALS['TL_LANG']['MOD']['leads']	= array('Données Leads', 'Stocke et permet de gérer les données du formulaire "%s".');
+$GLOBALS['TL_LANG']['MOD']['leads'] = array('Données Leads', 'Stocke et permet de gérer les données du formulaire "%s".');
