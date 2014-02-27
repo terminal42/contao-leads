@@ -69,13 +69,6 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'class'         => 'leads-export header_export_excel',
                 'attributes'    => 'onclick="Backend.getScrollOffset();"',
             ),
-            'export_choice' => array
-            (
-                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_choice'],
-                'href'          => 'key=export_choice',
-                'class'         => 'leads-export header_export_choice',
-                'attributes'    => 'onclick="Backend.getScrollOffset();"',
-            ),
             'all' => array
             (
                 'label'         => &$GLOBALS['TL_LANG']['MSC']['all'],
@@ -105,6 +98,15 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'href'          => 'table=tl_lead_data',
                 'icon'          => 'system/modules/leads/assets/field.png'
             ),
+        )
+    ),
+
+    // Select
+    'select' => array
+    (
+        'buttons_callback' => array
+        (
+            array('tl_lead', 'addExportButtons')
         )
     ),
 
@@ -254,39 +256,22 @@ class tl_lead extends Backend
         $this->Leads->export($intMaster, $this->Input->get('type'));
     }
 
-    public function exportChoice(DataContainer $dc)
+
+    public function addExportButtons($arrButtons)
     {
-        if ($this->Input->get('key') != 'export_choice')
-        {
-            $this->redirect($this->getReferer());
-        }
+        if (\Input::post('FORM_SUBMIT') == 'tl_select' && \Input::post('export_csv')) {
+            $arrIds = \Input::post('IDS');
 
-        // Form buttons
-        $arrButtons = array
-        (
-            array
-            (
-                'name'  => 'csv',
-                'label' => $GLOBALS['TL_LANG']['tl_lead']['export_csv'][0]
-            ),
-            array
-            (
-                'name'  => 'excel',
-                'label' => $GLOBALS['TL_LANG']['tl_lead']['export_excel'][0]
-            )
-        );
+            if (empty($arrIds)) {
+                $this->reload();
+            }
 
-        $intMaster = $this->Input->get('master');
-        $objSelect = new SelectView($dc->table, $arrButtons);
 
-        if ($objSelect->action)
-        {
             $this->import('Leads');
-            $arrIds = is_array($objSelect->ids) ? $objSelect->ids : null;
-
-            $this->Leads->export($intMaster, $objSelect->action, $arrIds);
+            $this->Leads->export($this->Input->get('master'), 'export_csv', $arrIds);
         }
 
-        return $objSelect->renderView();
+        $arrButtons['export_csv'] = '<input type="submit" name="export_csv" id="export_csv" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead']['export_csv'][0]).'">';
+        return $arrButtons;
     }
 }

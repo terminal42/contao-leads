@@ -27,7 +27,6 @@ $GLOBALS['TL_LANG']['tl_lead']['show']          = array('Lead details', 'Show de
 $GLOBALS['TL_LANG']['tl_lead']['export']        = array('Export', 'Downloads leads as file');
 $GLOBALS['TL_LANG']['tl_lead']['export_csv']    = array('as CSV', '');
 $GLOBALS['TL_LANG']['tl_lead']['export_excel']  = array('as Excel document', '');
-$GLOBALS['TL_LANG']['tl_lead']['export_choice'] = array('export choice', '');
 
 
 /**
