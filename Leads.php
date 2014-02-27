@@ -9,6 +9,7 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
+use \Haste\File\CsvWriter;
 
 class Leads extends Controller
 {
@@ -248,12 +249,6 @@ class Leads extends Controller
      */
     public function export($intMaster, $strType='csv', $arrIds=null)
     {
-        $objCSV = new CsvWriter();
-        $objCSV->excel = $strType === 'excel';
-
-        $arrHeader = array();
-        $arrFields = array();
-
         $objFields = \Database::getInstance()->prepare("
             SELECT
                 ld.master_id AS id,
@@ -266,11 +261,12 @@ class Leads extends Controller
             ORDER BY IFNULL(ff.sorting, ld.sorting)
         ")->executeUncached($intMaster);
 
-        while ($objFields->next()) {
-            $arrFields[] = $objFields->id;
+        $arrHeader = array();
 
-            // Add first row containing field labels
+        // Add header fields
+        while ($objFields->next()) {
             $arrHeader[] = $objFields->label;
+            $arrFields[] = $objFields->id;
         }
 
         // Add base information columns
@@ -278,9 +274,8 @@ class Leads extends Controller
         array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['form_id'][0]);
         array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['created'][0]);
 
-        $objCSV->appendContent($arrHeader);
-
         $strWhere = '';
+
         if (is_array($arrIds) && !empty($arrIds)) {
             $strWhere = ' WHERE l.id IN(' . implode(',', $arrIds) . ')';
         }
@@ -301,11 +296,16 @@ class Leads extends Controller
             $arrData[$objData->pid][$objData->master_id] = $objData->row();
         }
 
-        foreach ($arrData as $arrFieldData) {
+        $objDataProvider = new CsvWriter\DataProvider\ArrayProvider($arrData);
+        $objDataProvider->setHeaderFields($arrHeader);
+        $objCsv = new CsvWriter\CsvWriter($objDataProvider);
+        $objCsv->enableHeaderFields();
+
+        $objCsv->download('', function($arrFieldData) use ($arrFields) {
             $arrRow = array();
 
             $arrFirst = reset($arrFieldData);
-            $arrRow[] = $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']);
+            $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']);
             $arrRow[] = $arrFirst['form_name'];
             $arrRow[] = $arrFirst['member_name'];
 
@@ -313,9 +313,7 @@ class Leads extends Controller
                 $arrRow[] = Leads::formatValue((object) $arrFieldData[$intField]);
             }
 
-            $objCSV->appendContent($arrRow);
-        }
-
-        $objCSV->saveToBrowser();
+            return $arrRow;
+        });
     }
 }
