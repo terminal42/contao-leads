@@ -26,7 +26,6 @@ $GLOBALS['TL_LANG']['tl_lead']['delete']        = array('Delete lead', 'Delete l
 $GLOBALS['TL_LANG']['tl_lead']['show']          = array('Lead details', 'Show details of lead ID %s');
 $GLOBALS['TL_LANG']['tl_lead']['export']        = array('Export', 'Downloads leads as file');
 $GLOBALS['TL_LANG']['tl_lead']['export_csv']    = array('as CSV', '');
-$GLOBALS['TL_LANG']['tl_lead']['export_excel']  = array('as Excel document', '');
 
 
 /**
