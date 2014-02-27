@@ -245,8 +245,9 @@ class tl_lead extends Backend
             $this->redirect('contao/main.php?act=error');
         }
 
+        $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
         $this->import('Leads');
-        $this->Leads->export($intMaster, $this->Input->get('type'));
+        $this->Leads->export($intMaster, $this->Input->get('type'), $arrIds);
     }
 
 
@@ -258,7 +259,6 @@ class tl_lead extends Backend
             if (empty($arrIds)) {
                 $this->reload();
             }
-
 
             $this->import('Leads');
             $this->Leads->export($this->Input->get('master'), 'export_csv', $arrIds);
