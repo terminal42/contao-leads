@@ -125,6 +125,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'label'             => &$GLOBALS['TL_LANG']['tl_lead']['created'],
             'sorting'           => true,
             'flag'              => 8,
+            'eval'              => array('rgxp'=>'datim'),
         ),
         'member_id' => array
         (
