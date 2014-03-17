@@ -19,13 +19,6 @@
     padding: 2px 0 3px 22px;
 }
 
-.header_export_choice {
-    background-image: url("export_choice.png");
-    background-position: left center;
-    background-repeat: no-repeat;
-    padding: 2px 0 3px 22px;
-}
-
 #leadsexportmenu
 {
     display:none;
