@@ -9,7 +9,8 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-use \Haste\File\CsvWriter;
+use \Haste\IO\Reader\ArrayReader;
+use \Haste\IO\Writer\CsvFileWriter;
 
 class Leads extends Controller
 {
@@ -296,12 +297,13 @@ class Leads extends Controller
             $arrData[$objData->pid][$objData->master_id] = $objData->row();
         }
 
-        $objDataProvider = new CsvWriter\DataProvider\ArrayProvider($arrData);
-        $objDataProvider->setHeaderFields($arrHeader);
-        $objCsv = new CsvWriter\CsvWriter($objDataProvider);
-        $objCsv->enableHeaderFields();
+        $objReader = new ArrayReader($arrData);
+        $objReader->setHeaderFields($arrHeader);
 
-        $objCsv->download('', function($arrFieldData) use ($arrFields) {
+        $objWriter = new CsvFileWriter();
+        $objWriter->enableHeaderFields();
+
+        $objWriter->setRowCallback(function($arrFieldData) use ($arrFields) {
             $arrRow = array();
 
             $arrFirst = reset($arrFieldData);
@@ -315,5 +317,10 @@ class Leads extends Controller
 
             return $arrRow;
         });
+
+        $objWriter->writeFrom($objReader);
+
+        $objFile = new \File($objWriter->getFilename());
+        $objFile->sendToBrowser();
     }
 }
