@@ -139,6 +139,23 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 );
 
 
+if (class_exists('PHPExcel')) {
+    $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations']['export_xls'] = array
+    (
+        'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_xls'],
+        'href'          => 'key=export&amp;type=xls',
+        'class'         => 'leads-export header_export_excel',
+        'attributes'    => 'onclick="Backend.getScrollOffset();"',
+    );
+    $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations']['export_xlsx'] = array
+    (
+        'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_xlsx'],
+        'href'          => 'key=export&amp;type=xlsx',
+        'class'         => 'leads-export header_export_excel',
+        'attributes'    => 'onclick="Backend.getScrollOffset();"',
+    );
+}
+
 class tl_lead extends Backend
 {
 
@@ -241,8 +258,7 @@ class tl_lead extends Backend
     {
         $intMaster = $this->Input->get('master');
 
-        if (!$intMaster)
-        {
+        if (!$intMaster) {
             $this->redirect('contao/main.php?act=error');
         }
 
@@ -254,7 +270,7 @@ class tl_lead extends Backend
 
     public function addExportButtons($arrButtons)
     {
-        if (\Input::post('FORM_SUBMIT') == 'tl_select' && \Input::post('export_csv')) {
+        if (\Input::post('FORM_SUBMIT') == 'tl_select') {
             $arrIds = \Input::post('IDS');
 
             if (empty($arrIds)) {
@@ -262,10 +278,23 @@ class tl_lead extends Backend
             }
 
             $this->import('Leads');
-            $this->Leads->export($this->Input->get('master'), 'export_csv', $arrIds);
+
+            if (\Input::post('export_csv')) {
+                $this->Leads->export($this->Input->get('master'), 'csv', $arrIds);
+            } elseif (\Input::post('export_xls')) {
+                $this->Leads->export($this->Input->get('master'), 'xls', $arrIds);
+            } elseif (\Input::post('export_xlsx')) {
+                $this->Leads->export($this->Input->get('master'), 'xlsx', $arrIds);
+            }
         }
 
         $arrButtons['export_csv'] = '<input type="submit" name="export_csv" id="export_csv" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead']['export_csv'][0]).'">';
+
+        if (class_exists('PHPExcel')) {
+            $arrButtons['export_xls'] = '<input type="submit" name="export_csv" id="export_xls" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead']['export_xls'][0]).'">';
+            $arrButtons['export_xlsx'] = '<input type="submit" name="export_csv" id="export_xlsx" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead']['export_xlsx'][0]).'">';
+        }
+
         return $arrButtons;
     }
 }

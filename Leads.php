@@ -11,6 +11,7 @@
 
 use \Haste\IO\Reader\ArrayReader;
 use \Haste\IO\Writer\CsvFileWriter;
+use \Haste\IO\Writer\ExcelFileWriter;
 
 class Leads extends Controller
 {
@@ -300,8 +301,22 @@ class Leads extends Controller
         $objReader = new ArrayReader($arrData);
         $objReader->setHeaderFields($arrHeader);
 
-        $objWriter = new CsvFileWriter();
-        $objWriter->enableHeaderFields();
+        switch ($strType) {
+            case 'csv':
+                $objWriter = new CsvFileWriter();
+                $objWriter->enableHeaderFields();
+                break;
+
+            case 'xls':
+            case 'xlsx':
+                $objWriter = new ExcelFileWriter();
+                $objWriter->setFormat(($strType == 'xls' ? 'Excel5' : 'Excel2007'));
+                $objWriter->enableHeaderFields();
+                break;
+
+            default:
+                throw new \InvalidArgumentException('Export type "'.$strType.'" is not supported');
+        }
 
         $objWriter->setRowCallback(function($arrFieldData) use ($arrFields) {
             $arrRow = array();
