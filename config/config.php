@@ -22,7 +22,6 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
         'stylesheet'    => 'system/modules/leads/assets/leads.min.css',
         'show'          => array('tl_lead', 'show'),
         'export'        => array('tl_lead', 'export'),
-        'export_choice' => array('tl_lead', 'exportChoice')
     ),
 )));
 
