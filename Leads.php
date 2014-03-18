@@ -255,7 +255,9 @@ class Leads extends Controller
             SELECT
                 ld.master_id AS id,
                 IFNULL(ff.name, ld.name) AS name,
-                IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label
+                IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label,
+                ff.type,
+                ff.options
             FROM tl_lead_data ld
             LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
             WHERE ld.pid IN (SELECT id FROM tl_lead WHERE master_id=?)
@@ -267,8 +269,20 @@ class Leads extends Controller
 
         // Add header fields
         while ($objFields->next()) {
+
+            $arrFields[] = $objFields->row();
+
+            // Show single checkbox label as field label
+            if ($objFields->label == $objFields->name && $objFields->type == 'checkbox' && $objFields->options != '') {
+                $arrOptions = deserialize($objFields->options);
+
+                if (is_array($arrOptions) && count($arrOptions) == 1) {
+                    $arrHeader[] = $arrOptions[0]['label'];
+                    continue;
+                }
+            }
+
             $arrHeader[] = $objFields->label;
-            $arrFields[] = $objFields->id;
         }
 
         // Add base information columns
@@ -326,8 +340,25 @@ class Leads extends Controller
             $arrRow[] = $arrFirst['form_name'];
             $arrRow[] = $arrFirst['member_name'];
 
-            foreach ($arrFields as $intField) {
-                $arrRow[] = Leads::formatValue((object) $arrFieldData[$intField]);
+            foreach ($arrFields as $arrField) {
+
+                // Show yes/no for single checkbox value
+                if ($arrField['label'] == $arrField['name'] && $arrField['type'] == 'checkbox' && $arrField['options'] != '') {
+                    $arrOptions = deserialize($arrField['options']);
+
+                    if (is_array($arrOptions) && count($arrOptions) == 1) {
+                        if ($arrFieldData[$arrField['id']]['value'] == '') {
+                            $arrRow[] = $GLOBALS['TL_LANG']['MSC']['no'];
+                            continue;
+
+                        } elseif ($arrFieldData[$arrField['id']]['value'] == '1') {
+                            $arrRow[] = $GLOBALS['TL_LANG']['MSC']['yes'];
+                            continue;
+                        }
+                    }
+                }
+
+                $arrRow[] = Leads::formatValue((object) $arrFieldData[$arrField['id']]);
             }
 
             return $arrRow;
