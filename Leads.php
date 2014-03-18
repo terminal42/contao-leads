@@ -259,7 +259,7 @@ class Leads extends Controller
             FROM tl_lead_data ld
             LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
             WHERE ld.pid IN (SELECT id FROM tl_lead WHERE master_id=?)
-            GROUP BY ld.master_id
+            GROUP BY ld.field_id
             ORDER BY IFNULL(ff.sorting, ld.sorting)
         ")->executeUncached($intMaster);
 
@@ -295,7 +295,7 @@ class Leads extends Controller
         ");
 
         while ($objData->next()) {
-            $arrData[$objData->pid][$objData->master_id] = $objData->row();
+            $arrData[$objData->pid][$objData->field_id] = $objData->row();
         }
 
         $objReader = new ArrayReader($arrData);
