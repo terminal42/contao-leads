@@ -208,15 +208,15 @@ class Leads extends Controller
 
                     $varValue = Leads::prepareValue($varValue, $objFields);
 
-                    $arrSet = array(
-                        'pid'            => $intLead,
-                        'sorting'        => $objFields->sorting,
-                        'tstamp'        => $time,
-                        'master_id'        => $objFields->master_id,
-                        'field_id'        => $objFields->id,
-                        'name'            => $objFields->name,
-                        'value'            => $varValue,
-                        'label'            => $varLabel,
+                    $arrSet         = array(
+                        'pid'       => $intLead,
+                        'sorting'   => $objFields->sorting,
+                        'tstamp'    => $time,
+                        'master_id' => $objFields->master_id,
+                        'field_id'  => $objFields->id,
+                        'name'      => $objFields->name,
+                        'value'     => $varValue,
+                        'label'     => $varLabel,
                     );
 
                     // HOOK: add custom logic
