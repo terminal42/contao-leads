@@ -252,17 +252,23 @@ class Leads extends Controller
     public function export($intMaster, $strType='csv', $arrIds=null)
     {
         $objFields = \Database::getInstance()->prepare("
-            SELECT
-                ld.master_id AS id,
-                IFNULL(ff.name, ld.name) AS name,
-                IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label,
-                ff.type,
-                ff.options
-            FROM tl_lead_data ld
-            LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
-            WHERE ld.pid IN (SELECT id FROM tl_lead WHERE master_id=?)
-            GROUP BY ld.field_id
-            ORDER BY IFNULL(ff.sorting, ld.sorting)
+            SELECT * FROM (
+                SELECT
+                    ld.master_id AS id,
+                    IFNULL(ff.name, ld.name) AS name,
+                    IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label,
+                    ff.type,
+                    ff.options,
+                    ld.field_id,
+                    ld.sorting
+                FROM tl_lead_data ld
+                LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
+                LEFT JOIN tl_lead l ON ld.pid=l.id
+                WHERE l.master_id=?
+                ORDER BY l.master_id!=l.form_id
+            ) ld
+            GROUP BY field_id
+            ORDER BY sorting
         ")->executeUncached($intMaster);
 
         $arrHeader = array();
