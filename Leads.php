@@ -303,7 +303,7 @@ class Leads extends Controller
         }
 
         $arrData = array();
-        $objData = \Database::getInstance()->query("
+        $objData = \Database::getInstance()->prepare("
             SELECT
                 ld.*,
                 l.created,
@@ -311,8 +311,9 @@ class Leads extends Controller
                 IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
             FROM tl_lead_data ld
             LEFT JOIN tl_lead l ON l.id=ld.pid$strWhere
+            WHERE l.master_id=?
             ORDER BY l.created DESC
-        ");
+        ")->execute($intMaster);
 
         while ($objData->next()) {
             $arrData[$objData->pid][$objData->field_id] = $objData->row();
