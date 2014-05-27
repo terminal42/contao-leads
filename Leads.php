@@ -45,10 +45,9 @@ class Leads extends Controller
     /**
      * Get the label for a form value to store in lead table
      * @param mixed
-     * @param array
      * @param Database_Result
      */
-    public static function prepareLabel($varValue, $arrOptions, $objField)
+    public static function prepareLabel($varValue, $objField)
     {
         // Run for all values in an array
         if (is_array($varValue)) {
@@ -59,9 +58,18 @@ class Leads extends Controller
             return $varValue;
         }
 
-        foreach ($arrOptions as $arrOption) {
-            if ($arrOption['value'] == $varValue && $arrOption['label'] != '') {
-                return $arrOption['label'];
+        // Convert timestamps into date format
+        if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
+            $varValue = \Date::parse($GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format'], $varValue);
+        }
+
+        if ($objField->options != '') {
+            $arrOptions = deserialize($objField->options, true);
+
+            foreach ($arrOptions as $arrOption) {
+                if ($arrOption['value'] == $varValue && $arrOption['label'] != '') {
+                    $varValue = $arrOption['label'];
+                }
             }
         }
 
@@ -198,15 +206,8 @@ class Leads extends Controller
             while ($objFields->next()) {
 
                 if (isset($arrPost[$objFields->postName])) {
-                    $varLabel = '';
-                    $varValue = $arrPost[$objFields->postName];
-
-                    if ($objFields->options != '') {
-                        $arrOptions = deserialize($objFields->options, true);
-                        $varLabel = Leads::prepareLabel($varValue, $arrOptions, $objFields);
-                    }
-
-                    $varValue = Leads::prepareValue($varValue, $objFields);
+                    $varValue = Leads::prepareValue($arrPost[$objFields->postName], $objFields);
+                    $varLabel = Leads::prepareLabel($varValue, $objFields);
 
                     $arrSet         = array(
                         'pid'       => $intLead,
