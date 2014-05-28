@@ -9,6 +9,7 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
+use \Haste\Haste;
 use \Haste\IO\Reader\ArrayReader;
 use \Haste\IO\Writer\CsvFileWriter;
 use \Haste\IO\Writer\ExcelFileWriter;
@@ -60,7 +61,7 @@ class Leads extends Controller
 
         // Convert timestamps into date format
         if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
-            $varValue = \Date::parse($GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format'], $varValue);
+            $varValue = Haste::getInstance()->call('parseDate', array($GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format'], $varValue));
         }
 
         if ($objField->options != '') {
@@ -344,7 +345,7 @@ class Leads extends Controller
             $arrRow = array();
 
             $arrFirst = reset($arrFieldData);
-            $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']);
+            $arrRow[] = Haste::getInstance()->call('parseDate', array($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']));
             $arrRow[] = $arrFirst['form_name'];
             $arrRow[] = $arrFirst['member_name'];
 
@@ -374,7 +375,13 @@ class Leads extends Controller
 
         $objWriter->writeFrom($objReader);
 
-        $objFile = new \File($objWriter->getFilename());
-        $objFile->sendToBrowser();
+        if (version_compare(VERSION, '3', '<')) {
+            $GLOBALS['TL_CONFIG']['uploadPath'] = dirname($objWriter->getFilename());
+            $GLOBALS['TL_CONFIG']['allowedDownload'] .= ','.pathinfo($objWriter->getFilename(), PATHINFO_EXTENSION);
+            Haste::getInstance()->call('sendFileToBrowser', $objWriter->getFilename());
+        } else {
+            $objFile = new \File($objWriter->getFilename());
+            $objFile->sendToBrowser();
+        }
     }
 }

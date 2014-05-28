@@ -139,7 +139,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
 );
 
 
-if (class_exists('PHPExcel')) {
+if (in_array('php-excel', \Config::getInstance()->getActiveModules()) && class_exists('PHPExcel')) {
     $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations']['export_xls'] = array
     (
         'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_xls'],
