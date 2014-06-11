@@ -206,7 +206,7 @@ class tl_lead extends Backend
         $arrLanguages = \System::getLanguages();
 
         $objForm = $this->Database->prepare("
-            SELECT l.*, s.title AS source_title, f.title AS master_title, CONCAT(m.firstname, ' ', m.lastname) AS member_name
+            SELECT l.*, s.title AS form_title, f.title AS master_title, CONCAT(m.firstname, ' ', m.lastname) AS member_name
             FROM tl_lead l
             LEFT OUTER JOIN tl_form s ON l.form_id=s.id
             LEFT OUTER JOIN tl_form f ON l.master_id=f.id
