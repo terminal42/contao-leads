@@ -19,6 +19,7 @@ CREATE TABLE `tl_lead` (
   `master_id` int(10) unsigned NOT NULL default '0',
   `form_id` int(10) unsigned NOT NULL default '0',
   `member_id` int(10) unsigned NOT NULL default '0',
+  `post_data` mediumblob NULL,
   PRIMARY KEY  (`id`),
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
