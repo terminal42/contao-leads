@@ -13,62 +13,60 @@
 /**
  * Config
  */
-$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array('tl_form_field_leads', 'injectFieldSelect');
+$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array('tl_form_field_leads', 'loadLoadStore');
 
 
 /**
  * Fields
  */
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreSelect'] = array
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore'] = array
 (
     'label'                 => &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'],
     'exclude'               => true,
     'inputType'             => 'select',
-    'options_callback'      => array('tl_form_field_leads', 'getMasterFields'),
+    'options_callback'      => array('tl_form_field_leads', 'getLeadStoreOptions'),
     'eval'                  => array('tl_class'=>'w50', 'includeBlankOption'=>true, 'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'][2]),
-);
-
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreCheckbox'] = array
-(
-    'label'                 => &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox'],
-    'exclude'               => true,
-    'inputType'             => 'checkbox',
-    'eval'                  => array('tl_class'=>'w50 m12'),
 );
 
 
 class tl_form_field_leads extends Backend
 {
 
-    public function injectFieldSelect($dc)
+    public function loadLoadStore($dc)
     {
-        $intId = 0;
-        switch ($this->Input->get('act'))
-        {
+        global $objLeadForm;
+
+        switch ($this->Input->get('act')) {
+
             case 'edit':
-                $intId = $this->Database->execute("SELECT pid FROM tl_form_field WHERE id=$dc->id")->pid;
+                $objLeadForm = $this->Database->prepare("SELECT leadEnabled, leadMaster FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id=?)")->execute($dc->id);
                 break;
+
             case 'editAll':
             case 'overrideAll':
-                $intId = $this->Input->get('id');
+                $objLeadForm = $this->Database->prepare("SELECT leadEnabled, leadMaster FROM tl_form WHERE id=?")->execute($dc->id);
                 break;
+
+            default:
+                return;
         }
 
-        if ($intId === 0)
-        {
-            return;
+        if (!$objLeadForm->leadEnabled) {
+            unset($GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']);
         }
-
-        $objForm = $this->Database->execute("SELECT leadEnabled,leadMaster FROM tl_form WHERE id=$intId");
-
-        if ($objForm->leadEnabled)
+        else
         {
-            $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore'] = ($objForm->leadMaster ? $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreSelect'] : $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStoreCheckbox']);
+            if ($objLeadForm->leadMaster == 0) {
+                $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['label'] = &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox'];
+                $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['options'] = array('1'=> $GLOBALS['TL_LANG']['MSC']['yes']);
+                $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['eval']['blankOptionLabel'] = $GLOBALS['TL_LANG']['MSC']['no'];
 
-            foreach( $GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $strName => $strPalette )
-            {
-                if (in_array($strName, array('__selector__', 'submit', 'default', 'headline', 'explanation')))
-                {
+                unset($GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['options_callback']);
+            }
+
+            foreach ($GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $strName => $strPalette) {
+
+                if (in_array($strName, array('__selector__', 'submit', 'default', 'headline', 'explanation'))) {
                     continue;
                 }
 
@@ -80,19 +78,28 @@ class tl_form_field_leads extends Backend
     }
 
 
-    public function getMasterFields($dc)
+    public function getLeadStoreOptions($dc)
     {
+        global $objLeadForm;
+
         $arrFields = array();
-        $objForm = $this->Database->execute("SELECT * FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id={$dc->id})");
+        $objFields = $this->Database->prepare("
+            SELECT *
+            FROM tl_form_field
+            WHERE
+                name!=''
+                AND pid=?
+                AND leadStore='1'
+                AND id NOT IN (
+                    SELECT leadStore
+                    FROM tl_form_field
+                    WHERE pid=? AND id!=?
+                )
+            ORDER BY sorting
+        ")->execute($objLeadForm->leadMaster, $objLeadForm->id, $dc->activeRecord->id);
 
-        if ($objForm->leadEnabled && $objForm->leadMaster > 0)
-        {
-            $objFields = $this->Database->prepare("SELECT * FROM tl_form_field WHERE name!='' AND pid=? AND leadStore='1' AND id NOT IN (SELECT leadStore FROM tl_form_field WHERE pid=? AND id!=?) ORDER BY sorting")->execute($objForm->leadMaster, $objForm->id, $dc->activeRecord->id);
-
-            while ($objFields->next())
-            {
-                $arrFields[$objFields->id] = $objFields->label == '' ? $objFields->name : ($objFields->label . ' (' . $objFields->name . ')');
-            }
+        while ($objFields->next()) {
+            $arrFields[$objFields->id] = $objFields->label == '' ? $objFields->name : ($objFields->label . ' (' . $objFields->name . ')');
         }
 
         return $arrFields;
