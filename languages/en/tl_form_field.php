@@ -14,4 +14,4 @@
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect']     = array('Save as', 'Select the master field where this field should be stored.', 'Do not save');
-$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox']   = array('Save field', 'Klick here to store this field in leads.');
+$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox']   = array('Save field', 'Click here to store this field in leads.');
