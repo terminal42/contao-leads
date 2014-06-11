@@ -221,7 +221,7 @@ class tl_lead extends Backend
     <td' . ($i%2 ? ' class="tl_bg"' : '') . '>' . Leads::formatValue($objData) . '</td>
   </tr>';
 
-              ++$i;
+            ++$i;
         }
 
 
