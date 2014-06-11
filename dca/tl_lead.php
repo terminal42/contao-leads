@@ -203,12 +203,24 @@ class tl_lead extends Backend
 
     public function show($dc)
     {
-        $objData = $this->Database->prepare("SELECT d.*, l.created, f.title AS form_title, IF(ff.label IS NULL OR ff.label='', d.name, ff.label) AS name FROM tl_lead l LEFT JOIN tl_lead_data d ON l.id=d.pid LEFT OUTER JOIN tl_form f ON l.master_id=f.id LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id WHERE l.id=? ORDER BY d.sorting")->execute($dc->id);
+        $arrLanguages = \System::getLanguages();
 
-        if (!$objData->numRows)
-        {
-            $this->redirect('contao/main.php?act=error');
-        }
+        $objForm = $this->Database->prepare("
+            SELECT l.*, s.title AS source_title, f.title AS master_title, CONCAT(m.firstname, ' ', m.lastname) AS member_name
+            FROM tl_lead l
+            LEFT OUTER JOIN tl_form s ON l.form_id=s.id
+            LEFT OUTER JOIN tl_form f ON l.master_id=f.id
+            LEFT OUTER JOIN tl_member m ON l.member_id=m.id
+            WHERE l.id=?
+        ")->execute($dc->id);
+
+        $objData = $this->Database->prepare("
+            SELECT d.*, IF(ff.label IS NULL OR ff.label='', d.name, ff.label) AS name
+            FROM tl_lead_data d
+            LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id
+            WHERE d.pid=?
+            ORDER BY d.sorting
+        ")->execute($dc->id);
 
         $i = 0;
         $rows = '';
@@ -239,12 +251,24 @@ class tl_lead extends Backend
   </tr>
   <tr>
     <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['created'][0] . ': </span></td>
-    <td class="tl_bg">' . $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $objData->created) . '</td>
+    <td class="tl_bg">' . $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $objForm->created) . '</td>
   </tr>
   <tr>
     <td><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['form_id'][0] . ': </span></td>
-    <td>' . $objData->form_title . '</td>
+    <td>' . $objForm->form_title . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->form_id . ']</span></td>
   </tr>
+  <tr>
+    <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['master_id'][0] . ': </span></td>
+    <td class="tl_bg">' . $objForm->master_title . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->master_id . ']</span></td>
+  </tr>
+  <tr>
+    <td><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['language'][0] . ': </span></td>
+    <td>' . $arrLanguages[$objForm->language] . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $objForm->language . ']</span></td>
+  </tr> ' . ($objForm->member_id > 0 ? '
+  <tr>
+    <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['member'][0] . ': </span></td>
+    <td class="tl_bg">' . $objForm->member_name . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->member_id . ']</span></td>
+  </tr>' : '') . '
   <tr>
     <td>&nbsp;</td>
     <td>&nbsp;</td>

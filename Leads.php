@@ -94,7 +94,7 @@ class Leads extends Controller
                 $strLabel = implode(', ', $arrLabel);
             }
 
-            $strValue = $strLabel . ' (' . $strValue . ')';
+            $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
         }
 
         return $strValue;
@@ -367,7 +367,7 @@ class Leads extends Controller
                     }
                 }
 
-                $arrRow[] = Leads::formatValue((object) $arrFieldData[$arrField['id']]);
+                $arrRow[] = strip_tags(Leads::formatValue((object) $arrFieldData[$arrField['id']]));
             }
 
             return $arrRow;
