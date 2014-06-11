@@ -21,7 +21,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array('tl_f
  */
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore'] = array
 (
-    'label'                 => &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'],
+    'label'                 => &$GLOBALS['TL_LANG']['tl_form_field']['leadStore'],
     'exclude'               => true,
     'inputType'             => 'select',
     'options_callback'      => array('tl_form_field_leads', 'getLeadStoreOptions'),
@@ -57,7 +57,6 @@ class tl_form_field_leads extends Backend
         else
         {
             if ($objLeadForm->leadMaster == 0) {
-                $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['label'] = &$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox'];
                 $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['options'] = array('1'=> $GLOBALS['TL_LANG']['MSC']['yes']);
                 $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['eval']['blankOptionLabel'] = $GLOBALS['TL_LANG']['MSC']['no'];
 

@@ -13,5 +13,4 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect']     = array('Speichern in', 'Wählen Sie in welchem Hauptfeld dieses Feld gespeichert werden soll.', 'Nicht speichern');
-$GLOBALS['TL_LANG']['tl_form_field']['leadStoreCheckbox']   = array('Feld speichern', 'Klicken Sie hier um dieses Feld in Anfragen speichern.');
+$GLOBALS['TL_LANG']['tl_form_field']['leadStore'] = array('In Anfrage speichern', 'Wählen Sie ob/wie dieses Feld gespeichert werden soll. Bei Formularverbindungen wählen Sie das entsprechende Feld im Hauptformular.', 'Nicht speichern');
