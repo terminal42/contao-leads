@@ -256,18 +256,18 @@ class tl_lead extends Backend
   <tr>
     <td><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['form_id'][0] . ': </span></td>
     <td>' . $objForm->form_title . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->form_id . ']</span></td>
-  </tr>
+  </tr>' . ($objForm->master_id != $objForm->form_id ? '
   <tr>
     <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['master_id'][0] . ': </span></td>
     <td class="tl_bg">' . $objForm->master_title . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->master_id . ']</span></td>
-  </tr>
+  </tr>' : '') . '
   <tr>
-    <td><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['language'][0] . ': </span></td>
-    <td>' . $arrLanguages[$objForm->language] . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $objForm->language . ']</span></td>
+    <td' . ($objForm->master_id == $objForm->form_id ? ' class="tl_bg"' : '') . '><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['language'][0] . ': </span></td>
+    <td' . ($objForm->master_id == $objForm->form_id ? ' class="tl_bg"' : '') . '>' . $arrLanguages[$objForm->language] . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $objForm->language . ']</span></td>
   </tr> ' . ($objForm->member_id > 0 ? '
   <tr>
-    <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['member'][0] . ': </span></td>
-    <td class="tl_bg">' . $objForm->member_name . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->member_id . ']</span></td>
+    <td' . ($objForm->master_id == $objForm->form_id ? '' : ' class="tl_bg"') . '><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['member'][0] . ': </span></td>
+    <td' . ($objForm->master_id == $objForm->form_id ? '' : ' class="tl_bg"') . '>' . $objForm->member_name . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->member_id . ']</span></td>
   </tr>' : '') . '
   <tr>
     <td>&nbsp;</td>
