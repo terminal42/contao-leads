@@ -26,6 +26,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
         'ctable'                => array('tl_lead_data'),
         'onload_callback' => array
         (
+            array('tl_lead', 'loadExportConfigs'),
             array('tl_lead', 'checkPermission'),
         ),
     ),
@@ -54,13 +55,6 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export'],
                 'class'         => 'header_leads_export',
                 'attributes'    => 'onclick="Backend.getScrollOffset();" style="display:none"',
-            ),
-            'export_csv' => array
-            (
-                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_csv'],
-                'href'          => 'key=export&amp;type=csv',
-                'class'         => 'leads-export header_export_csv',
-                'attributes'    => 'onclick="Backend.getScrollOffset();"',
             ),
             'all' => array
             (
@@ -138,26 +132,28 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
     )
 );
 
-
-if (class_exists('PHPExcel')) {
-    $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations']['export_xls'] = array
-    (
-        'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_xls'],
-        'href'          => 'key=export&amp;type=xls',
-        'class'         => 'leads-export header_export_excel',
-        'attributes'    => 'onclick="Backend.getScrollOffset();"',
-    );
-    $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations']['export_xlsx'] = array
-    (
-        'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export_xlsx'],
-        'href'          => 'key=export&amp;type=xlsx',
-        'class'         => 'leads-export header_export_excel',
-        'attributes'    => 'onclick="Backend.getScrollOffset();"',
-    );
-}
-
 class tl_lead extends Backend
 {
+
+    /**
+     * Load the export configs
+     */
+    public function loadExportConfigs()
+    {
+        $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? ORDER BY name")
+                                              ->execute(\Input::get('master'));
+
+        while ($objConfigs->next()) {
+            $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations']['export_' . $objConfigs->id] = array
+            (
+                'label'         => $objConfigs->name,
+                'href'          => 'key=export&amp;config=' . $objConfigs->id,
+                'class'         => 'leads-export header_export_excel',
+                'attributes'    => 'onclick="Backend.getScrollOffset();"',
+            );
+        }
+    }
+
 
     /**
      * Check if a user has access to lead data
@@ -280,20 +276,21 @@ class tl_lead extends Backend
 
     public function export()
     {
-        $intMaster = $this->Input->get('master');
+        $intConfig = $this->Input->get('config');
 
-        if (!$intMaster) {
+        if (!$intConfig) {
             $this->redirect('contao/main.php?act=error');
         }
 
         $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
         $this->import('Leads');
-        $this->Leads->export($intMaster, $this->Input->get('type'), $arrIds);
+        $this->Leads->export($intConfig, $arrIds);
     }
 
 
     public function addExportButtons($arrButtons)
     {
+        // Run the export
         if (\Input::post('FORM_SUBMIT') == 'tl_select') {
             $arrIds = \Input::post('IDS');
 
@@ -303,20 +300,18 @@ class tl_lead extends Backend
 
             $this->import('Leads');
 
-            if (\Input::post('export_csv')) {
-                $this->Leads->export($this->Input->get('master'), 'csv', $arrIds);
-            } elseif (\Input::post('export_xls')) {
-                $this->Leads->export($this->Input->get('master'), 'xls', $arrIds);
-            } elseif (\Input::post('export_xlsx')) {
-                $this->Leads->export($this->Input->get('master'), 'xlsx', $arrIds);
+            foreach (array_keys($GLOBALS['LEADS_EXPORT']) as $type) {
+                if (\Input::post('export_' . $type)) {
+                    $this->Leads->export($this->Input->get('config'), $type, $arrIds);
+                }
             }
         }
 
-        $arrButtons['export_csv'] = '<input type="submit" name="export_csv" id="export_csv" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead']['export_csv'][0]).'">';
+        \System::loadLanguageFile('tl_lead_export');
 
-        if (class_exists('PHPExcel')) {
-            $arrButtons['export_xls'] = '<input type="submit" name="export_csv" id="export_xls" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead']['export_xls'][0]).'">';
-            $arrButtons['export_xlsx'] = '<input type="submit" name="export_csv" id="export_xlsx" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead']['export_xlsx'][0]).'">';
+        // Generate buttons
+        foreach (array_keys($GLOBALS['LEADS_EXPORT']) as $type) {
+            $arrButtons['export_' . $type] = '<input type="submit" name="export_' . $type . '" id="export_' . $type . '" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead_export']['type'][$type]).'">';
         }
 
         return $arrButtons;

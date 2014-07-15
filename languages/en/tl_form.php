@@ -22,3 +22,8 @@ $GLOBALS['TL_LANG']['tl_form']['leadLabel']     = array('Record label', 'Enter a
  * Other
  */
 $GLOBALS['TL_LANG']['tl_form']['leadMasterBlankOptionLabel'] = 'This is a master form';
+
+/**
+ * Buttons
+ */
+$GLOBALS['TL_LANG']['tl_form']['lead_export'] = array('Export settings', 'Define export settings for form ID %s');

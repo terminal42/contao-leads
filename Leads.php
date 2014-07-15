@@ -80,12 +80,15 @@ class Leads extends Controller
     /**
      * Format a lead field for list view
      * @param object
+     * @param string
      * @return string
      */
-    public static function formatValue($objData)
+    public static function formatValue($objData, $strReturn='all')
     {
+        $strLabel = '';
         $strValue = implode(', ', deserialize($objData->value, true));
 
+        // Generate label
         if ($objData->label != '') {
             $strLabel = $objData->label;
             $arrLabel = deserialize($objData->label);
@@ -93,11 +96,22 @@ class Leads extends Controller
             if (is_array($arrLabel) && !empty($arrLabel)) {
                 $strLabel = implode(', ', $arrLabel);
             }
-
-            $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
         }
 
-        return $strValue;
+        switch ($strReturn) {
+            case 'value':
+                return $strValue;
+
+            case 'label':
+                return $strLabel;
+
+            default:
+                if ($strLabel == '') {
+                    return $strValue;
+                }
+
+                return $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+        }
     }
 
 
@@ -245,137 +259,31 @@ class Leads extends Controller
 
 
     /**
-     * Export data to CSV or excel
-     * @param int master id
-     * @param string type (excel or csv [default])
-     * @param array lead data ids (optional)
-     *
+     * Export the data
+     * @param integer
+     * @param array
      */
-    public function export($intMaster, $strType='csv', $arrIds=null)
+    public function export($intConfig, $arrIds=null)
     {
-        $objFields = \Database::getInstance()->prepare("
-            SELECT * FROM (
-                SELECT
-                    ld.master_id AS id,
-                    IFNULL(ff.name, ld.name) AS name,
-                    IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label,
-                    ff.type,
-                    ff.options,
-                    ld.field_id,
-                    ld.sorting
-                FROM tl_lead_data ld
-                LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
-                LEFT JOIN tl_lead l ON ld.pid=l.id
-                WHERE l.master_id=?
-                ORDER BY l.master_id!=l.form_id
-            ) ld
-            GROUP BY field_id
-            ORDER BY sorting
-        ")->executeUncached($intMaster);
+        $objConfig = \Database::getInstance()->prepare("SELECT *, (SELECT leadMaster FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS master FROM tl_lead_export WHERE id=?")
+                                            ->limit(1)
+                                            ->execute($intConfig);
 
-        $arrHeader = array();
-
-        // Add header fields
-        while ($objFields->next()) {
-
-            $arrFields[] = $objFields->row();
-
-            // Show single checkbox label as field label
-            if ($objFields->label == $objFields->name && $objFields->type == 'checkbox' && $objFields->options != '') {
-                $arrOptions = deserialize($objFields->options);
-
-                if (is_array($arrOptions) && count($arrOptions) == 1) {
-                    $arrHeader[] = $arrOptions[0]['label'];
-                    continue;
-                }
-            }
-
-            $arrHeader[] = $objFields->label;
+        if (!$objConfig->numRows || !isset($GLOBALS['LEADS_EXPORT'][$objConfig->type])) {
+            return;
         }
 
-        // Add base information columns
-        array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['member'][0]);
-        array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['form_id'][0]);
-        array_unshift($arrHeader, $GLOBALS['TL_LANG']['tl_lead']['created'][0]);
+        $objConfig->master = $objConfig->master ?: $objConfig->pid;
+        $arrFields = array();
 
-        $strWhere = '';
-
-        if (is_array($arrIds) && !empty($arrIds)) {
-            $strWhere = ' WHERE l.id IN(' . implode(',', $arrIds) . ')';
+        // Prepare the fields
+        foreach (deserialize($objConfig->fields, true) as $arrField) {
+            $arrFields[$arrField['field']] = $arrField;
         }
 
-        $arrData = array();
-        $objData = \Database::getInstance()->prepare("
-            SELECT
-                ld.*,
-                l.created,
-                (SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
-                IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
-            FROM tl_lead_data ld
-            LEFT JOIN tl_lead l ON l.id=ld.pid$strWhere
-            WHERE l.master_id=?
-            ORDER BY l.created DESC
-        ")->execute($intMaster);
+        $objConfig->fields = $arrFields;
 
-        while ($objData->next()) {
-            $arrData[$objData->pid][$objData->field_id] = $objData->row();
-        }
-
-        $objReader = new ArrayReader($arrData);
-        $objReader->setHeaderFields($arrHeader);
-
-        switch ($strType) {
-            case 'csv':
-                $objWriter = new CsvFileWriter();
-                $objWriter->enableHeaderFields();
-                break;
-
-            case 'xls':
-            case 'xlsx':
-                $objWriter = new ExcelFileWriter();
-                $objWriter->setFormat(($strType == 'xls' ? 'Excel5' : 'Excel2007'));
-                $objWriter->enableHeaderFields();
-                break;
-
-            default:
-                throw new \InvalidArgumentException('Export type "'.$strType.'" is not supported');
-        }
-
-        $objWriter->setRowCallback(function($arrFieldData) use ($arrFields) {
-            $arrRow = array();
-
-            $arrFirst = reset($arrFieldData);
-            $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']);
-            $arrRow[] = $arrFirst['form_name'];
-            $arrRow[] = $arrFirst['member_name'];
-
-            foreach ($arrFields as $arrField) {
-
-                // Show yes/no for single checkbox value
-                if ($arrField['label'] == $arrField['name'] && $arrField['type'] == 'checkbox' && $arrField['options'] != '') {
-                    $arrOptions = deserialize($arrField['options']);
-
-                    if (is_array($arrOptions) && count($arrOptions) == 1) {
-                        if ($arrFieldData[$arrField['id']]['value'] == '') {
-                            $arrRow[] = $GLOBALS['TL_LANG']['MSC']['no'];
-                            continue;
-
-                        } elseif ($arrFieldData[$arrField['id']]['value'] == '1') {
-                            $arrRow[] = $GLOBALS['TL_LANG']['MSC']['yes'];
-                            continue;
-                        }
-                    }
-                }
-
-                $arrRow[] = strip_tags(Leads::formatValue((object) $arrFieldData[$arrField['id']]));
-            }
-
-            return $arrRow;
-        });
-
-        $objWriter->writeFrom($objReader);
-
-        $objFile = new \File($objWriter->getFilename());
-        $objFile->sendToBrowser();
+        $objExport = new $GLOBALS['LEADS_EXPORT'][$objConfig->type][0]();
+        $objExport->$GLOBALS['LEADS_EXPORT'][$objConfig->type][1]($objConfig, $arrIds);
     }
 }

@@ -9,6 +9,10 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
+/**
+ * Add the tl_lead_export table to form module
+ */
+$GLOBALS['BE_MOD']['content']['form']['tables'][] = 'tl_lead_export';
 
 /**
  * Fake back end module
@@ -31,3 +35,19 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 $GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads', 'loadLeadName');
 $GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
 $GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads', 'processFormData');
+
+/**
+ * Leads export types
+ */
+$GLOBALS['LEADS_EXPORT'] = array
+(
+    'csv' => array('LeadsExport', 'exportCsv'),
+);
+
+/**
+ * Add the XLS export if the PHPExcel extension is installed
+ */
+if (class_exists('PHPExcel')) {
+    $GLOBALS['LEADS_EXPORT']['xls'] = array('LeadsExport', 'exportXls');
+    $GLOBALS['LEADS_EXPORT']['xlsx'] = array('LeadsExport', 'exportXlsx');
+}

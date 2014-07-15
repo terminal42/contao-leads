@@ -15,5 +15,6 @@
  */
 ClassLoader::addClasses(array
 (
-    'Leads' => 'system/modules/leads/Leads.php',
+    'Leads'       => 'system/modules/leads/Leads.php',
+    'LeadsExport' => 'system/modules/leads/LeadsExport.php',
 ));
