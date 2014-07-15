@@ -290,6 +290,15 @@ class tl_lead extends Backend
 
     public function addExportButtons($arrButtons)
     {
+        $arrConfigs = array();
+        $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? ORDER BY name")
+                                              ->execute(\Input::get('master'));
+
+        // Prepare configs
+        while ($objConfigs->next()) {
+            $arrConfigs[] = $objConfigs->row();
+        }
+
         // Run the export
         if (\Input::post('FORM_SUBMIT') == 'tl_select') {
             $arrIds = \Input::post('IDS');
@@ -300,9 +309,9 @@ class tl_lead extends Backend
 
             $this->import('Leads');
 
-            foreach (array_keys($GLOBALS['LEADS_EXPORT']) as $type) {
-                if (\Input::post('export_' . $type)) {
-                    $this->Leads->export($this->Input->get('config'), $type, $arrIds);
+            foreach ($arrConfigs as $config) {
+                if (\Input::post('export_' . $config['id'])) {
+                    $this->Leads->export($config['id'], $arrIds);
                 }
             }
         }
@@ -310,8 +319,8 @@ class tl_lead extends Backend
         \System::loadLanguageFile('tl_lead_export');
 
         // Generate buttons
-        foreach (array_keys($GLOBALS['LEADS_EXPORT']) as $type) {
-            $arrButtons['export_' . $type] = '<input type="submit" name="export_' . $type . '" id="export_' . $type . '" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' ' . $GLOBALS['TL_LANG']['tl_lead_export']['type'][$type]).'">';
+        foreach ($arrConfigs as $config) {
+            $arrButtons['export_' . $config['id']] = '<input type="submit" name="export_' . $config['id'] . '" id="export_' . $config['id'] . '" class="tl_submit" value="'.specialchars($config['name']).'">';
         }
 
         return $arrButtons;

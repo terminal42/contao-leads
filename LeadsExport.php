@@ -53,7 +53,7 @@ class LeadsExport
      * @param object
      * @param array
      */
-    public function exportXls($intConfig, $arrIds=null)
+    public function exportXls($objConfig, $arrIds=null)
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
@@ -228,8 +228,8 @@ class LeadsExport
                 (SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
                 IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
             FROM tl_lead_data ld
-            LEFT JOIN tl_lead l ON l.id=ld.pid" . ((is_array($arrIds) && !empty($arrIds)) ? (" WHERE l.id IN(" . implode(',', $arrIds) . ")") : "") . "
-            WHERE l.master_id=?
+            LEFT JOIN tl_lead l ON l.id=ld.pid
+            WHERE l.master_id=?" . ((is_array($arrIds) && !empty($arrIds)) ? (" AND l.id IN(" . implode(',', $arrIds) . ")") : "") . "
             ORDER BY l.created DESC
         ")->execute($objConfig->master);
 
