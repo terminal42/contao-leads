@@ -160,14 +160,14 @@ class LeadsExport
                 }
             }
 
-            // Apply special formatting
-            switch ($objConfig->fields[$arrField['id']]['format']) {
-                case 'date':
-                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG']['dateFormat'], $arrData[$arrField['id']]);
-                    continue 2; break;
+            $strFormat = $objConfig->fields[$arrField['id']]['format'];
 
+            // Apply special formatting
+            switch ($strFormat) {
+                case 'date':
                 case 'datim':
-                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $arrData[$arrField['id']]);
+                case 'time':
+                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG'][$strFormat . 'Format'], $arrData[$arrField['id']]);
                     continue 2; break;
             }
 

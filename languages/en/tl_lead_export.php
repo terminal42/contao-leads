@@ -44,6 +44,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']  = 'Value only';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']   = 'Raw data';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']  = 'Date';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim'] = 'Date and time';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = 'Time';
 
 
 /**
