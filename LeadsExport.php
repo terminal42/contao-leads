@@ -153,7 +153,6 @@ class LeadsExport
                     if ($arrData[$arrField['id']]['value'] == '') {
                         $arrRow[] = $GLOBALS['TL_LANG']['MSC']['no'];
                         continue;
-
                     } elseif ($arrData[$arrField['id']]['value'] == '1') {
                         $arrRow[] = $GLOBALS['TL_LANG']['MSC']['yes'];
                         continue;
@@ -172,7 +171,32 @@ class LeadsExport
                     continue 2; break;
             }
 
-            $arrRow[] = strip_tags(Leads::formatValue((object) $arrData[$arrField['id']], $objConfig->fields[$arrField['id']]['value']));
+            $varValue = implode(', ', deserialize($arrData[$arrField['id']]['value'], true));
+            $strLabel = '';
+
+            // Prepare the label
+            if ($arrData[$arrField['id']]['label'] != '') {
+                $strLabel = $arrData[$arrField['id']]['label'];
+                $arrLabel = deserialize($arrData[$arrField['id']]['label']);
+
+                if (is_array($arrLabel) && !empty($arrLabel)) {
+                    $strLabel = implode(', ', $arrLabel);
+                }
+            }
+
+            switch ($objConfig->fields[$arrField['id']]['value']) {
+                case 'value':
+                    $arrRow[] = $varValue;
+                    break;
+
+                case 'label':
+                    $arrRow[] = $strLabel;
+                    break;
+
+                default:
+                    $arrRow[] = $strLabel . ' [' . $varValue . ']';
+                    break;
+            }
         }
 
         return $arrRow;

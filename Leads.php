@@ -80,15 +80,12 @@ class Leads extends Controller
     /**
      * Format a lead field for list view
      * @param object
-     * @param string
      * @return string
      */
-    public static function formatValue($objData, $strReturn='all')
+    public static function formatValue($objData)
     {
-        $strLabel = '';
         $strValue = implode(', ', deserialize($objData->value, true));
 
-        // Generate label
         if ($objData->label != '') {
             $strLabel = $objData->label;
             $arrLabel = deserialize($objData->label);
@@ -96,22 +93,11 @@ class Leads extends Controller
             if (is_array($arrLabel) && !empty($arrLabel)) {
                 $strLabel = implode(', ', $arrLabel);
             }
+
+            $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
         }
 
-        switch ($strReturn) {
-            case 'value':
-                return $strValue;
-
-            case 'label':
-                return $strLabel;
-
-            default:
-                if ($strLabel == '') {
-                    return $strValue;
-                }
-
-                return $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
-        }
+        return $strValue;
     }
 
 
