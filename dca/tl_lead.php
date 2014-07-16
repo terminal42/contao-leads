@@ -290,14 +290,9 @@ class tl_lead extends Backend
 
     public function addExportButtons($arrButtons)
     {
-        $arrConfigs = array();
-        $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? ORDER BY name")
-                                              ->execute(\Input::get('master'));
-
-        // Prepare configs
-        while ($objConfigs->next()) {
-            $arrConfigs[] = $objConfigs->row();
-        }
+        $arrConfigs = \Database::getInstance()->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
+                                              ->execute(\Input::get('master'))
+                                              ->fetchAllAssoc();
 
         // Run the export
         if (\Input::post('FORM_SUBMIT') == 'tl_select') {
@@ -320,7 +315,7 @@ class tl_lead extends Backend
 
         // Generate buttons
         foreach ($arrConfigs as $config) {
-            $arrButtons['export_' . $config['id']] = '<input type="submit" name="export_' . $config['id'] . '" id="export_' . $config['id'] . '" class="tl_submit" value="'.specialchars($config['name']).'">';
+            $arrButtons['export_' . $config['id']] = '<input type="submit" name="export_' . $config['id'] . '" id="export_' . $config['id'] . '" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' "' . $config['name'] . '"').'">';
         }
 
         return $arrButtons;
