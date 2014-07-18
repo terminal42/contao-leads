@@ -11,6 +11,13 @@
 
 
 /**
+ * Load forms language
+ */
+\System::loadLanguageFile('tl_form');
+\System::loadLanguageFile('tl_form_field');
+
+
+/**
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_lead_export']['name']           = array('Config name', 'Please enter the config name.');
@@ -41,10 +48,10 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_legend'] = 'Field settings';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['all']    = 'Label and value';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']  = 'Label only';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']  = 'Value only';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']   = 'Raw data';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']  = 'Date';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim'] = 'Date and time';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = 'Time';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']   = &$GLOBALS['TL_LANG']['tl_form']['raw'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']  = &$GLOBALS['TL_LANG']['tl_form_field']['date'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim'] = &$GLOBALS['TL_LANG']['tl_form_field']['datim'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = &$GLOBALS['TL_LANG']['tl_form_field']['time'][0];
 
 
 /**
