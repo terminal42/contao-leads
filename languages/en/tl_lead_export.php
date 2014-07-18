@@ -46,7 +46,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_legend'] = 'Field settings';
  * Reference
  */
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['all']    = 'Label and value';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']  = 'Label only';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']  = 'Label only (if available, fallback to value)';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']  = 'Value only';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']   = &$GLOBALS['TL_LANG']['tl_form']['raw'][0];
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']  = &$GLOBALS['TL_LANG']['tl_form_field']['date'][0];

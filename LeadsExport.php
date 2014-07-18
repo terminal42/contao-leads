@@ -190,7 +190,7 @@ class LeadsExport
                     break;
 
                 case 'label':
-                    $arrRow[] = $strLabel;
+                    $arrRow[] = $strLabel ? $strLabel : $varValue;
                     break;
 
                 default:
