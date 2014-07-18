@@ -298,7 +298,14 @@ class tl_lead_export extends Backend
                                             ->execute(Input::get('id'));
 
         while ($objFields->next()) {
-            $arrFields[$objFields->id] = $objFields->name;
+            $strLabel = $objFields->name;
+
+            // Use the field label
+            if ($objFields->label != '') {
+                $strLabel = $objFields->label . ' [' . $objFields->name . ']';
+            }
+
+            $arrFields[$objFields->id] = $strLabel;
         }
 
         return $arrFields;

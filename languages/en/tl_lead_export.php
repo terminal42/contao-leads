@@ -29,7 +29,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['includeMember']  = array('Include member 
 $GLOBALS['TL_LANG']['tl_lead_export']['limitFields']    = array('Limit fields', 'Limit the fields and their settings. By default all fields are exported.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields']         = array('Fields', 'Please choose the fields you want to export.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_field']   = array('Field');
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_name']    = array('Name');
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_name']    = array('Column name');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']   = array('Value');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']  = array('Format');
 
