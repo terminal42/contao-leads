@@ -21,6 +21,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'dataContainer'               => 'Table',
         'ptable'                      => 'tl_form',
         'enableVersioning'            => true,
+        'onload_callback' => array
+        (
+            array('tl_lead_export', 'updatePalette')
+        ),
         'sql' => array
         (
             'keys' => array
@@ -92,17 +96,17 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__'                => array('type', 'limitFields'),
-        'default'                     => '{name_legend},name,type;{fields_legend},limitFields',
-        'csv'                         => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember;{fields_legend},limitFields',
-        'xls'                         => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember;{fields_legend},limitFields',
-        'xlsx'                        => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember;{fields_legend},limitFields',
+        '__selector__'                => array('type'),
+        'default'                     => '{name_legend},name,type;{config_legend},export',
+        'csv'                         => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember,export',
+        'xls'                         => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember,export',
+        'xlsx'                        => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember,export',
     ),
 
     // Subpalettes
     'subpalettes' => array
     (
-        'limitFields'                 => 'fields'
+        'export'                      => 'fields'
     ),
 
     // Fields
@@ -176,14 +180,17 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'eval'                    => array('tl_class'=>'w50'),
             'sql'                     => "char(1) NOT NULL default ''"
         ),
-        'limitFields' => array
+        'export' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['limitFields'],
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
+            'default'                 => 'all',
             'exclude'                 => true,
             'filter'                  => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
-            'sql'                     => "char(1) NOT NULL default ''"
+            'inputType'               => 'radio',
+            'options'                 => array('all', 'fields'),
+            'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
+            'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
+            'sql'                     => "varchar(8) NOT NULL default ''"
         ),
         'fields' => array
         (
@@ -243,6 +250,28 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
  */
 class tl_lead_export extends Backend
 {
+
+    /**
+     * Update the palette depending on the export type
+     * @param \DataContainer
+     */
+    public function updatePalette($dc=null)
+    {
+        if (!$dc->id) {
+            return;
+        }
+
+        $objRecord = $this->Database->prepare("SELECT * FROM tl_lead_export WHERE id=?")
+                                    ->limit(1)
+                                    ->execute($dc->id);
+
+        if (!$objRecord->export || $objRecord->export == 'all') {
+            return;
+        }
+
+        $strPalette = $objRecord->type ? $objRecord->type : 'default';
+        $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace('export', 'export,' . $GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'], $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]);
+    }
 
     /**
      * Generate the label and return it as HTML string

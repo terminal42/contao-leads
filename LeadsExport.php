@@ -213,7 +213,7 @@ class LeadsExport
         $arrLimitFields = array();
 
         // Limit the fields
-        if ($objConfig->limitFields) {
+        if ($objConfig->export != 'all') {
             $arrLimitFields = array_keys($objConfig->fields);
         }
 

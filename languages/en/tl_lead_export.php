@@ -26,7 +26,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['headerFields']   = array('Header fields',
 $GLOBALS['TL_LANG']['tl_lead_export']['includeFormId']  = array('Include form ID', 'Include the form ID in the file.');
 $GLOBALS['TL_LANG']['tl_lead_export']['includeCreated'] = array('Include date created', 'Include the date created in the file.');
 $GLOBALS['TL_LANG']['tl_lead_export']['includeMember']  = array('Include member ID', 'Include the member ID in the file.');
-$GLOBALS['TL_LANG']['tl_lead_export']['limitFields']    = array('Limit fields', 'Limit the fields and their settings. By default all fields are exported.');
+$GLOBALS['TL_LANG']['tl_lead_export']['export']         = array('Export type', 'Please choose what data should be exported.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields']         = array('Fields', 'Please choose the fields you want to export.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_field']   = array('Field');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_name']    = array('Column name');
@@ -39,12 +39,13 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']  = array('Format');
  */
 $GLOBALS['TL_LANG']['tl_lead_export']['name_legend']   = 'Name and type';
 $GLOBALS['TL_LANG']['tl_lead_export']['config_legend'] = 'Configuration';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_legend'] = 'Field settings';
 
 
 /**
  * Reference
  */
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['all']          = 'Export all data';
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['fields']       = 'Custom export';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['all']    = 'Label and value';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']  = 'Label only (if available, fallback to value)';
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']  = 'Value only';
