@@ -26,6 +26,7 @@ $GLOBALS['TL_LANG']['tl_lead']['member']        = array('Member');
 $GLOBALS['TL_LANG']['tl_lead']['delete']        = array('Delete lead', 'Delete lead record ID %s');
 $GLOBALS['TL_LANG']['tl_lead']['show']          = array('Lead details', 'Show details of lead ID %s');
 $GLOBALS['TL_LANG']['tl_lead']['export']        = array('Export', 'Downloads leads as file');
+$GLOBALS['TL_LANG']['tl_lead']['export_config'] = array('Configuration', 'Define export configuration');
 $GLOBALS['TL_LANG']['tl_lead']['export_csv']    = array('as CSV', '');
 $GLOBALS['TL_LANG']['tl_lead']['export_xls']    = array('for Excel 97/2000/2003 (.xls)', '');
 $GLOBALS['TL_LANG']['tl_lead']['export_xlsx']   = array('for Excel 2007/2010 (.xlsx)', '');

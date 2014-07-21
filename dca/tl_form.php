@@ -17,17 +17,6 @@ $GLOBALS['TL_DCA']['tl_form']['config']['ctable'][] = 'tl_lead_export';
 $GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = array('tl_form_lead', 'modifyPalette');
 
 /**
- * Operations
- */
-$GLOBALS['TL_DCA']['tl_form']['list']['operations']['lead_export'] = array
-(
-    'label'               => &$GLOBALS['TL_LANG']['tl_form']['lead_export'],
-    'href'                => 'table=tl_lead_export',
-    'icon'                => 'system/modules/leads/assets/export.png',
-    'button_callback'     => array('tl_form_lead', 'exportIcon')
-);
-
-/**
  * Palettes
  */
 $GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'leadEnabled';
@@ -107,24 +96,5 @@ class tl_form_lead extends Backend
         }
 
         return $arrForms;
-    }
-
-    /**
-     * Return the export icon
-     * @param array
-     * @param string
-     * @param string
-     * @param string
-     * @param string
-     * @param string
-     * @return string
-     */
-    public function exportIcon($row, $href, $label, $title, $icon, $attributes)
-    {
-        if (!BackendUser::getInstance()->isAdmin || !$row['leadEnabled']) {
-            return '';
-        }
-
-        return '<a href="'.$this->addToUrl($href . '&amp;id=' . $row['id']).'" title="'.specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
     }
 }

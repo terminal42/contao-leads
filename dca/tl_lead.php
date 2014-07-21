@@ -50,6 +50,13 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
         ),
         'global_operations' => array
         (
+            'export_config' => array
+            (
+                'label'           => &$GLOBALS['TL_LANG']['tl_lead']['export_config'],
+                'icon'            => 'settings.gif',
+                'attributes'      => 'onclick="Backend.getScrollOffset();"',
+                'button_callback' => array('tl_lead', 'exportConfigIcon')
+            ),
             'export' => array
             (
                 'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export'],
@@ -194,6 +201,22 @@ class tl_lead extends Backend
         }
 
         return $this->parseSimpleTokens($objForm->leadLabel, $arrTokens);
+    }
+
+    /**
+     * Return the export config icon
+     * @param string
+     * @param string
+     * @param string
+     * @return string
+     */
+    public function exportConfigIcon($href, $label, $title, $class, $attributes)
+    {
+        if (!BackendUser::getInstance()->isAdmin) {
+            return '';
+        }
+
+        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id=' . Input::get('master') . '" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'><span style="margin-right:20px;">'.$label.'</span></a> ';
     }
 
 
