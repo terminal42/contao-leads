@@ -41,8 +41,8 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'sorting' => array
         (
             'mode'                    => 4,
-            'fields'                  => array('type'),
-            'headerFields'            => array('title', 'tstamp'),
+            'fields'                  => array('type', 'name'),
+            'headerFields'            => array('title', 'tstamp', 'leadEnabled', 'leadMaster', 'leadMenuLabel', 'leadLabel'),
             'panelLayout'             => 'filter;search,limit',
             'child_record_callback'   => array('tl_lead_export', 'generateLabel'),
             'child_record_class'      => 'no_padding'
@@ -98,9 +98,9 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     (
         '__selector__'                => array('type'),
         'default'                     => '{name_legend},name,type;{config_legend},export',
-        'csv'                         => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember,export',
-        'xls'                         => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember,export',
-        'xlsx'                        => '{name_legend},name,type;{config_legend},headerFields,includeFormId,includeCreated,includeMember,export',
+        'csv'                         => '{name_legend},name,type;{config_legend},headerFields,export',
+        'xls'                         => '{name_legend},name,type;{config_legend},headerFields,export',
+        'xlsx'                        => '{name_legend},name,type;{config_legend},headerFields,export',
     ),
 
     // Subpalettes
@@ -136,6 +136,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'type' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['type'],
+            'default'                 => key($GLOBALS['LEADS_EXPORT']),
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'select',
@@ -153,6 +154,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'eval'                    => array('tl_class'=>'w50'),
             'sql'                     => "char(1) NOT NULL default ''"
         ),
+/*
         'includeFormId' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['includeFormId'],
@@ -180,6 +182,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'eval'                    => array('tl_class'=>'w50'),
             'sql'                     => "char(1) NOT NULL default ''"
         ),
+*/
         'export' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
@@ -295,6 +298,34 @@ class tl_lead_export extends Backend
 
         // Load the form fields
         if (empty($arrFields) && $dc->id) {
+
+            // Form ID
+            $arrFields[] = array
+            (
+                'field' => '_form',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+
+            // Date created
+            $arrFields[] = array
+            (
+                'field' => '_created',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
+                'value' => 'all',
+                'format' => 'datim'
+            );
+
+            // Member ID
+            $arrFields[] = array
+            (
+                'field' => '_member',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+
             $objFields = Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
                                                 ->execute($dc->id);
 
@@ -322,7 +353,13 @@ class tl_lead_export extends Backend
             return array();
         }
 
-        $arrFields = array();
+        $arrFields = array
+        (
+            '_form' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
+            '_created' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
+            '_member' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+        );
+
         $objFields = Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
                                             ->execute(Input::get('id'));
 

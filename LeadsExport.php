@@ -112,19 +112,48 @@ class LeadsExport
     {
         $arrRow = array();
         $arrFirst = reset($arrData);
+        $arrFields = array();
 
         // Add base information columns
-        if ($objConfig->includeFormId) {
-            $arrRow[] = $arrFirst['form_name'];
-        }
-        if ($objConfig->includeCreated) {
-            $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $arrFirst['created']);
-        }
-        if ($objConfig->includeMember) {
-            $arrRow[] = $arrFirst['member_name'];
+        if ($objConfig->export == 'all') {
+            $arrFields[] = array
+            (
+                'field' => '_form',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+
+            $arrFields[] = array
+            (
+                'field' => '_created',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
+                'value' => 'all',
+                'format' => 'datim'
+            );
+
+            $arrFields[] = array
+            (
+                'field' => '_member',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+        } else {
+            if ($objConfig->fields['_form']) {
+                $arrFields[] = $objConfig->fields['_form'];
+            }
+            if ($objConfig->fields['_created']) {
+                $arrFields[] = $objConfig->fields['_created'];
+            }
+            if ($objConfig->fields['_member']) {
+                $arrFields[] = $objConfig->fields['_member'];
+            }
         }
 
-        foreach (static::$arrFields as $arrField) {
+        $arrFields = array_merge($arrFields, static::$arrFields);
+
+        foreach ($arrFields as $arrField) {
 
             // Add custom logic
             if (isset($GLOBALS['TL_HOOKS']['getLeadsExportRow']) && is_array($GLOBALS['TL_HOOKS']['getLeadsExportRow'])) {
@@ -160,28 +189,50 @@ class LeadsExport
                 }
             }
 
+            $varValue = '';
+            $strLabel = '';
             $strFormat = $objConfig->fields[$arrField['id']]['format'];
+
+            // Get the special field value and label
+            if (isset($arrField['field'])) {
+                switch ($arrField['field']) {
+                    case '_form':
+                        $varValue = $arrFirst['form_id'];
+                        $strLabel = $arrFirst['form_name'];
+                        break;
+
+                    case '_created':
+                        $varValue = $arrFirst['created'];
+                        break;
+
+                    case '_member':
+                        $varValue = $arrFirst['member_id'];
+                        $strLabel = $arrFirst['member_name'];
+                        break;
+                }
+
+                $strFormat = $arrField['format'];
+            } else {
+                $varValue = implode(', ', deserialize($arrData[$arrField['id']]['value'], true));
+
+                // Prepare the label
+                if ($arrData[$arrField['id']]['label'] != '') {
+                    $strLabel = $arrData[$arrField['id']]['label'];
+                    $arrLabel = deserialize($arrData[$arrField['id']]['label']);
+
+                    if (is_array($arrLabel) && !empty($arrLabel)) {
+                        $strLabel = implode(', ', $arrLabel);
+                    }
+                }
+            }
 
             // Apply special formatting
             switch ($strFormat) {
                 case 'date':
                 case 'datim':
                 case 'time':
-                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG'][$strFormat . 'Format'], $arrData[$arrField['id']]);
+                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG'][$strFormat . 'Format'], $varValue);
                     continue 2; break;
-            }
-
-            $varValue = implode(', ', deserialize($arrData[$arrField['id']]['value'], true));
-            $strLabel = '';
-
-            // Prepare the label
-            if ($arrData[$arrField['id']]['label'] != '') {
-                $strLabel = $arrData[$arrField['id']]['label'];
-                $arrLabel = deserialize($arrData[$arrField['id']]['label']);
-
-                if (is_array($arrLabel) && !empty($arrLabel)) {
-                    $strLabel = implode(', ', $arrLabel);
-                }
             }
 
             switch ($objConfig->fields[$arrField['id']]['value']) {
@@ -215,6 +266,7 @@ class LeadsExport
         // Limit the fields
         if ($objConfig->export != 'all') {
             $arrLimitFields = array_keys($objConfig->fields);
+            $arrLimitFields = array_map('intval', $arrLimitFields);
         }
 
         $objFields = \Database::getInstance()->prepare("
@@ -249,7 +301,9 @@ class LeadsExport
             SELECT
                 ld.*,
                 l.created,
+                l.form_id AS form_id,
                 (SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
+                l.member_id AS member_id,
                 IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
             FROM tl_lead_data ld
             LEFT JOIN tl_lead l ON l.id=ld.pid
@@ -268,14 +322,22 @@ class LeadsExport
             $arrHeader = array();
 
             // Add base information columns
-            if ($objConfig->includeFormId) {
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead']['form_id'][0];
-            }
-            if ($objConfig->includeCreated) {
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead']['created'][0];
-            }
-            if ($objConfig->includeMember) {
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead']['member'][0];
+            if ($objConfig->export == 'all') {
+                \System::loadLanguageFile('tl_lead_export');
+
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
+            } else {
+                if ($objConfig->fields['_form']) {
+                    $arrHeader[] = $objConfig->fields['_form']['name'];
+                }
+                if ($objConfig->fields['_created']) {
+                    $arrHeader[] = $objConfig->fields['_created']['name'];
+                }
+                if ($objConfig->fields['_member']) {
+                    $arrHeader[] = $objConfig->fields['_member']['name'];
+                }
             }
 
             $objFields->reset();

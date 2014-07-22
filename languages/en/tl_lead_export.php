@@ -23,13 +23,10 @@
 $GLOBALS['TL_LANG']['tl_lead_export']['name']           = array('Config name', 'Please enter the config name.');
 $GLOBALS['TL_LANG']['tl_lead_export']['type']           = array('Type', 'Please enter the export type.');
 $GLOBALS['TL_LANG']['tl_lead_export']['headerFields']   = array('Header fields', 'Include the header fields in the file.');
-$GLOBALS['TL_LANG']['tl_lead_export']['includeFormId']  = array('Include form ID', 'Include the form ID in the file.');
-$GLOBALS['TL_LANG']['tl_lead_export']['includeCreated'] = array('Include date created', 'Include the date created in the file.');
-$GLOBALS['TL_LANG']['tl_lead_export']['includeMember']  = array('Include member ID', 'Include the member ID in the file.');
 $GLOBALS['TL_LANG']['tl_lead_export']['export']         = array('Export type', 'Please choose what data should be exported.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields']         = array('Fields', 'Please choose the fields you want to export.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_field']   = array('Field');
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_name']    = array('Column name');
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_name']    = array('Header name');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_value']   = array('Value');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']  = array('Format');
 
@@ -53,6 +50,9 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']   = &$GLOBALS['TL_
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']  = &$GLOBALS['TL_LANG']['tl_form_field']['date'][0];
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim'] = &$GLOBALS['TL_LANG']['tl_form_field']['datim'][0];
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = &$GLOBALS['TL_LANG']['tl_form_field']['time'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['field_form']             = 'Form';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_created']          = 'Date created';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_member']           = 'Member';
 
 
 /**
