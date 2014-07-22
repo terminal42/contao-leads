@@ -37,6 +37,7 @@
     display:block;
     padding-top: 3px;
     white-space: nowrap;
+    margin-left: 0 !important;
 }
 
 #leadsexportmenu img

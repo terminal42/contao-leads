@@ -54,6 +54,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             (
                 'label'           => &$GLOBALS['TL_LANG']['tl_lead']['export_config'],
                 'icon'            => 'settings.gif',
+                'class'           => 'leads-export',
                 'attributes'      => 'onclick="Backend.getScrollOffset();"',
                 'button_callback' => array('tl_lead', 'exportConfigIcon')
             ),
@@ -216,7 +217,7 @@ class tl_lead extends Backend
             return '';
         }
 
-        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id=' . Input::get('master') . '" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'><span style="margin-right:20px;">'.$label.'</span></a> ';
+        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id=' . Input::get('master') . '" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
     }
 
 
