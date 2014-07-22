@@ -151,8 +151,14 @@ class tl_lead extends Backend
         $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? ORDER BY name")
                                               ->execute(\Input::get('master'));
 
+        if (!$objConfigs->numRows) {
+            return;
+        }
+
+        $arrOperations = array();
+
         while ($objConfigs->next()) {
-            $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations']['export_' . $objConfigs->id] = array
+            $arrOperations['export_' . $objConfigs->id] = array
             (
                 'label'         => $objConfigs->name,
                 'href'          => 'key=export&amp;config=' . $objConfigs->id,
@@ -160,6 +166,8 @@ class tl_lead extends Backend
                 'attributes'    => 'onclick="Backend.getScrollOffset();"',
             );
         }
+
+        array_insert($GLOBALS['TL_DCA']['tl_lead']['list']['global_operations'], 0, $arrOperations);
     }
 
 
