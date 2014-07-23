@@ -245,7 +245,17 @@ class LeadsExport
                     break;
 
                 default:
-                    $arrRow[] = $strLabel . ' [' . $varValue . ']';
+                    if ($strLabel === '' && $varValue === '') {
+                        $arrRow[] = ''; // No label, no value
+                    } elseif ($strLabel === '' && $varValue !== '') {
+                        $arrRow[] = '[' . $varValue . ']'; // No label, but value
+                    } elseif ($strLabel !== '' && $varValue === '') {
+                        $arrRow[] = $strLabel; // Label, no value
+                    } elseif ($strLabel == $varValue) {
+                        $arrRow[] = $varValue; // Label the same as value
+                    } else {
+                        $arrRow[] = $strLabel . ' [' . $varValue . ']'; // Different label and value
+                    }
                     break;
             }
         }
