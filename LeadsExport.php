@@ -248,7 +248,7 @@ class LeadsExport
                     if ($strLabel === '' && $varValue === '') {
                         $arrRow[] = ''; // No label, no value
                     } elseif ($strLabel === '' && $varValue !== '') {
-                        $arrRow[] = '[' . $varValue . ']'; // No label, but value
+                        $arrRow[] = $varValue; // No label, but value
                     } elseif ($strLabel !== '' && $varValue === '') {
                         $arrRow[] = $strLabel; // Label, no value
                     } elseif ($strLabel == $varValue) {
