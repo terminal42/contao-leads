@@ -157,7 +157,7 @@ class LeadsExport
 
             // Add custom logic
             if (isset($GLOBALS['TL_HOOKS']['getLeadsExportRow']) && is_array($GLOBALS['TL_HOOKS']['getLeadsExportRow'])) {
-                $varValue = false;
+                $varValue = null;
 
                 foreach ($GLOBALS['TL_HOOKS']['getLeadsExportRow'] as $callback) {
                     if (is_array($callback)) {
@@ -168,7 +168,7 @@ class LeadsExport
                 }
 
                 // Store the value
-                if ($varValue !== false) {
+                if ($varValue !== null) {
                     $arrRow[] = $varValue;
                     continue;
                 }
