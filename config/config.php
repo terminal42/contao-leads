@@ -1,76 +1,53 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2011 Leo Feyer
+ * leads Extension for Contao Open Source CMS
  *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  Andreas Schempp 2011
- * @author     Andreas Schempp <andreas@schempp.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html
- * @version    $Id$
+ * @copyright  Copyright (c) 2011-2014, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
  */
-
 
 /**
- * Backend modules
+ * Add the tl_lead_export table to form module
  */
-$GLOBALS['BE_MOD']['content']['leads'] = array
+$GLOBALS['BE_MOD']['content']['form']['tables'][] = 'tl_lead_export';
+
+/**
+ * Fake back end module
+ */
+array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 (
-	'tables'			=> array('tl_leads', 'tl_lead_groups', 'tl_lead_fields'),
-	'icon'				=> 'system/modules/leads/html/icon.png',
-	'stylesheet'		=> 'system/modules/leads/html/style.css',
-	'export_csv'		=> array('Leads', 'exportToCSV'),
-	'export_excel'		=> array('Leads', 'exportToExcel'),
-);
-
+    'lead' => array
+    (
+        'tables'        => array('tl_lead', 'tl_lead_data'),
+        'javascript'    => 'system/modules/leads/assets/leads.min.js',
+        'stylesheet'    => 'system/modules/leads/assets/leads.min.css',
+        'show'          => array('tl_lead', 'show'),
+        'export'        => array('tl_lead', 'export'),
+    ),
+)));
 
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('Leads', 'loadFields');
-$GLOBALS['TL_HOOKS']['processFormData'][] = array('Leads', 'processFormData');
-
+$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads', 'loadLeadName');
+$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
+$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads', 'processFormData');
 
 /**
- * Lead field types
+ * Leads export types
  */
-$GLOBALS['LEAD_FFL'] = array
+$GLOBALS['LEADS_EXPORT'] = array
 (
-	'text' => array
-	(
-		'sql'		=> "varchar(255) NOT NULL default ''",
-	),
-	'textarea' => array
-	(
-		'sql'		=> "text NULL",
-	),
-	'select' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'radio' => array
-	(
-		'sql'		=> "blob NULL",
-	),
-	'checkbox' => array
-	(
-		'sql'		=> "blob NULL",
-	),
+    'csv' => array('LeadsExport', 'exportCsv'),
 );
+
+/**
+ * Add the XLS export if the PHPExcel extension is installed
+ */
+if (class_exists('PHPExcel')) {
+    $GLOBALS['LEADS_EXPORT']['xls'] = array('LeadsExport', 'exportXls');
+    $GLOBALS['LEADS_EXPORT']['xlsx'] = array('LeadsExport', 'exportXlsx');
+}

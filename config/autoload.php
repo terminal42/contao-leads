@@ -11,6 +11,10 @@
 
 
 /**
- * Backend modules
+ * Register the classes
  */
-$GLOBALS['TL_LANG']['MOD']['leads'] = array('Leads', 'Manage incoming leads from form "%s".');
+ClassLoader::addClasses(array
+(
+    'Leads'       => 'system/modules/leads/Leads.php',
+    'LeadsExport' => 'system/modules/leads/LeadsExport.php',
+));

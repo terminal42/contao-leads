@@ -11,6 +11,6 @@
 
 
 /**
- * Backend modules
+ * Fields
  */
-$GLOBALS['TL_LANG']['MOD']['leads'] = array('Leads', 'Manage incoming leads from form "%s".');
+$GLOBALS['TL_LANG']['tl_form_field']['leadStore'] = array('Enregistrer le champs avec Leads', 'Cocher pour enregistrer les données de ce champs à l\'aide du module Leads.');

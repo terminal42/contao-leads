@@ -1,414 +1,275 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2011 Leo Feyer
+ * leads Extension for Contao Open Source CMS
  *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  Andreas Schempp 2011
- * @author     Andreas Schempp <andreas@schempp.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html
- * @version    $Id$
+ * @copyright  Copyright (c) 2011-2014, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
  */
 
+use \Haste\IO\Reader\ArrayReader;
+use \Haste\IO\Writer\CsvFileWriter;
+use \Haste\IO\Writer\ExcelFileWriter;
 
-class Leads extends Backend
+class Leads extends Controller
 {
-	
-	/**
-	 * DCA is "closed" to hide the "new" button. Re-enable it when clicking on a button
-	 *
-	 * @param  object
-	 * @return void
-	 */
-	public function allowEditing($dc)
-	{
-		if ($this->Input->get('act') != '')
-		{
-			$GLOBALS['TL_DCA'][$dc->table]['config']['closed'] = false;
-		}
-	}
-	
-	
-	public function loadFields($strTable)
-	{
-		if ($strTable != 'tl_leads')
-			return;
-		
-		$strCondition = '';
-		if ($this->Input->get('id') != '')
-		{
-			$objGroup = $this->Database->prepare("SELECT * FROM tl_lead_groups WHERE id=(SELECT group_id FROM tl_leads WHERE id=?)")->execute($this->Input->get('id'));
-			$arrFields = deserialize($objGroup->fields);
-				
-			if (is_array($arrFields) && count($arrFields))
-			{
-				$strCondition = ' WHERE id IN (' . implode(',', $arrFields) . ')  ORDER BY id=' . implode(' DESC, id=', $arrFields) . ' DESC';
-			}
-		}
-		
-		$objFields = $this->Database->execute("SELECT * FROM tl_lead_fields" . $strCondition);
 
-		while ( $objFields->next() )
-		{
-			// Add to palette
-			$GLOBALS['TL_DCA']['tl_leads']['palettes']['default'] .= ','.$objFields->field_name;
-			
-			// Keep field settings made through DCA code
-			$arrData = is_array($GLOBALS['TL_DCA']['tl_leads']['fields'][$objFields->field_name]) ? $GLOBALS['TL_DCA']['tl_leads']['fields'][$objFields->field_name] : array();
+    /**
+     * Prepare a form value for storage in lead table
+     * @param mixed
+     * @param Database_Result
+     */
+    public static function prepareValue($varValue, $objField)
+    {
+        // Run for all values in an array
+        if (is_array($varValue)) {
+            foreach ($varValue as $k => $v) {
+                $varValue[$k] = self::prepareValue($v, $objField);
+            }
 
-			$arrData['label']		= array($objFields->name, $objFields->description);
-			$arrData['inputType']	= $objFields->type;
-			$arrData['eval']		= is_array($arrData['eval']) ? array_merge($arrData['eval'], $objFields->row()) : $objFields->row();
+            return $varValue;
+        }
 
-			if ($objFields->filter) $arrData['filter'] = true;
-			if ($objFields->search) $arrData['search'] = true;
+        // Convert date formats into timestamps
+        if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
+            $objDate = new Date($varValue, $GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format']);
+            $varValue = $objDate->tstamp;
+        }
 
-			// Add date picker
-			if ($objFields->rgxp == 'date')
-			{
-				$arrData['eval']['datepicker'] = $this->getDatePickerString();
-			}
+        return $varValue;
+    }
 
-			if ($objFields->type == 'textarea' || $objFields->rte != '')
-			{
-				$arrData['eval']['tl_class'] = 'clr';
-			}
 
-			// Prepare options
-			if ($objFields->foreignKey != '')
-			{
-				$arrData['foreignKey'] = $objFields->foreignKey;
-				$arrData['eval']['includeBlankOption'] = true;
-				unset($arrData['options']);
-			}
-			else
-			{
-				$arrOptions = deserialize($objFields->options);
-				
-				if (is_array($arrOptions) && count($arrOptions))
-				{
-					$arrData['options'] = array();
-					$arrData['reference'] = array();
+    /**
+     * Get the label for a form value to store in lead table
+     * @param mixed
+     * @param Database_Result
+     */
+    public static function prepareLabel($varValue, $objField)
+    {
+        // Run for all values in an array
+        if (is_array($varValue)) {
+            foreach ($varValue as $k => $v) {
+                $varValue[$k] = self::prepareLabel($v, $arrOptions, $objField);
+            }
 
-					$strGroup = '';
-					foreach ($arrOptions as $option)
-					{
-						if (!strlen($option['value']))
-						{
-							$arrData['eval']['includeBlankOption'] = true;
-							$arrData['eval']['blankOptionLabel'] = $option['label'];
-							continue;
-						}
-						elseif ($option['group'])
-						{
-							$strGroup = $option['value'];
-							continue;
-						}
+            return $varValue;
+        }
 
-						if (strlen($strGroup))
-						{
-							$arrData['options'][$strGroup][$option['value']] = $option['label'];
-						}
-						else
-						{
-							$arrData['options'][$option['value']] = $option['label'];
-						}
+        // Convert timestamps into date format
+        if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
+            $varValue = \Date::parse($GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format'], $varValue);
+        }
 
-						$arrData['reference'][$option['value']] = $option['label'];
-					}
-				}
-			}
+        if ($objField->options != '') {
+            $arrOptions = deserialize($objField->options, true);
 
-			unset($arrData['eval']['foreignKey']);
-			unset($arrData['eval']['options']);
+            foreach ($arrOptions as $arrOption) {
+                if ($arrOption['value'] == $varValue && $arrOption['label'] != '') {
+                    $varValue = $arrOption['label'];
+                }
+            }
+        }
 
-			if (is_array($GLOBALS['ISO_ATTR'][$objFields->type]['callback']) && count($GLOBALS['ISO_ATTR'][$objFields->type]['callback']))
-			{
-				foreach( $GLOBALS['ISO_ATTR'][$objFields->type]['callback'] as $callback )
-				{
-					$this->import($callback[0]);
-					$arrData = $this->{$callback[0]}->{$callback[1]}($objFields->field_name, $arrData);
-				}
-			}
+        return $varValue;
+    }
 
-			$GLOBALS['TL_DCA']['tl_leads']['fields'][$objFields->field_name] = $arrData;
-		}
-	}
-	
-	
-	public function injectFieldSelect($dc)
-	{
-		if ($this->Input->get('act') != 'edit')
-			return;
-		
-		$objForm = $this->Database->execute("SELECT * FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id={$dc->id})");
-		
-		if ($objForm->leadGroup)
-		{
-			foreach( $GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $strName => $strPalette )
-			{
-				if (in_array($strName, array('__selector__', 'submit', 'default', 'headline', 'explanation')))
-					continue;
-			
-				$GLOBALS['TL_DCA']['tl_form_field']['palettes'][$strName] = str_replace(',type,', ',type,leadField,', $strPalette);
-			}
-			
-			$objGroup = $this->Database->execute("SELECT * FROM tl_lead_groups WHERE id={$objForm->leadGroup}");
-			$arrIds = deserialize($objGroup->fields);
-			$arrIds = (is_array($arrIds) && count($arrIds)) ? $arrIds : array(0);
-			
-			$arrFields = array();
-			$objFields = $this->Database->execute("SELECT * FROM tl_lead_fields WHERE id IN (".implode(',', $arrIds).") ORDER BY id=" . implode(" DESC, id=", $arrIds) . " DESC");
-			
-			while( $objFields->next() )
-			{
-				$arrFields[$objFields->field_name] = $objFields->name;
-			}
-			
-			$GLOBALS['TL_DCA']['tl_form_field']['fields']['type']['eval']['tl_class'] = 'w50';
-			$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadField']['options'] = $arrFields;
-		}
 
-	}
-	
-	
-	public function validateFieldSelect($varValue, $dc)
-	{
-		if ($varValue != '')
-		{
-			$objFields = $this->Database->prepare("SELECT COUNT(*) AS total FROM tl_form_field WHERE pid=? AND leadField=? GROUP BY pid")->execute($dc->activeRecord->pid, $varValue);
-			
-			if ($objFields->total > 1)
-			{
-				throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['unique'], $GLOBALS['TL_LANG']['tl_form_field'][$dc->field][0]));
-			}
-		}
-		
-		return $varValue;
-	}
-	
-	
-	public function processFormData($arrPost, $arrForm, $arrFiles)
-	{
-		if ($arrForm['leadGroup'] > 0)
-		{
-			$this->loadDataContainer('tl_leads');
-			
-			$arrSet = array();
-			$objFields = $this->Database->execute("SELECT * FROM tl_form_field WHERE pid={$arrForm['id']} AND leadField!=''");
-			
-			while( $objFields->next() )
-			{
-				if (isset($arrPost[$objFields->name]))
-				{
-					$varValue = $arrPost[$objFields->name];
-					
-					// Convert date formats into timestamps
-					if ($varValue != '' && in_array($GLOBALS['TL_DCA']['tl_leads']['fields'][$objFields->leadField]['eval']['rgxp'], array('date', 'time', 'datim')))
-					{
-						$objDate = new Date($varValue, $GLOBALS['TL_CONFIG'][$GLOBALS['TL_DCA']['tl_leads']['fields'][$objFields->leadField]['eval']['rgxp'] . 'Format']);
-						$varValue = $objDate->tstamp;
-					}
-					
-					$arrSet[$objFields->leadField] = $varValue;
-				}
-			}
-			
-			if (count($arrSet))
-			{
-				$arrSet['tstamp'] = time();
-				$arrSet['created'] = $arrSet['tstamp'];
-				$arrSet['form_id'] = $arrForm['id'];
-				$arrSet['group_id'] = $arrForm['leadGroup'];
-				
-				$this->Database->prepare("INSERT INTO tl_leads %s")->set($arrSet)->execute();
-			}
-		}
-	}
-	
-	
-	public function exportToCSV($dc, $strTable, $arrModule, $blnExcel=false)
-	{
-		$arrSession = $_SESSION['BE_DATA']['filter']['tl_leads'];
-		$arrWhere = array();
-		$arrValues = array();
+    /**
+     * Format a lead field for list view
+     * @param object
+     * @return string
+     */
+    public static function formatValue($objData)
+    {
+        $strValue = implode(', ', deserialize($objData->value, true));
 
-		$arrFields = array_keys($GLOBALS['TL_DCA']['tl_leads']['fields']);
+        if ($objData->label != '') {
+            $strLabel = $objData->label;
+            $arrLabel = deserialize($objData->label);
 
-		// if we have a filter on the group, we only load the fields from the group
-		if ($arrSession['group_id'] != '')
-		{
-			$arrWhere[] = 'group_id=?';
-			$arrValues[] = $arrSession['group_id'];
-			
-			$objGroup = $this->Database->prepare('SELECT fields FROM tl_lead_groups WHERE id=?')
-									   ->limit(1)
-									   ->execute($arrSession['group_id']);
+            if (is_array($arrLabel) && !empty($arrLabel)) {
+                $strLabel = implode(', ', $arrLabel);
+            }
 
-			$arrGroupFields = deserialize($objGroup->fields);
-			
-			if (is_array($arrGroupFields) && count($arrGroupFields))
-			{
-				$objGroupFields = $this->Database->query('SELECT field_name FROM tl_lead_fields WHERE id IN(' . implode(',', $arrGroupFields). ')');
-				$arrFields = array_merge(array('created','tstamp','group_id','form_id'), $objFields->fetchEach('field_name'));
-			}
-		}
+            $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+        }
 
-		if ($arrSession['form_id'] != '')
-		{
-			$arrWhere[] = 'form_id=?';
-			$arrValues[] = $arrSession['form_id'];
-		}
+        return $strValue;
+    }
 
-		$objExport = $this->Database->prepare("SELECT " . implode(',', $arrFields) . " FROM tl_leads" . (count($arrWhere) > 0 ? (' WHERE ' . implode(' AND ', $arrWhere)) : ''))->execute($arrValues);
 
-		// add the header fields
-		foreach ($arrFields as $field)
-		{
-			$arrLabels[] = $GLOBALS['TL_DCA']['tl_leads']['fields'][$field]['label'][0] ? $GLOBALS['TL_DCA']['tl_leads']['fields'][$field]['label'][0] : $field;
-		}
-		
-		$strSeparator = $blnExcel ? "\t" : ',';
+    /**
+     * Dynamically load the name for the current lead view
+     * @param string
+     * @param string
+     */
+    public function loadLeadName($strName, $strLanguage)
+    {
+        if ($strName == 'modules' && $this->Input->get('do') == 'lead') {
+            $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute($this->Input->get('master'));
 
-		array_walk($arrLabels, array($this, 'escapeRow'));
-		$strCSV .= '"' . implode('"' . $strSeparator . '"', $arrLabels) . '"'.  "\n";
+            $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ? $objForm->leadMenuLabel : $objForm->title;
+        }
+    }
 
-		foreach( $objExport->fetchAllAssoc() as $arrRow )
-		{
-			foreach ( $arrRow as $k => $v )
-			{
-				$arrRow[$k] = $this->formatValue($k, $v);
-			}
 
-			array_walk($arrRow, array($this, 'escapeRow'));
-			$strCSV .= '"' . implode('"' . $strSeparator . '"', $arrRow) . '"'.  "\n";
-		}
+    /**
+     * Add leads to the backend navigation
+     * @param array
+     * @param bool
+     * @return array
+     */
+    public function loadBackendModules($arrModules, $blnShowAll)
+    {
+        if (!\Database::getInstance()->tableExists('tl_lead')) {
+            unset($arrModules['leads']);
+            return $arrModules;
+        }
 
-		if ($blnExcel)
-		{
-			$strCSV = chr(255).chr(254).mb_convert_encoding($strCSV, 'UTF-16LE', 'UTF-8');
-		}
-		
-		// Open the "save as …" dialogue
-		header('Content-Type: text/csv, charset=UTF-16LE; encoding=UTF-16LE');
-		header('Content-Transfer-Encoding: binary');
-		header('Content-Disposition: attachment; filename="leads_'.date('Ymd').'.csv"');
-		header('Content-Length: ' . strlen($strCSV));
-		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		header('Pragma: public');
-		header('Expires: 0');
-		
-		echo $strCSV;
-		
-		exit;
-	}
-	
-	
-	/**
-	 * Export in Excel compatible CSV mode
-	 */
-	public function exportToExcel($dc, $strTable, $arrModule)
-	{
-		$this->exportToCSV($dc, $strTable, $arrModule, true);
-	}
+        $objForms = \Database::getInstance()->execute("
+                SELECT f.id, f.title, IF(f.leadMenuLabel='', f.title, f.leadMenuLabel) AS leadMenuLabel
+                FROM tl_form f
+                LEFT JOIN tl_lead l ON l.master_id=f.id
+                WHERE leadEnabled='1' AND leadMaster=0
+            UNION
+                SELECT l.master_id AS id, IFNULL(f.title, CONCAT('ID ', l.master_id)) AS title, IFNULL(IF(f.leadMenuLabel='', f.title, f.leadMenuLabel), CONCAT('ID ', l.master_id)) AS leadMenuLabel
+                FROM tl_lead l
+                LEFT JOIN tl_form f ON l.master_id=f.id
+                WHERE ISNULL(f.id)
+                ORDER BY leadMenuLabel
+        ");
 
-	/**
-	 * Escape an entry
-	 * 
-	 * @param reference $varValue
-	 * @return reference
-	 */
-	protected function escapeRow(&$varValue)
-	{
-		$varValue = str_replace('"', '""', $varValue);
-	}
-	
-	
-	/**
-	 * Format value (based on DC_Table::show(), Contao 2.9.0)
-	 * @param  mixed
-	 * @param  string
-	 * @param  string
-	 * @return string
-	 */
-	protected function formatValue($field, $value)
-	{
-		$table = 'tl_leads';
-		$value = deserialize($value);
+        if (!$objForms->numRows) {
+            unset($arrModules['leads']);
+            return $arrModules;
+        }
 
-		// Get field value
-		if (strlen($GLOBALS['TL_DCA'][$table]['fields'][$field]['foreignKey']))
-		{
-			$temp = array();
-			$chunks = explode('.', $GLOBALS['TL_DCA'][$table]['fields'][$field]['foreignKey'], 2);
+        $arrSession = $this->Session->get('backend_modules');
+        $blnOpen = $arrSession['leads'] || $blnShowAll;
+        $arrModules['leads']['modules'] = array();
 
-			$objKey = $this->Database->execute("SELECT " . $chunks[1] . " AS value FROM " . $chunks[0] . " WHERE id IN (" . implode(',', array_map('intval', (array)$value)) . ")");
+        if ($blnOpen) {
+            while ($objForms->next()) {
 
-			return implode(', ', $objKey->fetchEach('value'));
-		}
+                $arrModules['leads']['modules']['lead_'.$objForms->id] = array(
+                    'tables'    => array('tl_lead'),
+                    'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $objForms->title)),
+                    'label'     => $objForms->leadMenuLabel,
+                    'icon'      => 'style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
+                    'class'     => 'navigation leads',
+                    'href'      => 'contao/main.php?do=lead&master='.$objForms->id,
+                );
+            }
+        } else {
+            $arrModules['leads']['modules'] = false;
+            $arrModules['leads']['icon'] = 'modPlus.gif';
+            $arrModules['leads']['title'] = specialchars($GLOBALS['TL_LANG']['MSC']['expandNode']);
+        }
 
-		elseif (is_array($value))
-		{
-			foreach ($value as $kk=>$vv)
-			{
-				if (is_array($vv))
-				{
-					$vals = array_values($vv);
-					$value[$kk] = $vals[0].' ('.$vals[1].')';
-				}
-			}
+        return $arrModules;
+    }
 
-			return implode(', ', $value);
-		}
 
-		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['rgxp'] == 'date')
-		{
-			return $this->parseDate($GLOBALS['TL_CONFIG']['dateFormat'], $value);
-		}
+    /**
+     * Process data submitted through the form generator
+     * @param array
+     * @param array
+     * @param array
+     */
+    public function processFormData(&$arrPost, &$arrForm, &$arrFiles)
+    {
+        if ($arrForm['leadEnabled']) {
+            $time = time();
 
-		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['rgxp'] == 'time')
-		{
-			return $this->parseDate($GLOBALS['TL_CONFIG']['timeFormat'], $value);
-		}
+            $intLead = \Database::getInstance()->prepare("
+                INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id,post_data) VALUES (?,?,?,?,?,?,?)
+            ")->executeUncached(
+                $time,
+                $time,
+                $GLOBALS['TL_LANGUAGE'],
+                $arrForm['id'],
+                ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']),
+                (FE_USER_LOGGED_IN === true ? \FrontendUser::getInstance()->id : 0),
+                serialize($arrPost)
+            )->insertId;
 
-		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['rgxp'] == 'datim' || in_array($GLOBALS['TL_DCA'][$table]['fields'][$field]['flag'], array(5, 6, 7, 8, 9, 10)) || $field == 'tstamp')
-		{
-			return $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $value);
-		}
 
-		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['inputType'] == 'checkbox' && !$GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['multiple'])
-		{
-			return strlen($value) ? $GLOBALS['TL_LANG']['MSC']['yes'] : $GLOBALS['TL_LANG']['MSC']['no'];
-		}
+            // Fetch master form fields
+            if ($arrForm['leadMaster'] > 0) {
+                $objFields = \Database::getInstance()->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' ORDER BY f2.sorting")->execute($arrForm['id']);
+            } else {
+                $objFields = \Database::getInstance()->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' ORDER BY sorting")->execute($arrForm['id']);
+            }
 
-		elseif ($GLOBALS['TL_DCA'][$table]['fields'][$field]['inputType'] == 'textarea' && ($GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['allowHtml'] || $GLOBALS['TL_DCA'][$table]['fields'][$field]['eval']['preserveTags']))
-		{
-			return specialchars($value);
-		}
+            while ($objFields->next()) {
 
-		elseif (is_array($GLOBALS['TL_DCA'][$table]['fields'][$field]['reference']))
-		{
-			return isset($GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value]) ? ((is_array($GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value])) ? $GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value][0] : $GLOBALS['TL_DCA'][$table]['fields'][$field]['reference'][$value]) : $value;
-		}
+                if (isset($arrPost[$objFields->postName])) {
+                    $varValue = Leads::prepareValue($arrPost[$objFields->postName], $objFields);
+                    $varLabel = Leads::prepareLabel($varValue, $objFields);
 
-		return $value;
-	}
+                    $arrSet         = array(
+                        'pid'       => $intLead,
+                        'sorting'   => $objFields->sorting,
+                        'tstamp'    => $time,
+                        'master_id' => $objFields->master_id,
+                        'field_id'  => $objFields->id,
+                        'name'      => $objFields->name,
+                        'value'     => $varValue,
+                        'label'     => $varLabel,
+                    );
+
+                    // HOOK: add custom logic
+                    if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'])) {
+                        foreach ($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'] as $callback) {
+                            $this->import($callback[0]);
+                            $this->$callback[0]->$callback[1]($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
+                        }
+                    }
+
+                    \Database::getInstance()->prepare("INSERT INTO tl_lead_data %s")->set($arrSet)->executeUncached();
+                }
+            }
+
+            // HOOK: add custom logic
+            if (isset($GLOBALS['TL_HOOKS']['storeLeadsData']) && is_array($GLOBALS['TL_HOOKS']['storeLeadsData'])) {
+                foreach ($GLOBALS['TL_HOOKS']['storeLeadsData'] as $callback) {
+                    $this->import($callback[0]);
+                    $this->$callback[0]->$callback[1]($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Export the data
+     * @param integer
+     * @param array
+     */
+    public function export($intConfig, $arrIds=null)
+    {
+        $objConfig = \Database::getInstance()->prepare("SELECT *, (SELECT leadMaster FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS master FROM tl_lead_export WHERE id=?")
+                                            ->limit(1)
+                                            ->execute($intConfig);
+
+        if (!$objConfig->numRows || !isset($GLOBALS['LEADS_EXPORT'][$objConfig->type])) {
+            return;
+        }
+
+        $objConfig->master = $objConfig->master ?: $objConfig->pid;
+        $arrFields = array();
+
+        // Prepare the fields
+        foreach (deserialize($objConfig->fields, true) as $arrField) {
+            $arrFields[$arrField['field']] = $arrField;
+        }
+
+        $objConfig->fields = $arrFields;
+
+        $objExport = new $GLOBALS['LEADS_EXPORT'][$objConfig->type][0]();
+        $objExport->$GLOBALS['LEADS_EXPORT'][$objConfig->type][1]($objConfig, $arrIds);
+    }
 }
-

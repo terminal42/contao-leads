@@ -1,51 +1,106 @@
-<?php if (!defined('TL_ROOT')) die('You cannot access this file directly!');
+<?php
 
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2011 Leo Feyer
+ * leads Extension for Contao Open Source CMS
  *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
- * PHP version 5
- * @copyright  Andreas Schempp 2011
- * @author     Andreas Schempp <andreas@schempp.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html
- * @version    $Id$
+ * @copyright  Copyright (c) 2011-2014, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
  */
 
 
 /**
  * Config
  */
-$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array('Leads', 'injectFieldSelect');
+$GLOBALS['TL_DCA']['tl_form_field']['config']['onload_callback'][] = array('tl_form_field_leads', 'loadLoadStore');
 
 
 /**
  * Fields
  */
-$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadField'] = array
+$GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore'] = array
 (
-	'label'				=> &$GLOBALS['TL_LANG']['tl_form_field']['leadField'],
-	'exclude'			=> true,
-	'inputType'			=> 'select',
-	'eval'				=> array('tl_class'=>'w50', 'includeBlankOption'=>true),
-	'save_callback'		=> array
-	(
-		array('Leads', 'validateFieldSelect'),
-	),
+    'label'                 => &$GLOBALS['TL_LANG']['tl_form_field']['leadStore'],
+    'exclude'               => true,
+    'inputType'             => 'select',
+    'options_callback'      => array('tl_form_field_leads', 'getLeadStoreOptions'),
+    'eval'                  => array('tl_class'=>'w50', 'includeBlankOption'=>true, 'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'][2]),
 );
 
+
+class tl_form_field_leads extends Backend
+{
+
+    public function loadLoadStore($dc)
+    {
+        global $objLeadForm;
+
+        switch ($this->Input->get('act')) {
+
+            case 'edit':
+                $objLeadForm = $this->Database->prepare("SELECT leadEnabled, leadMaster FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id=?)")->execute($dc->id);
+                break;
+
+            case 'editAll':
+            case 'overrideAll':
+                $objLeadForm = $this->Database->prepare("SELECT leadEnabled, leadMaster FROM tl_form WHERE id=?")->execute($dc->id);
+                break;
+
+            default:
+                return;
+        }
+
+        if (!$objLeadForm->leadEnabled) {
+            unset($GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']);
+        }
+        else
+        {
+            if ($objLeadForm->leadMaster == 0) {
+                $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['options'] = array('1'=> $GLOBALS['TL_LANG']['MSC']['yes']);
+                $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['eval']['blankOptionLabel'] = $GLOBALS['TL_LANG']['MSC']['no'];
+
+                unset($GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['options_callback']);
+            }
+
+            foreach ($GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $strName => $strPalette) {
+
+                if (in_array($strName, array('__selector__', 'submit', 'default', 'headline', 'explanation'))) {
+                    continue;
+                }
+
+                $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$strName] = str_replace(',type,', ',type,leadStore,', $strPalette);
+            }
+
+            $GLOBALS['TL_DCA']['tl_form_field']['fields']['type']['eval']['tl_class'] = 'w50';
+        }
+    }
+
+
+    public function getLeadStoreOptions($dc)
+    {
+        global $objLeadForm;
+
+        $arrFields = array();
+        $objFields = $this->Database->prepare("
+            SELECT *
+            FROM tl_form_field
+            WHERE
+                name!=''
+                AND pid=?
+                AND leadStore='1'
+                AND id NOT IN (
+                    SELECT leadStore
+                    FROM tl_form_field
+                    WHERE pid=? AND id!=?
+                )
+            ORDER BY sorting
+        ")->execute($objLeadForm->leadMaster, $objLeadForm->id, $dc->activeRecord->id);
+
+        while ($objFields->next()) {
+            $arrFields[$objFields->id] = $objFields->label == '' ? $objFields->name : ($objFields->label . ' (' . $objFields->name . ')');
+        }
+
+        return $arrFields;
+    }
+}
