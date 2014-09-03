@@ -129,11 +129,24 @@ class Leads extends Controller
             return $arrModules;
         }
 
+        $arrIds = array();
+        $objUser = \BackendUser::getInstance();
+
+        // Check permissions
+        if (!$objUser->isAdmin) {
+            if (!is_array($objUser->forms) || empty($objUser->forms)) {
+                unset($arrModules['leads']);
+                return $arrModules;
+            }
+
+            $arrIds = $objUser->forms;
+        }
+
         $objForms = \Database::getInstance()->execute("
                 SELECT f.id, f.title, IF(f.leadMenuLabel='', f.title, f.leadMenuLabel) AS leadMenuLabel
                 FROM tl_form f
                 LEFT JOIN tl_lead l ON l.master_id=f.id
-                WHERE leadEnabled='1' AND leadMaster=0
+                WHERE leadEnabled='1' AND leadMaster=0" . (!empty($arrIds) ? (" AND f.id IN (" . implode(',', array_map('intval', $arrIds)) . ")") : "") . "
             UNION
                 SELECT l.master_id AS id, IFNULL(f.title, CONCAT('ID ', l.master_id)) AS title, IFNULL(IF(f.leadMenuLabel='', f.title, f.leadMenuLabel), CONCAT('ID ', l.master_id)) AS leadMenuLabel
                 FROM tl_lead l
