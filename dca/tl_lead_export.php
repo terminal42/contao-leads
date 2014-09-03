@@ -23,6 +23,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'enableVersioning'            => true,
         'onload_callback' => array
         (
+            array('tl_lead_export', 'checkPermission'),
             array('tl_lead_export', 'updatePalette')
         ),
         'sql' => array
@@ -253,6 +254,17 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
  */
 class tl_lead_export extends Backend
 {
+
+    /**
+     * Check permissions to edit table
+     */
+    public function checkPermission()
+    {
+        if (!\BackendUser::getInstance()->isAdmin) {
+            \System::log('Not enough permissions to access leads export ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
+            $this->redirect('contao/main.php?act=error');
+        }
+    }
 
     /**
      * Update the palette depending on the export type
