@@ -23,6 +23,11 @@ class Leads extends Controller
      */
     public static function prepareValue($varValue, $objField)
     {
+        // File upload
+        if ($objField->type == 'upload') {
+            return $varValue['uuid'];
+        }
+
         // Run for all values in an array
         if (is_array($varValue)) {
             foreach ($varValue as $k => $v) {
@@ -56,6 +61,15 @@ class Leads extends Controller
             }
 
             return $varValue;
+        }
+
+        // File upload
+        if ($objField->type == 'upload') {
+            $objFile = \FilesModel::findByUuid($varValue);
+
+            if ($objFile !== null) {
+                return $objFile->path;
+            }
         }
 
         // Convert timestamps into date format
@@ -218,12 +232,14 @@ class Leads extends Controller
             }
 
             while ($objFields->next()) {
+                $arrSet = array();
 
+                // Regular data
                 if (isset($arrPost[$objFields->postName])) {
                     $varValue = Leads::prepareValue($arrPost[$objFields->postName], $objFields);
                     $varLabel = Leads::prepareLabel($varValue, $objFields);
 
-                    $arrSet         = array(
+                    $arrSet = array(
                         'pid'       => $intLead,
                         'sorting'   => $objFields->sorting,
                         'tstamp'    => $time,
@@ -233,7 +249,26 @@ class Leads extends Controller
                         'value'     => $varValue,
                         'label'     => $varLabel,
                     );
+                }
 
+                // Files
+                if (isset($arrFiles[$objFields->postName]) && $arrFiles[$objFields->postName]['uploaded']) {
+                    $varValue = Leads::prepareValue($arrFiles[$objFields->postName], $objFields);
+                    $varLabel = Leads::prepareLabel($varValue, $objFields);
+
+                    $arrSet = array(
+                        'pid'       => $intLead,
+                        'sorting'   => $objFields->sorting,
+                        'tstamp'    => $time,
+                        'master_id' => $objFields->master_id,
+                        'field_id'  => $objFields->id,
+                        'name'      => $objFields->name,
+                        'value'     => $varValue,
+                        'label'     => $varLabel,
+                    );
+                }
+
+                if (!empty($arrSet)) {
                     // HOOK: add custom logic
                     if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'])) {
                         foreach ($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'] as $callback) {
