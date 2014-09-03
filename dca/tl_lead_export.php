@@ -97,10 +97,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     'palettes' => array
     (
         '__selector__'                => array('type'),
-        'default'                     => '{name_legend},name,type;{config_legend},export',
-        'csv'                         => '{name_legend},name,type;{config_legend},headerFields,export',
-        'xls'                         => '{name_legend},name,type;{config_legend},headerFields,export',
-        'xlsx'                        => '{name_legend},name,type;{config_legend},headerFields,export',
+        'default'                     => '{name_legend},name,type,filename;{config_legend},export',
+        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
+        'xls'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
+        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},headerFields,export',
     ),
 
     // Subpalettes
@@ -144,6 +144,16 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['type'],
             'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'w50'),
             'sql'                     => "varchar(32) NOT NULL default ''"
+        ),
+        'filename' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['filename'],
+            'exclude'                 => true,
+            'search'                  => true,
+            'inputType'               => 'text',
+            'eval'                    => array('decodeEntities'=>true, 'maxlength'=>128, 'helpwizard'=>true, 'tl_class'=>'w50'),
+            'explanation'             => 'leadsTags',
+            'sql'                     => "varchar(128) NOT NULL default ''"
         ),
         'headerFields' => array
         (
