@@ -31,7 +31,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new CsvFileWriter();
+        $objWriter = new CsvFileWriter($this->getFilename($objConfig));
 
         // Add header fields
         if ($objConfig->headerFields) {
@@ -57,7 +57,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new ExcelFileWriter();
+        $objWriter = new ExcelFileWriter($this->getFilename($objConfig));
         $objWriter->setFormat('Excel5');
 
         // Add header fields
@@ -84,7 +84,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new ExcelFileWriter();
+        $objWriter = new ExcelFileWriter($this->getFilename($objConfig));
         $objWriter->setFormat('Excel2007');
 
         // Add header fields
@@ -100,6 +100,38 @@ class LeadsExport
 
         $objFile = new \File($objWriter->getFilename());
         $objFile->sendToBrowser();
+    }
+
+    /**
+     * Get the filename from config
+     * @param object
+     * @return string
+     */
+    protected function getFilename($objConfig)
+    {
+        if ($objConfig->filename == '') {
+            return '';
+        }
+
+        $arrTokens = array
+        (
+            'time' => \Date::parse($GLOBALS['TL_CONFIG']['timeFormat']),
+            'date' => \Date::parse($GLOBALS['TL_CONFIG']['dateFormat']),
+            'datim' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat']),
+        );
+
+        // Add custom logic
+        if (isset($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens']) && is_array($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens'])) {
+            foreach ($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens'] as $callback) {
+                if (is_array($callback)) {
+                    $arrTokens = \System::importStatic($callback[0])->$callback[1]($arrTokens, $objConfig);
+                } elseif (is_callable($callback)) {
+                    $arrTokens = $callback($arrTokens, $objConfig);
+                }
+            }
+        }
+
+        return \String::parseSimpleTokens($objConfig->filename, $arrTokens);
     }
 
     /**

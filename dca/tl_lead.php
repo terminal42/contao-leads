@@ -177,8 +177,18 @@ class tl_lead extends Backend
      */
     public function checkPermission($dc)
     {
-        if ($this->Input->get('master') == '')
-        {
+        if (\Input::get('master') == '') {
+            $this->redirect('contao/main.php?act=error');
+        }
+
+        $objUser = \BackendUser::getInstance();
+
+        if ($objUser->isAdmin) {
+            return;
+        }
+
+        if (!is_array($objUser->forms) || !in_array(\Input::get('master'), $objUser->forms)) {
+            \System::log('Not enough permissions to access leads ID "'.\Input::get('master').'"', __METHOD__, TL_ERROR);
             $this->redirect('contao/main.php?act=error');
         }
     }

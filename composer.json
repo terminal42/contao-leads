@@ -1,0 +1,33 @@
+{
+    "name":"terminal42/contao-leads",
+    "description":"Leads extension for Contao Open Source CMS; Store and manage form data with ease!",
+    "keywords":["contao", "form", "data", "store", "export"],
+    "type":"contao-module",
+    "license":"LGPL-3.0+",
+    "authors":[
+        {
+            "name":"terminal42 gmbh",
+            "homepage":"http://terminal42.ch"
+        }
+    ],
+    "require":{
+        "php":">=5.3.2",
+        "contao/core":">=3.2,<3.4",
+        "contao-community-alliance/composer-plugin":"2.*",
+        "contao-legacy/haste":"4.*",
+        "menatwork/contao-multicolumnwizard": "~3.2"
+    },
+    "suggest": {
+        "contao-legacy/php_excel": "3.*"
+    },
+    "autoload":{
+        "classmap":[""]
+    },
+    "extra":{
+        "contao": {
+            "sources":{
+                "": "system/modules/leads"
+            }
+        }
+    }
+}

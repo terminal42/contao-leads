@@ -26,6 +26,10 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = array
         'notCopyable'               => true,
         'notSortable'               => true,
         'notDeletable'              => true,
+        'onload_callback' => array
+        (
+            array('tl_lead_data', 'checkPermission')
+        )
     ),
 
     // List
@@ -50,6 +54,32 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = array
 
 class tl_lead_data extends Backend
 {
+
+    /**
+     * Check permissions to edit table
+     */
+    public function checkPermission()
+    {
+        $objUser = \BackendUser::getInstance();
+
+        if ($objUser->isAdmin) {
+            return;
+        }
+
+        if (!is_array($objUser->forms)) {
+            \System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
+            $this->redirect('contao/main.php?act=error');
+        }
+
+        $objLeads = \Database::getInstance()->prepare("SELECT master_id FROM tl_lead WHERE id=(SELECT pid FROM tl_lead_data WHERE id=?)")
+                                            ->limit(1)
+                                            ->execute(\Input::get('id'));
+
+        if (!$objLeads->numRows || !in_array($objLeads->master_id, $objUser->forms)) {
+            \System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
+            $this->redirect('contao/main.php?act=error');
+        }
+    }
 
     /**
      * Add an image to each record
