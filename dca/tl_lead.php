@@ -148,7 +148,7 @@ class tl_lead extends Backend
      */
     public function loadExportConfigs()
     {
-        $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? ORDER BY name")
+        $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name")
                                               ->execute(\Input::get('master'));
 
         if (!$objConfigs->numRows) {
