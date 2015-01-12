@@ -165,35 +165,6 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'eval'                    => array('tl_class'=>'w50'),
             'sql'                     => "char(1) NOT NULL default ''"
         ),
-/*
-        'includeFormId' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['includeFormId'],
-            'exclude'                 => true,
-            'filter'                  => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
-            'sql'                     => "char(1) NOT NULL default ''"
-        ),
-        'includeCreated' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['includeCreated'],
-            'exclude'                 => true,
-            'filter'                  => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
-            'sql'                     => "char(1) NOT NULL default ''"
-        ),
-        'includeMember' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['includeMember'],
-            'exclude'                 => true,
-            'filter'                  => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
-            'sql'                     => "char(1) NOT NULL default ''"
-        ),
-*/
         'export' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
@@ -272,23 +243,24 @@ class tl_lead_export extends Backend
     {
         if (!\BackendUser::getInstance()->isAdmin) {
             \System::log('Not enough permissions to access leads export ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
     }
 
     /**
      * Update the palette depending on the export type
-     * @param \DataContainer
+     *
+     * @param object $dc
      */
-    public function updatePalette($dc=null)
+    public function updatePalette($dc = null)
     {
         if (!$dc->id) {
             return;
         }
 
-        $objRecord = $this->Database->prepare("SELECT * FROM tl_lead_export WHERE id=?")
-                                    ->limit(1)
-                                    ->execute($dc->id);
+        $objRecord = \Database::getInstance()->prepare(
+            "SELECT * FROM tl_lead_export WHERE id=?"
+        )->execute($dc->id);
 
         if (!$objRecord->export || $objRecord->export == 'all') {
             return;
@@ -300,7 +272,9 @@ class tl_lead_export extends Backend
 
     /**
      * Generate the label and return it as HTML string
-     * @param array
+     *
+     * @param array $arrRow
+     *
      * @return string
      */
     public function generateLabel($arrRow)
@@ -310,11 +284,13 @@ class tl_lead_export extends Backend
 
     /**
      * Load the lead fields
-     * @param mixed
-     * @param DataContainer
-     * @return mixed
+     *
+     * @param mixed  $varValue
+     * @param object $dc
+     *
+     * @return string
      */
-    public function loadLeadFields($varValue, $dc=null)
+    public function loadLeadFields($varValue, $dc = null)
     {
         $arrFields = deserialize($varValue, true);
 
@@ -322,8 +298,7 @@ class tl_lead_export extends Backend
         if (empty($arrFields) && $dc->id) {
 
             // Form ID
-            $arrFields[] = array
-            (
+            $arrFields[] = array(
                 'field' => '_form',
                 'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
                 'value' => 'all',
@@ -331,8 +306,7 @@ class tl_lead_export extends Backend
             );
 
             // Date created
-            $arrFields[] = array
-            (
+            $arrFields[] = array(
                 'field' => '_created',
                 'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
                 'value' => 'all',
@@ -340,20 +314,19 @@ class tl_lead_export extends Backend
             );
 
             // Member ID
-            $arrFields[] = array
-            (
+            $arrFields[] = array(
                 'field' => '_member',
                 'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
                 'value' => 'all',
                 'format' => 'raw'
             );
 
-            $objFields = Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
-                                                ->execute($dc->id);
+            $objFields = Database::getInstance()->prepare(
+                "SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)"
+            )->execute($dc->id);
 
             while ($objFields->next()) {
-                $arrFields[] = array
-                (
+                $arrFields[] = array(
                     'field' => $objFields->id,
                     'name' => '',
                     'value' => 'all',
@@ -367,23 +340,23 @@ class tl_lead_export extends Backend
 
     /**
      * Get the export fields as array
+     *
      * @return array
      */
     public function getExportFields()
     {
-        if (!Input::get('id')) {
+        if (!\Input::get('id')) {
             return array();
         }
 
-        $arrFields = array
-        (
+        $arrFields = array(
             '_form' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
             '_created' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
             '_member' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
         );
 
-        $objFields = Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
-                                            ->execute(Input::get('id'));
+        $objFields = \Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
+                                             ->execute(Input::get('id'));
 
         while ($objFields->next()) {
             $strLabel = $objFields->name;
