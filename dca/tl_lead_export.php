@@ -204,7 +204,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                     'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
                     'exclude'                 => true,
                     'inputType'               => 'select',
-                    'options'                 => array('all', 'label', 'value'),
+                    'options'                 => array('label', 'all', 'value'),
                     'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
                     'eval'                    => array('style'=>'width:125px;')
                 ),
