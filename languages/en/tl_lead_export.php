@@ -21,8 +21,8 @@
  * Fields
  */
 $GLOBALS['TL_LANG']['tl_lead_export']['name']           = array('Config name', 'Please enter the config name.');
-$GLOBALS['TL_LANG']['tl_lead_export']['type']           = array('Type', 'Please enter the export type.');
-$GLOBALS['TL_LANG']['tl_lead_export']['filename']       = array('Custom file name', 'Here you can enter a custom file name. You can use wildcards (e.g. ##date##)');
+$GLOBALS['TL_LANG']['tl_lead_export']['type']           = array('Data type', 'Please choose the data type here.');
+$GLOBALS['TL_LANG']['tl_lead_export']['filename']       = array('Custom file name', 'Here you can enter a custom file name. You can use wildcards (e.g. ##date##). See help wizard for details.');
 $GLOBALS['TL_LANG']['tl_lead_export']['headerFields']   = array('Header fields', 'Include the header fields in the file.');
 $GLOBALS['TL_LANG']['tl_lead_export']['export']         = array('Export type', 'Please choose what data should be exported.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields']         = array('Fields', 'Please choose the fields you want to export.');

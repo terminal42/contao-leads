@@ -18,7 +18,7 @@
         "menatwork/contao-multicolumnwizard": "~3.2"
     },
     "suggest": {
-        "contao-legacy/php_excel": "3.*"
+        "phpoffice/phpexcel": "1.8.*"
     },
     "autoload":{
         "classmap":[""]
