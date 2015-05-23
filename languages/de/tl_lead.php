@@ -26,6 +26,7 @@ $GLOBALS['TL_LANG']['tl_lead']['member']        = array('Mitglied');
 $GLOBALS['TL_LANG']['tl_lead']['delete']        = array('Anfrage löschen', 'Anfrage ID %s löschen');
 $GLOBALS['TL_LANG']['tl_lead']['show']          = array('Anfragedetails', 'Details der Anfrage ID %s anzeigen');
 $GLOBALS['TL_LANG']['tl_lead']['export']        = array('Exportieren', 'Anfragen als Datei herunterladen');
+$GLOBALS['TL_LANG']['tl_lead']['export_config'] = array('Konfiguration', 'Definieren Sie Export-Konfigurationen');
 $GLOBALS['TL_LANG']['tl_lead']['export_csv']    = array('als CSV', '');
 $GLOBALS['TL_LANG']['tl_lead']['export_xls']    = array('für Excel 97/2000/2003 (.xls)', '');
 $GLOBALS['TL_LANG']['tl_lead']['export_xlsx']   = array('für Excel 2007/2010 (.xlsx)', '');
