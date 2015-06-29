@@ -42,7 +42,10 @@ class LeadsExport
             return static::generateExportRow($arrData, $objConfig);
         });
 
-        $objWriter->writeFrom($objReader);
+        if (!$objWriter->writeFrom($objReader)) {
+            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
+            $objResponse->send();
+        }
 
         $objFile = new \File($objWriter->getFilename());
         $objFile->sendToBrowser();
@@ -69,7 +72,10 @@ class LeadsExport
             return static::generateExportRow($arrData, $objConfig);
         });
 
-        $objWriter->writeFrom($objReader);
+        if (!$objWriter->writeFrom($objReader)) {
+            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
+            $objResponse->send();
+        }
 
         $objFile = new \File($objWriter->getFilename());
         $objFile->sendToBrowser();
@@ -96,7 +102,10 @@ class LeadsExport
             return static::generateExportRow($arrData, $objConfig);
         });
 
-        $objWriter->writeFrom($objReader);
+        if (!$objWriter->writeFrom($objReader)) {
+            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
+            $objResponse->send();
+        }
 
         $objFile = new \File($objWriter->getFilename());
         $objFile->sendToBrowser();
