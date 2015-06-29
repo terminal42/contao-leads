@@ -12,8 +12,8 @@
     ],
     "require":{
         "php":">=5.3.2",
-        "contao/core":">=3.2,<3.6",
-        "contao-community-alliance/composer-plugin":"2.*",
+        "contao/core":"~3.2",
+        "contao-community-alliance/composer-plugin":"*",
         "codefog/contao-haste": "4.*",
         "menatwork/contao-multicolumnwizard": "~3.2"
     },
