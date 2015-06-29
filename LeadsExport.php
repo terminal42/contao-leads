@@ -338,7 +338,7 @@ class LeadsExport
             ) ld
             GROUP BY field_id
             ORDER BY " . (!empty($arrLimitFields) ? \Database::getInstance()->findInSet("ld.field_id", $arrLimitFields) : "sorting")
-        )->executeUncached($objConfig->master);
+        )->execute($objConfig->master);
 
         static::$arrFields = array();
 
