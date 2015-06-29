@@ -31,7 +31,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new CsvFileWriter($this->getFilename($objConfig));
+        $objWriter = new CsvFileWriter('system/tmp/' . $this->getFilename($objConfig));
 
         // Add header fields
         if ($objConfig->headerFields) {
@@ -60,7 +60,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new ExcelFileWriter($this->getFilename($objConfig));
+        $objWriter = new ExcelFileWriter('system/tmp/' . $this->getFilename($objConfig));
         $objWriter->setFormat('Excel5');
 
         // Add header fields
@@ -90,7 +90,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new ExcelFileWriter($this->getFilename($objConfig));
+        $objWriter = new ExcelFileWriter('system/tmp/' . $this->getFilename($objConfig));
         $objWriter->setFormat('Excel2007');
 
         // Add header fields
