@@ -31,7 +31,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new CsvFileWriter($this->getFilename($objConfig));
+        $objWriter = new CsvFileWriter('system/tmp/' . $this->getFilename($objConfig));
 
         // Add header fields
         if ($objConfig->headerFields) {
@@ -42,7 +42,10 @@ class LeadsExport
             return static::generateExportRow($arrData, $objConfig);
         });
 
-        $objWriter->writeFrom($objReader);
+        if (!$objWriter->writeFrom($objReader)) {
+            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
+            $objResponse->send();
+        }
 
         $objFile = new \File($objWriter->getFilename());
         $objFile->sendToBrowser();
@@ -57,7 +60,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new ExcelFileWriter($this->getFilename($objConfig));
+        $objWriter = new ExcelFileWriter('system/tmp/' . $this->getFilename($objConfig));
         $objWriter->setFormat('Excel5');
 
         // Add header fields
@@ -69,7 +72,10 @@ class LeadsExport
             return static::generateExportRow($arrData, $objConfig);
         });
 
-        $objWriter->writeFrom($objReader);
+        if (!$objWriter->writeFrom($objReader)) {
+            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
+            $objResponse->send();
+        }
 
         $objFile = new \File($objWriter->getFilename());
         $objFile->sendToBrowser();
@@ -84,7 +90,7 @@ class LeadsExport
     {
         $objReader = $this->getExportData($objConfig, $arrIds);
 
-        $objWriter = new ExcelFileWriter($this->getFilename($objConfig));
+        $objWriter = new ExcelFileWriter('system/tmp/' . $this->getFilename($objConfig));
         $objWriter->setFormat('Excel2007');
 
         // Add header fields
@@ -96,7 +102,10 @@ class LeadsExport
             return static::generateExportRow($arrData, $objConfig);
         });
 
-        $objWriter->writeFrom($objReader);
+        if (!$objWriter->writeFrom($objReader)) {
+            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
+            $objResponse->send();
+        }
 
         $objFile = new \File($objWriter->getFilename());
         $objFile->sendToBrowser();
@@ -329,7 +338,7 @@ class LeadsExport
             ) ld
             GROUP BY field_id
             ORDER BY " . (!empty($arrLimitFields) ? \Database::getInstance()->findInSet("ld.field_id", $arrLimitFields) : "sorting")
-        )->executeUncached($objConfig->master);
+        )->execute($objConfig->master);
 
         static::$arrFields = array();
 
