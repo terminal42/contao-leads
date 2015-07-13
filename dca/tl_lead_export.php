@@ -237,7 +237,7 @@ class tl_lead_export extends Backend
 {
 
     /**
-     * Check permissions to edit table
+     * Check permissions to edit table.
      */
     public function checkPermission()
     {
@@ -248,9 +248,9 @@ class tl_lead_export extends Backend
     }
 
     /**
-     * Update the palette depending on the export type
+     * Update the palette depending on the export type.
      *
-     * @param object $dc
+     * @param $dc
      */
     public function updatePalette($dc = null)
     {
@@ -263,15 +263,20 @@ class tl_lead_export extends Backend
         )->execute($dc->id);
 
         if (!$objRecord->export || $objRecord->export == 'all') {
+
             return;
         }
 
         $strPalette = $objRecord->type ? $objRecord->type : 'default';
-        $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace('export', 'export,' . $GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'], $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]);
+        $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace(
+            'export',
+            'export,' . $GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'],
+            $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]
+        );
     }
 
     /**
-     * Generate the label and return it as HTML string
+     * Generate the label and return it as HTML string.
      *
      * @param array $arrRow
      *
@@ -283,7 +288,7 @@ class tl_lead_export extends Backend
     }
 
     /**
-     * Load the lead fields
+     * Load the lead fields.
      *
      * @param mixed  $varValue
      * @param object $dc
@@ -339,7 +344,7 @@ class tl_lead_export extends Backend
     }
 
     /**
-     * Get the export fields as array
+     * Get the export fields as array.
      *
      * @return array
      */

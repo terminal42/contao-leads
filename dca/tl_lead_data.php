@@ -114,7 +114,7 @@ class tl_lead_data extends Backend
 
         if (!is_array($objUser->forms)) {
             \System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
 
         $objLeads = \Database::getInstance()->prepare("SELECT master_id FROM tl_lead WHERE id=(SELECT pid FROM tl_lead_data WHERE id=?)")
@@ -123,7 +123,7 @@ class tl_lead_data extends Backend
 
         if (!$objLeads->numRows || !in_array($objLeads->master_id, $objUser->forms)) {
             \System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
     }
 

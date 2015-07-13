@@ -40,7 +40,12 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMaster'] = array
     'exclude'               => true,
     'inputType'             => 'select',
     'options_callback'      => array('tl_form_lead', 'getMasterForms'),
-    'eval'                  => array('submitOnChange'=>true, 'includeBlankOption'=>true, 'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form']['leadMasterBlankOptionLabel'], 'tl_class'=>'w50'),
+    'eval'                  => array(
+        'submitOnChange'=>true,
+        'includeBlankOption'=>true,
+        'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form']['leadMasterBlankOptionLabel'],
+        'tl_class'=>'w50'
+    ),
     'sql'                   => "int(10) unsigned NOT NULL default '0'"
 );
 
@@ -67,20 +72,20 @@ class tl_form_lead extends Backend
 {
 
     /**
-     * Modify the palette based on configuration. We can't use simple subpalettes because we do complex things...
-     * @param DataContainer
+     * Modify the palette based on configuration. We can't use simple subpalettes
+     * because we do more complex things.
+     *
+     * @param   $dc
      */
     public function modifyPalette($dc)
     {
         $strPalette = 'leadEnabled';
-        $objForm = $this->Database->execute("SELECT * FROM tl_form WHERE id=" . (int) $dc->id);
+        $objForm = \Database::getInstance()->execute("SELECT * FROM tl_form WHERE id=" . (int) $dc->id);
 
-        if ($objForm->leadEnabled)
-        {
+        if ($objForm->leadEnabled) {
             $strPalette .= ',leadMaster';
 
-            if ($objForm->leadMaster == 0)
-            {
+            if ($objForm->leadMaster == 0) {
                 $strPalette .= ',leadMenuLabel,leadLabel';
             }
         }
@@ -88,14 +93,19 @@ class tl_form_lead extends Backend
         $GLOBALS['TL_DCA']['tl_form']['palettes']['default'] = str_replace('storeValues', 'storeValues,'.$strPalette, $GLOBALS['TL_DCA']['tl_form']['palettes']['default']);
     }
 
-
+    /**
+     * Gets the master forms.
+     *
+     * @param $dc
+     *
+     * @return array
+     */
     public function getMasterForms($dc)
     {
         $arrForms = array();
-        $objForms = $this->Database->execute("SELECT id, title FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 AND id!=" . (int) $dc->id);
+        $objForms = \Database::getInstance()->execute("SELECT id, title FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 AND id!=" . (int) $dc->id);
 
-        while ($objForms->next())
-        {
+        while ($objForms->next()) {
             $arrForms[$objForms->id] = $objForms->title;
         }
 

@@ -121,11 +121,11 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
         ),
         'tstamp' => array
         (
-         'sql'                  => "int(10) unsigned NOT NULL default '0'"
+            'sql'                  => "int(10) unsigned NOT NULL default '0'"
         ),
         'master_id' => array
         (
-         'sql'                  => "int(10) unsigned NOT NULL default '0'"
+            'sql'                  => "int(10) unsigned NOT NULL default '0'"
         ),
         'form_id' => array
         (
@@ -171,7 +171,7 @@ class tl_lead extends Backend
 {
 
     /**
-     * Load the export configs
+     * Load the export configs.
      */
     public function loadExportConfigs()
     {
@@ -199,13 +199,14 @@ class tl_lead extends Backend
 
 
     /**
-     * Check if a user has access to lead data
-     * @param DataContainer
+     * Check if a user has access to lead data.
+     *
+     * @param $dc
      */
     public function checkPermission($dc)
     {
         if (\Input::get('master') == '') {
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
 
         $objUser = \BackendUser::getInstance();
@@ -216,49 +217,56 @@ class tl_lead extends Backend
 
         if (!is_array($objUser->forms) || !in_array(\Input::get('master'), $objUser->forms)) {
             \System::log('Not enough permissions to access leads ID "'.\Input::get('master').'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
     }
 
 
     /**
-     * Generate label for this record
+     * Generate label for this record.
+     *
      * @param array
      * @param string
+     *
      * @return string
      */
     public function getLabel($row, $label)
     {
-        $objForm = $this->Database->prepare("SELECT * FROM tl_form WHERE id=?")->execute($row['master_id']);
+        $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute($row['master_id']);
 
         // No form found, we can't format the label
-        if (!$objForm->numRows)
-        {
+        if (!$objForm->numRows) {
+
             return $label;
         }
 
-        $arrTokens = array('created'=>$this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']));
-        $objData = $this->Database->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
+        $arrTokens = array(
+            'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['created'])
+        );
 
-        while ($objData->next())
-        {
+        $objData = \Database::getInstance()->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
+
+        while ($objData->next()) {
             $varValue = deserialize($objData->value);
             $arrTokens[$objData->name] = is_array($varValue) ? implode(', ', $varValue) : $varValue;
         }
 
-        return $this->parseSimpleTokens($objForm->leadLabel, $arrTokens);
+        return \String::parseSimpleTokens($objForm->leadLabel, $arrTokens);
     }
 
     /**
-     * Return the export config icon
+     * Return the export config icon.
+     *
      * @param string
      * @param string
      * @param string
+     *
      * @return string
      */
     public function exportConfigIcon($href, $label, $title, $class, $attributes)
     {
-        if (!BackendUser::getInstance()->isAdmin) {
+        if (!\BackendUser::getInstance()->isAdmin) {
+
             return '';
         }
 
@@ -335,21 +343,30 @@ class tl_lead extends Backend
         return $template->parse();
     }
 
-
+    /**
+     * Exports according to a config.
+     */
     public function export()
     {
-        $intConfig = $this->Input->get('config');
+        $intConfig = \Input::get('config');
 
         if (!$intConfig) {
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
 
         $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
-        $this->import('Leads');
-        $this->Leads->export($intConfig, $arrIds);
+
+        $leads = new Leads();
+        $leads->export($intConfig, $arrIds);
     }
 
-
+    /**
+     * Adds the export buttons to the buttons bar and exports the data.
+     *
+     * @param array $arrButtons
+     *
+     * @return mixed
+     */
     public function addExportButtons($arrButtons)
     {
         $arrConfigs = \Database::getInstance()->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
@@ -361,14 +378,14 @@ class tl_lead extends Backend
             $arrIds = \Input::post('IDS');
 
             if (empty($arrIds)) {
-                $this->reload();
+                \Controller::reload();
             }
 
-            $this->import('Leads');
+            $leads = new Leads();
 
             foreach ($arrConfigs as $config) {
                 if (\Input::post('export_' . $config['id'])) {
-                    $this->Leads->export($config['id'], $arrIds);
+                    $leads->export($config['id'], $arrIds);
                 }
             }
         }

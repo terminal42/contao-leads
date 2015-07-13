@@ -9,15 +9,19 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-use \Haste\IO\Reader\ArrayReader;
-use \Haste\IO\Writer\CsvFileWriter;
-use \Haste\IO\Writer\ExcelFileWriter;
 
 class Leads extends Controller
 {
+    // @todo cleanup
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
 
     /**
-     * Prepare a form value for storage in lead table
+     * Prepare a form value for storage in lead table.
+     *
      * @param mixed
      * @param Database_Result
      */
@@ -48,9 +52,12 @@ class Leads extends Controller
 
 
     /**
-     * Get the label for a form value to store in lead table
-     * @param mixed
-     * @param Database_Result
+     * Get the label for a form value to store in lead table.
+     *
+     * @param mixed $varValue
+     * @param Database_Result $objField
+     *
+     * @return mixed
      */
     public static function prepareLabel($varValue, $objField)
     {
@@ -92,8 +99,10 @@ class Leads extends Controller
 
 
     /**
-     * Format a lead field for list view
+     * Format a lead field for list view.
+     *
      * @param object
+     *
      * @return string
      */
     public static function formatValue($objData)
@@ -102,9 +111,9 @@ class Leads extends Controller
 
         if ($objData->label != '') {
             $strLabel = $objData->label;
-            $arrLabel = deserialize($objData->label);
+            $arrLabel = deserialize($objData->label, true);
 
-            if (is_array($arrLabel) && !empty($arrLabel)) {
+            if (!empty($arrLabel)) {
                 $strLabel = implode(', ', $arrLabel);
             }
 
@@ -116,14 +125,15 @@ class Leads extends Controller
 
 
     /**
-     * Dynamically load the name for the current lead view
+     * Dynamically load the name for the current lead view.
+     *
      * @param string
      * @param string
      */
     public function loadLeadName($strName, $strLanguage)
     {
         if ($strName == 'modules' && $this->Input->get('do') == 'lead') {
-            $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute($this->Input->get('master'));
+            $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute(\Input::get('master'));
 
             $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ? $objForm->leadMenuLabel : $objForm->title;
         }
@@ -131,9 +141,11 @@ class Leads extends Controller
 
 
     /**
-     * Add leads to the backend navigation
+     * Add leads to the backend navigation.
+     *
      * @param array
      * @param bool
+     *
      * @return array
      */
     public function loadBackendModules($arrModules, $blnShowAll)
@@ -171,6 +183,7 @@ class Leads extends Controller
 
         if (!$objForms->numRows) {
             unset($arrModules['leads']);
+
             return $arrModules;
         }
 
@@ -201,7 +214,8 @@ class Leads extends Controller
 
 
     /**
-     * Process data submitted through the form generator
+     * Process data submitted through the form generator.
+     *
      * @param array
      * @param array
      * @param array
@@ -213,7 +227,7 @@ class Leads extends Controller
 
             $intLead = \Database::getInstance()->prepare("
                 INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id,post_data) VALUES (?,?,?,?,?,?,?)
-            ")->executeUncached(
+            ")->execute(
                 $time,
                 $time,
                 $GLOBALS['TL_LANGUAGE'],
