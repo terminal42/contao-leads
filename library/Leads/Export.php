@@ -14,6 +14,7 @@ namespace Leads;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
 use Haste\IO\Writer\ExcelFileWriter;
+use Leads\DataTransformer\DataTransformerInterface;
 
 class Export
 {
@@ -269,15 +270,20 @@ class Export
                 }
             }
 
-            // Apply special formatting
-            switch ($strFormat) {
-                case 'date':
-                case 'datim':
-                case 'time':
-                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG'][$strFormat . 'Format'], $varValue);
-                    continue 2; break;
+            /**
+             * Apply special formatting
+             * @var $dataTransformer DataTransformerInterface
+             */
+            if (in_array($strFormat, array_keys($GLOBALS['LEADS_DATA_TRANSFORMERS']))) {
+
+                $dataTransformer = new $GLOBALS['LEADS_DATA_TRANSFORMERS'][$strFormat]();
+
+                $arrRow[] = $dataTransformer->transform($varValue);
+
+                continue;
             }
 
+            // Fallback formatting if no data transformer specified
             switch ($objConfig->fields[$arrField['id']]['value']) {
                 case 'value':
                     $arrRow[] = $varValue;

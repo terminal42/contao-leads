@@ -51,3 +51,14 @@ if (class_exists('PHPExcel')) {
     $GLOBALS['LEADS_EXPORT']['xls'] = array('Leads\\Export', 'exportXls');
     $GLOBALS['LEADS_EXPORT']['xlsx'] = array('Leads\\Export', 'exportXlsx');
 }
+
+/**
+ * Data transformers
+ */
+$GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
+(
+    'raw'       => 'Leads\\DataTransformer\\RawTransformer',
+    'date'      => 'Leads\\DataTransformer\\DateTransformer',
+    'datim'     => 'Leads\\DataTransformer\\DatimTransformer',
+    'time'      => 'Leads\\DataTransformer\\TimeTransformer',
+);
