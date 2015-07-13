@@ -11,6 +11,8 @@
 
 namespace Leads;
 
+use Leads\Exporter\ExporterInterface;
+
 class Leads extends \Controller
 {
     /**
@@ -319,14 +321,27 @@ class Leads extends \Controller
         $objConfig->master = $objConfig->master ?: $objConfig->pid;
         $arrFields = array();
 
-        // Prepare the fields
-        foreach (deserialize($objConfig->fields, true) as $arrField) {
-            $arrFields[$arrField['field']] = $arrField;
+        $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
+
+        // Backwards compatibility
+        if (is_array($exporterDefinition)) {
+            // Prepare the fields
+            foreach (deserialize($objConfig->fields, true) as $arrField) {
+                $arrFields[$arrField['field']] = $arrField;
+            }
+
+            $objConfig->fields = $arrFields;
+
+            $objExport = $exporterDefinition[0]();
+            $objExport->$exporterDefinition[1]($objConfig, $arrIds);
+        } else {
+
+            // Note the difference here: Fields are not touched and thus every field can be exported multiple times
+            $exporter = new $exporterDefinition();
+
+            if ($exporter instanceof ExporterInterface) {
+                $exporter->export($objConfig, $arrIds);
+            }
         }
-
-        $objConfig->fields = $arrFields;
-
-        $objExport = new $GLOBALS['LEADS_EXPORT'][$objConfig->type][0]();
-        $objExport->$GLOBALS['LEADS_EXPORT'][$objConfig->type][1]($objConfig, $arrIds);
     }
 }

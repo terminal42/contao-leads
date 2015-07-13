@@ -141,7 +141,32 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'select',
-            'options'                 => array_keys($GLOBALS['LEADS_EXPORT']),
+            'options_callback'        => function() {
+
+                $options = array();
+
+                foreach (array_keys($GLOBALS['LEADS_EXPORT']) as $exporterClassKey) {
+
+                    $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$exporterClassKey];
+
+                    if (!is_array($exporterDefinition)) {
+
+                        /** @var Leads\Exporter\ExporterInterface $exporter */
+                        $exporter = new $exporterDefinition();
+
+                        if ($exporter instanceof \Leads\Exporter\ExporterInterface) {
+                            if ($exporter->isAvailable()) {
+                                $options[] = $exporterClassKey;
+                            }
+                        }
+                    } else {
+                        // Backwards compatibility
+                        $options[] = $exporterClassKey;
+                    }
+                }
+
+                return $options;
+            },
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['type'],
             'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'w50'),
             'sql'                     => "varchar(32) NOT NULL default ''"
