@@ -31,15 +31,15 @@
         <?php endif; ?>
 
         <tr>
-            <td<?php if (this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><span class="tl_label"><?php echo $this->languageLabel; ?>: </span></td>
-            <td<?php if (this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><?php echo $this->languageTrans; ?> <span style="color:#b3b3b3; padding-left:3px;">[ID <?php echo $this->languageValue; ?>]</span></td>
+            <td<?php if ($this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><span class="tl_label"><?php echo $this->languageLabel; ?>: </span></td>
+            <td<?php if ($this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><?php echo $this->languageTrans; ?> <span style="color:#b3b3b3; padding-left:3px;">[ID <?php echo $this->languageValue; ?>]</span></td>
         </tr>
 
         <?php if ($this->hasMember): ?>
 
         <tr>
-            <td<?php if (!this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><span class="tl_label"><?php echo $this->memberLabel; ?>: </span></td>
-            <td<?php if (!this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><?php echo $this->memberName; ?> <span style="color:#b3b3b3; padding-left:3px;">[ID <?php echo $this->memberId; ?>]</span></span></td>
+            <td<?php if (!$this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><span class="tl_label"><?php echo $this->memberLabel; ?>: </span></td>
+            <td<?php if (!$this->isMasterForm): ?> class="tl_bg"<?php endif; ?>><?php echo $this->memberName; ?> <span style="color:#b3b3b3; padding-left:3px;">[ID <?php echo $this->memberId; ?>]</span></span></td>
         </tr>
 
         <?php endif; ?>
