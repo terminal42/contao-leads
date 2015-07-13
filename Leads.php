@@ -57,7 +57,7 @@ class Leads extends Controller
         // Run for all values in an array
         if (is_array($varValue)) {
             foreach ($varValue as $k => $v) {
-                $varValue[$k] = self::prepareLabel($v, $arrOptions, $objField);
+                $varValue[$k] = self::prepareLabel($v, $objField);
             }
 
             return $varValue;
