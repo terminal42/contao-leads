@@ -31,6 +31,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadEnabled'] = array
     'exclude'               => true,
     'inputType'             => 'checkbox',
     'eval'                  => array('tl_class'=>'clr', 'submitOnChange'=>true),
+    'sql'                   => "char(1) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadMaster'] = array
@@ -40,6 +41,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMaster'] = array
     'inputType'             => 'select',
     'options_callback'      => array('tl_form_lead', 'getMasterForms'),
     'eval'                  => array('submitOnChange'=>true, 'includeBlankOption'=>true, 'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form']['leadMasterBlankOptionLabel'], 'tl_class'=>'w50'),
+    'sql'                   => "int(10) unsigned NOT NULL default '0'"
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadMenuLabel'] = array
@@ -48,6 +50,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMenuLabel'] = array
     'exclude'               => true,
     'inputType'             => 'text',
     'eval'                  => array('maxlength'=>255, 'tl_class'=>'w50'),
+    'sql'                   => "varchar(255) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = array
@@ -56,6 +59,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = array
     'exclude'               => true,
     'inputType'             => 'textarea',
     'eval'                  => array('mandatory'=>true, 'decodeEntities'=>true, 'style'=>'height:60px', 'allowHtml'=>true, 'tl_class'=>'clr'),
+    'sql'                   => "text NULL"
 );
 
 

@@ -29,6 +29,13 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             array('tl_lead', 'loadExportConfigs'),
             array('tl_lead', 'checkPermission'),
         ),
+        'sql' => array
+        (
+            'keys' => array
+            (
+                'id'    => 'primary'
+            )
+        )
     ),
 
     // List
@@ -108,12 +115,25 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
     // Fields
     'fields' => array
     (
+        'id' => array
+        (
+            'sql'               => "int(10) unsigned NOT NULL auto_increment"
+        ),
+        'tstamp' => array
+        (
+         'sql'                  => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'master_id' => array
+        (
+         'sql'                  => "int(10) unsigned NOT NULL default '0'"
+        ),
         'form_id' => array
         (
             'label'             => &$GLOBALS['TL_LANG']['tl_lead']['form_id'],
             'filter'            => true,
             'sorting'           => true,
             'foreignKey'        => 'tl_form.title',
+            'sql'               => "int(10) unsigned NOT NULL default '0'"
         ),
         'language' => array
         (
@@ -121,6 +141,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'filter'            => true,
             'sorting'           => true,
             'options'           => $this->getLanguages(),
+            'sql'               => "varchar(2) NOT NULL default ''"
         ),
         'created' => array
         (
@@ -128,6 +149,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'sorting'           => true,
             'flag'              => 8,
             'eval'              => array('rgxp'=>'datim'),
+            'sql'               => "int(10) unsigned NOT NULL default '0'"
         ),
         'member_id' => array
         (
@@ -135,7 +157,12 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'filter'            => true,
             'sorting'           => true,
             'flag'              => 12,
-            'foreignKey'        => "tl_member.CONCAT(lastname, ' ', firstname)"
+            'foreignKey'        => "tl_member.CONCAT(lastname, ' ', firstname)",
+            'sql'               => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'post_data' => array
+        (
+            'sql'               => "mediumblob NULL"
         ),
     )
 );

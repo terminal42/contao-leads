@@ -26,6 +26,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore'] = array
     'inputType'             => 'select',
     'options_callback'      => array('tl_form_field_leads', 'getLeadStoreOptions'),
     'eval'                  => array('tl_class'=>'w50', 'includeBlankOption'=>true, 'blankOptionLabel'=>&$GLOBALS['TL_LANG']['tl_form_field']['leadStoreSelect'][2]),
+    'sql'                   => "varchar(10) NOT NULL default ''"
 );
 
 
