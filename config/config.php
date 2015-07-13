@@ -41,16 +41,10 @@ $GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads\\Leads', 'processForm
  */
 $GLOBALS['LEADS_EXPORT'] = array
 (
-    'csv' => array('Leads\\Export', 'exportCsv'),
+    'csv'   => 'Leads\\Exporter\\Csv',
+    'xls'   => 'Leads\\Exporter\\Xls',
+    'xlsx'  => 'Leads\\Exporter\\Xlsx',
 );
-
-/**
- * Add the XLS export if the PHPExcel extension is installed
- */
-if (class_exists('PHPExcel')) {
-    $GLOBALS['LEADS_EXPORT']['xls'] = array('Leads\\Export', 'exportXls');
-    $GLOBALS['LEADS_EXPORT']['xlsx'] = array('Leads\\Export', 'exportXlsx');
-}
 
 /**
  * Data transformers

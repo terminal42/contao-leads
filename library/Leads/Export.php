@@ -20,106 +20,13 @@ class Export
 {
 
     /**
-     * Fields data
-     * @var array
-     */
-    protected static $arrFields = array();
-
-    /**
-     * Export data to CSV
-     * @param object
-     * @param array
-     */
-    public function exportCsv($objConfig, $arrIds=null)
-    {
-        $objReader = $this->getExportData($objConfig, $arrIds);
-
-        $objWriter = new CsvFileWriter('system/tmp/' . $this->getFilename($objConfig));
-
-        // Add header fields
-        if ($objConfig->headerFields) {
-            $objWriter->enableHeaderFields();
-        }
-
-        $objWriter->setRowCallback(function($arrData) use ($objConfig) {
-            return static::generateExportRow($arrData, $objConfig);
-        });
-
-        if (!$objWriter->writeFrom($objReader)) {
-            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
-            $objResponse->send();
-        }
-
-        $objFile = new \File($objWriter->getFilename());
-        $objFile->sendToBrowser();
-    }
-
-    /**
-     * Export data to XLS
-     * @param object
-     * @param array
-     */
-    public function exportXls($objConfig, $arrIds=null)
-    {
-        $objReader = $this->getExportData($objConfig, $arrIds);
-
-        $objWriter = new ExcelFileWriter('system/tmp/' . $this->getFilename($objConfig));
-        $objWriter->setFormat('Excel5');
-
-        // Add header fields
-        if ($objConfig->headerFields) {
-            $objWriter->enableHeaderFields();
-        }
-
-        $objWriter->setRowCallback(function($arrData) use ($objConfig) {
-            return static::generateExportRow($arrData, $objConfig);
-        });
-
-        if (!$objWriter->writeFrom($objReader)) {
-            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
-            $objResponse->send();
-        }
-
-        $objFile = new \File($objWriter->getFilename());
-        $objFile->sendToBrowser();
-    }
-
-    /**
-     * Export data to XLSX
-     * @param object
-     * @param array
-     */
-    public function exportXlsx($objConfig, $arrIds=null)
-    {
-        $objReader = $this->getExportData($objConfig, $arrIds);
-
-        $objWriter = new ExcelFileWriter('system/tmp/' . $this->getFilename($objConfig));
-        $objWriter->setFormat('Excel2007');
-
-        // Add header fields
-        if ($objConfig->headerFields) {
-            $objWriter->enableHeaderFields();
-        }
-
-        $objWriter->setRowCallback(function($arrData) use ($objConfig) {
-            return static::generateExportRow($arrData, $objConfig);
-        });
-
-        if (!$objWriter->writeFrom($objReader)) {
-            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
-            $objResponse->send();
-        }
-
-        $objFile = new \File($objWriter->getFilename());
-        $objFile->sendToBrowser();
-    }
-
-    /**
+     * @todo Move this somewhere more appropriate.
+     *
      * Get the filename from config
      * @param object
      * @return string
      */
-    protected function getFilename($objConfig)
+    public static function getFilename($objConfig)
     {
         if ($objConfig->filename == '') {
             return '';
@@ -147,12 +54,14 @@ class Export
     }
 
     /**
+     * @todo Move this somewhere more appropriate.
+     *
      * Generate the export row
      * @param array
      * @param object
      * @return array
      */
-    protected static function generateExportRow($arrData, $objConfig)
+    public static function generateExportRow($arrData, $objConfig)
     {
         $arrRow = array();
         $arrFirst = reset($arrData);
@@ -184,14 +93,11 @@ class Export
                 'format' => 'raw'
             );
         } else {
-            if ($objConfig->fields['_form']) {
-                $arrFields[] = $objConfig->fields['_form'];
-            }
-            if ($objConfig->fields['_created']) {
-                $arrFields[] = $objConfig->fields['_created'];
-            }
-            if ($objConfig->fields['_member']) {
-                $arrFields[] = $objConfig->fields['_member'];
+
+            foreach (array('_form', '_created', '_member', '_skip') as $specialField) {
+                if ($objConfig->fields[$specialField]) {
+                    $arrFields[] = $objConfig->fields[$specialField];
+                }
             }
         }
 
@@ -253,6 +159,11 @@ class Export
                         $varValue = $arrFirst['member_id'];
                         $strLabel = $arrFirst['member_name'];
                         break;
+
+                    case '_skip':
+                        $varValue = null;
+                        $strLabel = null;
+                        break;
                 }
 
                 $strFormat = $arrField['format'];
@@ -309,122 +220,22 @@ class Export
             }
         }
 
+        var_dump($arrRow);exit;
+
         return $arrRow;
     }
 
     /**
      * Get the export fields
+     *
      * @param object
      * @param array
      * @return object|null
+     *
+     * @deprecated Use DataCollector::fetchExportData() instead.
      */
     protected function getExportData($objConfig, $arrIds=null)
     {
-        $arrLimitFields = array();
-
-        // Limit the fields
-        if ($objConfig->export != 'all') {
-            $arrLimitFields = array_keys($objConfig->fields);
-            $arrLimitFields = array_map('intval', $arrLimitFields);
-        }
-
-        $objFields = \Database::getInstance()->prepare("
-            SELECT * FROM (
-                SELECT
-                    ld.master_id AS id,
-                    IFNULL(ff.name, ld.name) AS name,
-                    IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label,
-                    ff.type,
-                    ff.options,
-                    ld.field_id,
-                    ld.sorting
-                FROM tl_lead_data ld
-                LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
-                LEFT JOIN tl_lead l ON ld.pid=l.id
-                WHERE l.master_id=?" . (!empty($arrLimitFields) ? (" AND ld.field_id IN (" . implode(',', $arrLimitFields) . ")") : "") . "
-                ORDER BY l.master_id!=l.form_id
-            ) ld
-            GROUP BY field_id
-            ORDER BY " . (!empty($arrLimitFields) ? \Database::getInstance()->findInSet("ld.field_id", $arrLimitFields) : "sorting")
-        )->execute($objConfig->master);
-
-        static::$arrFields = array();
-
-        // Collect fields data
-        while ($objFields->next()) {
-            static::$arrFields[$objFields->id] = $objFields->row();
-        }
-
-        $arrData = array();
-        $objData = \Database::getInstance()->prepare("
-            SELECT
-                ld.*,
-                l.created,
-                l.form_id AS form_id,
-                (SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
-                l.member_id AS member_id,
-                IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
-            FROM tl_lead_data ld
-            LEFT JOIN tl_lead l ON l.id=ld.pid
-            WHERE l.master_id=?" . ((is_array($arrIds) && !empty($arrIds)) ? (" AND l.id IN(" . implode(',', $arrIds) . ")") : "") . "
-            ORDER BY l.created DESC
-        ")->execute($objConfig->master);
-
-        while ($objData->next()) {
-            $arrData[$objData->pid][$objData->field_id] = $objData->row();
-        }
-
-        $objReader = new ArrayReader($arrData);
-
-        // Add header fields
-        if ($objConfig->headerFields) {
-            $arrHeader = array();
-
-            // Add base information columns
-            if ($objConfig->export == 'all') {
-                \System::loadLanguageFile('tl_lead_export');
-
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
-            } else {
-                if ($objConfig->fields['_form']) {
-                    $arrHeader[] = $objConfig->fields['_form']['name'];
-                }
-                if ($objConfig->fields['_created']) {
-                    $arrHeader[] = $objConfig->fields['_created']['name'];
-                }
-                if ($objConfig->fields['_member']) {
-                    $arrHeader[] = $objConfig->fields['_member']['name'];
-                }
-            }
-
-            $objFields->reset();
-
-            while ($objFields->next()) {
-
-                // Use a custom header field
-                if ($objConfig->fields[$objFields->id]['name'] != '') {
-                    $arrHeader[] = $objConfig->fields[$objFields->id]['name'];
-                    continue;
-                }
-
-                // Show single checkbox label as field label
-                if ($objFields->label == $objFields->name && $objFields->type == 'checkbox' && $objFields->options != '') {
-                    $arrOptions = deserialize($objFields->options);
-
-                    if (is_array($arrOptions) && count($arrOptions) == 1) {
-                        $arrHeader[] = $arrOptions[0]['label'];
-                        continue;
-                    }
-                }
-
-                $arrHeader[] = $objFields->label;
-            }
-
-            $objReader->setHeaderFields($arrHeader);
-        }
-
-        return $objReader;
+        return DataCollector::fetchExportData($objConfig, $arrIds = null);
     }
 }
