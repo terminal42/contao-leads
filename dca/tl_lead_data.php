@@ -135,6 +135,6 @@ class tl_lead_data extends Backend
      */
     public function listRows($row)
     {
-        return $row['name'] . ': ' . Leads::formatValue((object) $row);
+        return $row['name'] . ': ' . \Leads\Leads::formatValue((object) $row);
     }
 }

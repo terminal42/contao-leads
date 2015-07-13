@@ -11,5 +11,7 @@
 
 /**
  * Backwards compatibility
+ *
+ * @deprecated Use \Leads\Leads instead.
  */
 class Leads extends \Leads\Leads {}

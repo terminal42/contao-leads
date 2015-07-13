@@ -32,22 +32,22 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads', 'loadLeadName');
-$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
-$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads', 'processFormData');
+$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads\\Leads', 'loadLeadName');
+$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads\\Leads', 'loadBackendModules');
+$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads\\Leads', 'processFormData');
 
 /**
  * Leads export types
  */
 $GLOBALS['LEADS_EXPORT'] = array
 (
-    'csv' => array('LeadsExport', 'exportCsv'),
+    'csv' => array('Leads\\Export', 'exportCsv'),
 );
 
 /**
  * Add the XLS export if the PHPExcel extension is installed
  */
 if (class_exists('PHPExcel')) {
-    $GLOBALS['LEADS_EXPORT']['xls'] = array('LeadsExport', 'exportXls');
-    $GLOBALS['LEADS_EXPORT']['xlsx'] = array('LeadsExport', 'exportXlsx');
+    $GLOBALS['LEADS_EXPORT']['xls'] = array('Leads\\Export', 'exportXls');
+    $GLOBALS['LEADS_EXPORT']['xlsx'] = array('Leads\\Export', 'exportXlsx');
 }

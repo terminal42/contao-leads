@@ -140,7 +140,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'label'             => &$GLOBALS['TL_LANG']['tl_lead']['language'],
             'filter'            => true,
             'sorting'           => true,
-            'options'           => $this->getLanguages(),
+            'options'           => \System::getLanguages(),
             'sql'               => "varchar(2) NOT NULL default ''"
         ),
         'created' => array
@@ -331,7 +331,7 @@ class tl_lead extends Backend
         while ($objData->next()) {
             $rows[] = array(
                 'label' => $objData->name,
-                'value' => Leads::formatValue($objData),
+                'value' => \Leads\Leads::formatValue($objData),
                 'class' => ($i % 2 ? 'tl_bg' : '')
             );
 
@@ -356,7 +356,7 @@ class tl_lead extends Backend
 
         $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
 
-        Leads::export($intConfig, $arrIds);
+        \Leads\Leads::export($intConfig, $arrIds);
     }
 
     /**
@@ -382,7 +382,7 @@ class tl_lead extends Backend
 
             foreach ($arrConfigs as $config) {
                 if (\Input::post('export_' . $config['id'])) {
-                    Leads::export($config['id'], $arrIds);
+                    \Leads\Leads::export($config['id'], $arrIds);
                 }
             }
         }

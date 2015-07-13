@@ -12,5 +12,7 @@
 
 /**
  * Backwards compatibility
+ *
+ * @deprecated Use \Leads\Export instead.
  */
-class LeadsExport extends \Leads\LeadsExport {}
+class LeadsExport extends \Leads\Export {}

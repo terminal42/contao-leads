@@ -15,7 +15,7 @@ use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
 use Haste\IO\Writer\ExcelFileWriter;
 
-class LeadsExport
+class Export
 {
 
     /**
