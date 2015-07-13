@@ -265,12 +265,18 @@ class tl_lead extends Backend
         return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id=' . Input::get('master') . '" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
     }
 
-
+    /**
+     * Override the default "show" dialog.
+     *
+     * @param $dc
+     *
+     * @return string
+     */
     public function show($dc)
     {
         $arrLanguages = \System::getLanguages();
 
-        $objForm = $this->Database->prepare("
+        $objForm = \Database::getInstance()->prepare("
             SELECT l.*, s.title AS form_title, f.title AS master_title, CONCAT(m.firstname, ' ', m.lastname) AS member_name
             FROM tl_lead l
             LEFT OUTER JOIN tl_form s ON l.form_id=s.id
@@ -279,7 +285,7 @@ class tl_lead extends Backend
             WHERE l.id=?
         ")->execute($dc->id);
 
-        $objData = $this->Database->prepare("
+        $objData = \Database::getInstance()->prepare("
             SELECT d.*, IF(ff.label IS NULL OR ff.label='', d.name, ff.label) AS name
             FROM tl_lead_data d
             LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id
@@ -287,59 +293,46 @@ class tl_lead extends Backend
             ORDER BY d.sorting
         ")->execute($dc->id);
 
-        $i = 0;
-        $rows = '';
+        $template = new \BackendTemplate('be_leads_show');
+        $template->recordId         = $dc->id;
+        $template->referer          = \System::getReferer(true);
+        $template->subheadline      = sprintf($GLOBALS['TL_LANG']['MSC']['showRecord'], 'ID ' . $dc->id);
+        $template->createdLabel     = $GLOBALS['TL_LANG']['tl_lead']['created'][0];
+        $template->createdValue     = \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $objForm->created);
+        $template->formLabel        = $GLOBALS['TL_LANG']['tl_lead']['form_id'][0];
+        $template->formTitle        = $objForm->form_title;
+        $template->formId           = $objForm->form_id;
 
-        while ($objData->next())
-        {
-            $rows .= '
-  <tr>
-    <td' . ($i%2 ? ' class="tl_bg"' : '') . '><span class="tl_label">' . $objData->name . ': </span></td>
-    <td' . ($i%2 ? ' class="tl_bg"' : '') . '>' . Leads::formatValue($objData) . '</td>
-  </tr>';
+        $template->isMasterForm     = $objForm->master_id == $objForm->form_id;
+        $template->masterLabel      = $GLOBALS['TL_LANG']['tl_lead']['master_id'][0];
+        $template->masterTitle      = $objForm->master_title;
+        $template->masterId         = $objForm->master_id;
+
+        $template->languageLabel    = $GLOBALS['TL_LANG']['tl_lead']['language'][0];
+        $template->languageTrans    = $arrLanguages[$objForm->language];
+        $template->languageValue    = $objForm->language;
+
+        $template->hasMember        = $objForm->member_id > 0;
+        $template->memberLabel      = $GLOBALS['TL_LANG']['tl_lead']['member'][0];
+        $template->memberName       = $objForm->member_name;
+        $template->memberId         = $objForm->member_id;
+
+        $i = 0;
+        $rows = array();
+
+        while ($objData->next()) {
+            $rows[] = array(
+                'label' => $objData->name,
+                'value' => Leads::formatValue($objData),
+                'class' => ($i % 2 ? 'tl_bg' : '')
+            );
 
             ++$i;
         }
 
+        $template->data = $rows;
 
-        return '
-<div id="tl_buttons">
-<a href="' . $this->getReferer(true) . '" class="header_back" title="' . $GLOBALS['TL_LANG']['MSC']['backBT'] . '" accesskey="b" onclick="Backend.getScrollOffset()">' . $GLOBALS['TL_LANG']['MSC']['backBT'] . '</a>
-</div>
-
-<h2 class="sub_headline">' . sprintf($GLOBALS['TL_LANG']['MSC']['showRecord'], 'ID ' . $dc->id) . '</h2>
-
-<table class="tl_show">
-  <tbody><tr>
-    <td><span class="tl_label">ID: </span></td>
-    <td>' . $dc->id . '</td>
-  </tr>
-  <tr>
-    <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['created'][0] . ': </span></td>
-    <td class="tl_bg">' . $this->parseDate($GLOBALS['TL_CONFIG']['datimFormat'], $objForm->created) . '</td>
-  </tr>
-  <tr>
-    <td><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['form_id'][0] . ': </span></td>
-    <td>' . $objForm->form_title . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->form_id . ']</span></td>
-  </tr>' . ($objForm->master_id != $objForm->form_id ? '
-  <tr>
-    <td class="tl_bg"><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['master_id'][0] . ': </span></td>
-    <td class="tl_bg">' . $objForm->master_title . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->master_id . ']</span></td>
-  </tr>' : '') . '
-  <tr>
-    <td' . ($objForm->master_id == $objForm->form_id ? ' class="tl_bg"' : '') . '><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['language'][0] . ': </span></td>
-    <td' . ($objForm->master_id == $objForm->form_id ? ' class="tl_bg"' : '') . '>' . $arrLanguages[$objForm->language] . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $objForm->language . ']</span></td>
-  </tr> ' . ($objForm->member_id > 0 ? '
-  <tr>
-    <td' . ($objForm->master_id == $objForm->form_id ? '' : ' class="tl_bg"') . '><span class="tl_label">' . $GLOBALS['TL_LANG']['tl_lead']['member'][0] . ': </span></td>
-    <td' . ($objForm->master_id == $objForm->form_id ? '' : ' class="tl_bg"') . '>' . $objForm->member_name . ' <span style="color:#b3b3b3; padding-left:3px;">[ID ' . $objForm->member_id . ']</span></td>
-  </tr>' : '') . '
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>' . $rows . '
-</tbody></table>
-';
+        return $template->parse();
     }
 
 

@@ -18,3 +18,11 @@ ClassLoader::addClasses(array
     'Leads'       => 'system/modules/leads/Leads.php',
     'LeadsExport' => 'system/modules/leads/LeadsExport.php',
 ));
+
+/**
+ * Register the templates
+ */
+TemplateLoader::addFiles(array
+(
+    'be_leads_show' => 'system/modules/leads/templates',
+));
