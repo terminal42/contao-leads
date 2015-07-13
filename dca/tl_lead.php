@@ -356,8 +356,7 @@ class tl_lead extends Backend
 
         $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
 
-        $leads = new Leads();
-        $leads->export($intConfig, $arrIds);
+        Leads::export($intConfig, $arrIds);
     }
 
     /**
@@ -381,11 +380,9 @@ class tl_lead extends Backend
                 \Controller::reload();
             }
 
-            $leads = new Leads();
-
             foreach ($arrConfigs as $config) {
                 if (\Input::post('export_' . $config['id'])) {
-                    $leads->export($config['id'], $arrIds);
+                    Leads::export($config['id'], $arrIds);
                 }
             }
         }

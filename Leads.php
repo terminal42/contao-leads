@@ -307,11 +307,12 @@ class Leads extends Controller
 
 
     /**
-     * Export the data
-     * @param integer
+     * Export the data.
+     *
+     * @param integer $intConfig
      * @param array
      */
-    public function export($intConfig, $arrIds=null)
+    public static function export($intConfig, $arrIds=null)
     {
         $objConfig = \Database::getInstance()->prepare("SELECT *, (SELECT leadMaster FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS master FROM tl_lead_export WHERE id=?")
                                             ->limit(1)
