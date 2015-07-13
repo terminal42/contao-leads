@@ -11,13 +11,19 @@
 
 
 /**
- * Register the classes
+ * Register the classes (Backwards compatibility)
  */
 ClassLoader::addClasses(array
 (
     'Leads'       => 'system/modules/leads/Leads.php',
     'LeadsExport' => 'system/modules/leads/LeadsExport.php',
 ));
+
+/**
+ * Register PSR-0 namespace
+ */
+NamespaceClassLoader::add('Leads', 'system/modules/leads/library');
+
 
 /**
  * Register the templates
