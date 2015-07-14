@@ -17,24 +17,93 @@ use Haste\IO\Reader\ArrayReader;
 class DataCollector
 {
     /**
-     * Collects fields data for given config
+     * Form ID
+     * @var int
+     */
+    private $formId;
+
+    /**
+     * Form field ids limitation
+     * @var array
+     */
+    private $fieldIds = array();
+
+    /**
+     * Lead data row ids limitation
+     * @var array
+     */
+    private $leadDataIds = array();
+
+    /**
+     * Constructor.
      *
-     * @param \Database_Result $config
+     * @param int $formId
+     */
+    public function __construct($formId)
+    {
+        $this->formId = (int) $formId;
+    }
+
+    /**
+     * Returns the form id.
+     *
+     * @return int
+     */
+    public function getFormId()
+    {
+        return $this->formId;
+    }
+
+    /**
+     * Get the array of field ids.
      *
      * @return array
      */
-    public static function collectFieldsData($config)
+    public function getFieldIds()
     {
-        $fields = array();
-        $arrLimitFields = array();
+        return $this->fieldIds;
+    }
 
-        // Limit the fields
-        if ($config->export != 'all') {
-            $arrLimitFields = array_keys($config->fields);
-            $arrLimitFields = array_map('intval', $arrLimitFields);
-        }
+    /**
+     * Limit the result to a given array of field ids.
+     *
+     * @param array $fieldIds
+     */
+    public function setFieldIds(array $fieldIds)
+    {
+        $this->fieldIds = $fieldIds;
+    }
 
-        $objFields = \Database::getInstance()->prepare("
+    /**
+     * Get the array of lead data ids.
+     *
+     * @return array
+     */
+    public function getLeadDataIds()
+    {
+        return $this->leadDataIds;
+    }
+
+    /**
+     * Limit the export result to a given array of lead data ids.
+     *
+     * @param array $leadDataIds
+     */
+    public function setLeadDataIds(array $leadDataIds)
+    {
+        $this->leadDataIds = $leadDataIds;
+    }
+
+    /**
+     * Fetches the form field data. Use setFieldIds() if you want to limit the
+     * result to a given array of form field ids.
+     *
+     * @return array
+     */
+    public function getFieldsData()
+    {
+        $data = array();
+        $db = \Database::getInstance()->prepare("
             SELECT * FROM (
                 SELECT
                     ld.master_id AS id,
@@ -47,31 +116,30 @@ class DataCollector
                 FROM tl_lead_data ld
                 LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
                 LEFT JOIN tl_lead l ON ld.pid=l.id
-                WHERE l.master_id=?" . (!empty($arrLimitFields) ? (" AND ld.field_id IN (" . implode(',', $arrLimitFields) . ")") : "") . "
+                WHERE l.master_id=?" . (!empty($this->fieldIds) ? (" AND ld.field_id IN (" . implode(',', $this->fieldIds) . ")") : "") . "
                 ORDER BY l.master_id!=l.form_id
             ) ld
             GROUP BY field_id
-            ORDER BY " . (!empty($arrLimitFields) ? \Database::getInstance()->findInSet("ld.field_id", $arrLimitFields) : "sorting")
-        )->execute($config->master);
+            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet("ld.field_id", $this->fieldIds) : "sorting")
+        )->execute($this->formId);
 
-        // Collect fields data
-        while ($objFields->next()) {
-            $fields[$objFields->id] = $objFields->row();
+        while ($db->next()) {
+            $data[$db->id] = $db->row();
         }
 
-        return $fields;
+        return $data;
     }
 
     /**
-     * Get the export fields
-     * @param object
-     * @param array
-     * @return object|null
+     * Fetches the export (tl_lead_data) data. Use setLeadDataIds() if you want to limit the
+     * result to a given array of tl_lead_data ids.
+     *
+     * @return array
      */
-    public static function fetchExportData($objConfig, $arrIds = null)
+    public function getExportData()
     {
-        $arrData = array();
-        $objData = \Database::getInstance()->prepare("
+        $data = array();
+        $db = \Database::getInstance()->prepare("
             SELECT
                 ld.*,
                 l.created,
@@ -81,65 +149,14 @@ class DataCollector
                 IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
             FROM tl_lead_data ld
             LEFT JOIN tl_lead l ON l.id=ld.pid
-            WHERE l.master_id=?" . ((is_array($arrIds) && !empty($arrIds)) ? (" AND l.id IN(" . implode(',', $arrIds) . ")") : "") . "
+            WHERE l.master_id=?" . ((!empty($this->leadDataIds)) ? (" AND l.id IN(" . implode(',', $this->leadDataIds) . ")") : "") . "
             ORDER BY l.created DESC
-        ")->execute($objConfig->master);
+        ")->execute($this->formId);
 
-        while ($objData->next()) {
-            $arrData[$objData->pid][$objData->field_id] = $objData->row();
+        while ($db->next()) {
+            $data[$db->pid][$db->field_id] = $db->row();
         }
 
-        $objReader = new ArrayReader($arrData);
-
-        // Add header fields
-        if ($objConfig->headerFields) {
-            $arrHeader = array();
-
-            // Add base information columns
-            if ($objConfig->export == 'all') {
-                \System::loadLanguageFile('tl_lead_export');
-
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
-                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
-            } else {
-                if ($objConfig->fields['_form']) {
-                    $arrHeader[] = $objConfig->fields['_form']['name'];
-                }
-                if ($objConfig->fields['_created']) {
-                    $arrHeader[] = $objConfig->fields['_created']['name'];
-                }
-                if ($objConfig->fields['_member']) {
-                    $arrHeader[] = $objConfig->fields['_member']['name'];
-                }
-            }
-
-            $fields = static::collectFieldsData($objConfig);
-
-            foreach ($fields as $fieldId => $row) {
-
-                // Use a custom header field
-                if ($objConfig->fields[$fieldId]['name'] != '') {
-                    $arrHeader[] = $objConfig->fields[$fieldId]['name'];
-                    continue;
-                }
-
-                // Show single checkbox label as field label
-                if ($row['label'] == $row['name'] && $row['type'] == 'checkbox' && $row['options'] != '') {
-                    $arrOptions = deserialize($row['options']);
-
-                    if (is_array($arrOptions) && count($arrOptions) == 1) {
-                        $arrHeader[] = $arrOptions[0]['label'];
-                        continue;
-                    }
-                }
-
-                $arrHeader[] = $row['label'];
-            }
-
-            $objReader->setHeaderFields($arrHeader);
-        }
-
-        return $objReader;
+        return $data;
     }
 }

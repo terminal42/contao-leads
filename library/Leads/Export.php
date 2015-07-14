@@ -230,12 +230,73 @@ class Export
      *
      * @param object
      * @param array
-     * @return object|null
+     * @return ArrayReader
      *
-     * @deprecated Use DataCollector::fetchExportData() instead.
+     * @deprecated Use the DataCollector class instead.
      */
     protected function getExportData($objConfig, $arrIds=null)
     {
-        return DataCollector::fetchExportData($objConfig, $arrIds = null);
+        $dataCollector = new DataCollector($objConfig->master);
+
+        // Limit the fields
+        if ($objConfig->export != 'all') {
+            $arrLimitFields = array_keys($objConfig->fields);
+            $dataCollector->setFieldIds(array_map('intval', $arrLimitFields));
+        }
+
+        if (null !== $arrIds) {
+            $dataCollector->setLeadDataIds($arrIds);
+        }
+
+        $objReader = new ArrayReader($dataCollector->getExportData());
+
+        // Add header fields
+        if ($objConfig->headerFields) {
+            $arrHeader = array();
+
+            // Add base information columns
+            if ($objConfig->export == 'all') {
+                \System::loadLanguageFile('tl_lead_export');
+
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
+            } else {
+                if ($objConfig->fields['_form']) {
+                    $arrHeader[] = $objConfig->fields['_form']['name'];
+                }
+                if ($objConfig->fields['_created']) {
+                    $arrHeader[] = $objConfig->fields['_created']['name'];
+                }
+                if ($objConfig->fields['_member']) {
+                    $arrHeader[] = $objConfig->fields['_member']['name'];
+                }
+            }
+
+            foreach ($dataCollector->getFieldsData() as $fieldId => $row) {
+
+                // Use a custom header field
+                if ($objConfig->fields[$fieldId]['name'] != '') {
+                    $arrHeader[] = $objConfig->fields[$fieldId]['name'];
+                    continue;
+                }
+
+                // Show single checkbox label as field label
+                if ($row['label'] == $row['name'] && $row['type'] == 'checkbox' && $row['options'] != '') {
+                    $arrOptions = deserialize($row['options']);
+
+                    if (is_array($arrOptions) && count($arrOptions) == 1) {
+                        $arrHeader[] = $arrOptions[0]['label'];
+                        continue;
+                    }
+                }
+
+                $arrHeader[] = $row['label'];
+            }
+
+            $objReader->setHeaderFields($arrHeader);
+        }
+
+        return $objReader;
     }
 }
