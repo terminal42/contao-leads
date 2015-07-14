@@ -14,7 +14,7 @@ namespace Leads;
 use Haste\IO\Reader\ArrayReader;
 use Leads\DataTransformer\DataTransformerInterface;
 use Leads\Exporter\Csv;
-use Leads\Exporter\Util;
+use Leads\Exporter\Utils\File;
 use Leads\Exporter\Xls;
 use Leads\Exporter\Xlsx;
 
@@ -58,11 +58,11 @@ class Export
      * Get the filename from config
      * @param object
      * @return string
-     * @deprecated Use Util::getFilename() instead.
+     * @deprecated Use File::getName() instead.
      */
     public function getFilename($objConfig)
     {
-        return Util::getFilename($objConfig);
+        return File::getName($objConfig);
     }
 
     /**

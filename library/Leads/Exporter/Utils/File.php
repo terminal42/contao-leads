@@ -10,10 +10,9 @@
  */
 
 
-namespace Leads\Exporter;
+namespace Leads\Exporter\Utils;
 
-
-class Util
+class File
 {
     /**
      * Get the filename from a database config.
@@ -21,7 +20,7 @@ class Util
      * @param   \Database_Result $config
      * @return  string
      */
-    public static function getFilename($config)
+    public static function getName($config)
     {
         if ($config->filename == '') {
 
