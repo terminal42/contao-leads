@@ -11,11 +11,13 @@
 namespace Leads\Exporter;
 
 
+use Haste\Http\Response\Response;
+use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
-use Leads\DataCollector;
 use Leads\Export;
+use Leads\Exporter\Utils\File;
 
-abstract class AbstractExcelExporter implements ExporterInterface
+abstract class AbstractExcelExporter extends AbstractExporter
 {
     /**
      * Returns true if available.
@@ -33,7 +35,10 @@ abstract class AbstractExcelExporter implements ExporterInterface
      * @param \Database_Result $config
      * @param array|null       $ids
      */
-    abstract public function export(\Database_Result $config, $ids = null);
+    public function export(\Database_Result $config, $ids = null)
+    {
+        throw new \RuntimeException('export() has to be implemented by a child class of AbstractExcelExporter.');
+    }
 
 
     /**
@@ -45,13 +50,14 @@ abstract class AbstractExcelExporter implements ExporterInterface
      */
     protected function exportWithFormat($config, $ids, $format)
     {
-        $reader = DataCollector::fetchExportData($config, $ids);
-
-        $writer = new ExcelFileWriter('system/tmp/' . Export::getFilename($config));
+        $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
+        $reader = new ArrayReader($dataCollector->getExportData());
+        $writer = new ExcelFileWriter('system/tmp/' . File::getName($config));
         $writer->setFormat($format);
 
         // Add header fields
         if ($config->headerFields) {
+            $reader->setHeaderFields($this->prepareHeaderFields($config, $dataCollector));
             $writer->enableHeaderFields();
         }
 
@@ -60,7 +66,7 @@ abstract class AbstractExcelExporter implements ExporterInterface
         });
 
         if (!$writer->writeFrom($reader)) {
-            $objResponse = new \Haste\Http\Response\Response('Data export failed.', 500);
+            $objResponse = new Response('Data export failed.', 500);
             $objResponse->send();
         }
 

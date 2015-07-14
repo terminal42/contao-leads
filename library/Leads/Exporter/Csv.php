@@ -12,11 +12,12 @@ namespace Leads\Exporter;
 
 
 use Haste\Http\Response\Response;
+use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
-use Leads\DataCollector;
 use Leads\Export;
+use Leads\Exporter\Utils\File;
 
-class Csv implements ExporterInterface
+class Csv extends AbstractExporter
 {
     /**
      * Returns true if available.
@@ -36,12 +37,13 @@ class Csv implements ExporterInterface
      */
     public function export(\Database_Result $config, $ids = null)
     {
-        $reader = DataCollector::fetchExportData($config, $ids);
-
-        $writer = new CsvFileWriter('system/tmp/' . Export::getFilename($config));
+        $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
+        $reader = new ArrayReader($dataCollector->getExportData());
+        $writer = new CsvFileWriter('system/tmp/' . File::getName($config));
 
         // Add header fields
         if ($config->headerFields) {
+            $reader->setHeaderFields($this->prepareHeaderFields($config, $dataCollector));
             $writer->enableHeaderFields();
         }
 
