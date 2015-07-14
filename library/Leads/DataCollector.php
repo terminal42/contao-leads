@@ -32,6 +32,12 @@ class DataCollector
     private $leadDataIds = array();
 
     /**
+     * Cache for getFieldsData()
+     * @var array
+     */
+    private $getFieldsDataCache = array();
+
+    /**
      * Constructor.
      *
      * @param int $formId
@@ -99,6 +105,13 @@ class DataCollector
      */
     public function getFieldsData()
     {
+        $cacheKey = md5($this->formId . ':' . implode(',', $this->fieldIds));
+
+        if (isset($this->getFieldsDataCache[$cacheKey])) {
+
+            return $this->getFieldsDataCache[$cacheKey];
+        }
+
         $data = array();
         $db = \Database::getInstance()->prepare("
             SELECT * FROM (
@@ -123,6 +136,8 @@ class DataCollector
         while ($db->next()) {
             $data[$db->id] = $db->row();
         }
+
+        $this->getFieldsDataCache[$cacheKey] = $data;
 
         return $data;
     }
