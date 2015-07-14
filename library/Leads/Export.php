@@ -283,25 +283,15 @@ class Export
                 }
             }
 
-            foreach ($dataCollector->getFieldsData() as $fieldId => $row) {
+            // Add export data header fields
+            foreach ($dataCollector->getHeaderFields() as $fieldId => $label) {
 
                 // Use a custom header field
                 if ($objConfig->fields[$fieldId]['name'] != '') {
                     $arrHeader[] = $objConfig->fields[$fieldId]['name'];
-                    continue;
+                } else {
+                    $arrHeader[] = $label;
                 }
-
-                // Show single checkbox label as field label
-                if ($row['label'] == $row['name'] && $row['type'] == 'checkbox' && $row['options'] != '') {
-                    $arrOptions = deserialize($row['options']);
-
-                    if (is_array($arrOptions) && count($arrOptions) == 1) {
-                        $arrHeader[] = $arrOptions[0]['label'];
-                        continue;
-                    }
-                }
-
-                $arrHeader[] = $row['label'];
             }
 
             $objReader->setHeaderFields($arrHeader);

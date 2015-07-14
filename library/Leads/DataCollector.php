@@ -171,4 +171,34 @@ class DataCollector
 
         return $data;
     }
+
+    /**
+     * Get the header fields of the fields data.
+     *
+     * @return array
+     */
+    public function getHeaderFields()
+    {
+        $headerFields = array();
+
+        foreach ($this->getFieldsData() as $fieldId => $row) {
+
+            // Show single checkbox label as field label
+            if ($row['label'] == $row['name']
+                && $row['type'] == 'checkbox'
+                && $row['options'] != ''
+            ) {
+                $options = deserialize($row['options'], true);
+
+                if (count($options) == 1) {
+                    $headerFields[$fieldId] = $options[0]['label'];
+                    continue;
+                }
+            }
+
+            $headerFields[$fieldId] = $row['label'];
+        }
+
+        return $headerFields;
+    }
 }
