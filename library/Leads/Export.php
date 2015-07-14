@@ -12,45 +12,57 @@
 namespace Leads;
 
 use Haste\IO\Reader\ArrayReader;
-use Haste\IO\Writer\CsvFileWriter;
-use Haste\IO\Writer\ExcelFileWriter;
 use Leads\DataTransformer\DataTransformerInterface;
+use Leads\Exporter\Csv;
+use Leads\Exporter\Util;
+use Leads\Exporter\Xls;
+use Leads\Exporter\Xlsx;
 
 class Export
 {
+    /**
+     * Export data to CSV
+     * @param object
+     * @param array
+     * @deprecated Use the Csv class instead.
+     */
+    public function exportCsv($objConfig, $arrIds=null)
+    {
+        $csvExporter = new Csv();
+        $csvExporter->export($objConfig, $arrIds);
+    }
 
     /**
-     * @todo Move this somewhere more appropriate.
-     *
+     * Export data to XLS
+     * @param object
+     * @deprecated Use the Xls class instead.
+     */
+    public function exportXls($objConfig, $arrIds=null)
+    {
+        $xlsExporter = new Xls();
+        $xlsExporter->export($objConfig, $arrIds);
+    }
+
+    /**
+     * Export data to XLSX
+     * @param object
+     * @deprecated Use the Xlsx class instead.
+     */
+    public function exportXlsx($objConfig, $arrIds=null)
+    {
+        $xlsxExporter = new Xlsx();
+        $xlsxExporter->export($objConfig, $arrIds);
+    }
+
+    /**
      * Get the filename from config
      * @param object
      * @return string
+     * @deprecated Use Util::getFilename() instead.
      */
-    public static function getFilename($objConfig)
+    public function getFilename($objConfig)
     {
-        if ($objConfig->filename == '') {
-            return '';
-        }
-
-        $arrTokens = array
-        (
-            'time' => \Date::parse($GLOBALS['TL_CONFIG']['timeFormat']),
-            'date' => \Date::parse($GLOBALS['TL_CONFIG']['dateFormat']),
-            'datim' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat']),
-        );
-
-        // Add custom logic
-        if (isset($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens']) && is_array($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens'])) {
-            foreach ($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens'] as $callback) {
-                if (is_array($callback)) {
-                    $arrTokens = \System::importStatic($callback[0])->$callback[1]($arrTokens, $objConfig);
-                } elseif (is_callable($callback)) {
-                    $arrTokens = $callback($arrTokens, $objConfig);
-                }
-            }
-        }
-
-        return \String::parseSimpleTokens($objConfig->filename, $arrTokens);
+        return Util::getFilename($objConfig);
     }
 
     /**
