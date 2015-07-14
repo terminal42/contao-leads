@@ -11,9 +11,6 @@
 
 namespace Leads;
 
-
-use Haste\IO\Reader\ArrayReader;
-
 class DataCollector
 {
     /**

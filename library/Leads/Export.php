@@ -219,9 +219,7 @@ class Export
                     break;
             }
         }
-
-        var_dump($arrRow);exit;
-
+        
         return $arrRow;
     }
 
