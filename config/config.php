@@ -35,6 +35,7 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 $GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads\\Leads', 'loadLeadName');
 $GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads\\Leads', 'loadBackendModules');
 $GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads\\Leads', 'processFormData');
+$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Leads\\Leads', 'handleSystemColumnExports');
 
 /**
  * Leads export types
