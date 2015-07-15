@@ -16,6 +16,7 @@ use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
 use Leads\Export;
 use Leads\Exporter\Utils\File;
+use Leads\Exporter\Utils\Row;
 
 class Csv extends AbstractExporter
 {
@@ -47,8 +48,11 @@ class Csv extends AbstractExporter
             $writer->enableHeaderFields();
         }
 
-        $writer->setRowCallback(function($arrData) use ($config) {
-            return Export::generateExportRow($arrData, $config);
+        $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
+
+        $writer->setRowCallback(function($data) use ($row) {
+
+            return $row->compile($data);
         });
 
         if (!$writer->writeFrom($reader)) {
