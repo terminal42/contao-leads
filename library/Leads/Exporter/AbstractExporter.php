@@ -110,4 +110,66 @@ abstract class AbstractExporter implements ExporterInterface
 
         return $headerFields;
     }
+
+    /**
+     * Prepares the default export configuration according to the configuration.
+     *
+     * @param \Database_Result $config
+     * @param DataCollector    $dataCollector
+     * @return array
+     */
+    protected function prepareDefaultExportConfig(\Database_Result $config, DataCollector $dataCollector)
+    {
+        $columnConfig = array();
+
+        if ($config->export == 'all') {
+            // Add base information columns (system columns)
+            foreach (Leads::getSystemColumns() as $systemColumn) {
+                $columnConfig[] = $systemColumn;
+            }
+
+            // Add export data column config.
+            foreach ($dataCollector->getFieldsData() as $fieldId => $fieldConfig) {
+                $fieldConfig['value'] = 'all';
+                $columnConfig[] = $fieldConfig;
+            }
+
+            return $columnConfig;
+        }
+
+        // We do this here so we don't have to do it in the loop
+        $systemColumns =  Leads::getSystemColumns();
+        $fieldsData = $dataCollector->getFieldsData();
+
+        foreach ($config->fields as $column) {
+
+            // System column
+            if (in_array($column['field'], array_keys($systemColumns))) {
+
+                $columnConfig[] = $systemColumns[$column['field']];
+            } else {
+
+                $fieldConfig = $fieldsData[$column['field']];
+
+                // Yes and No transformer for checkboxes with only one option
+                if ($fieldConfig['label'] == $fieldConfig['name']
+                    && $fieldConfig['type'] == 'checkbox'
+                    && $fieldConfig['options'] != ''
+                ) {
+                    $options = deserialize($fieldConfig['options'], true);
+
+                    if (count($options) == 1) {
+                        $fieldConfig['transformers'] = array_merge(
+                            (array) $fieldConfig['transformers'],
+                            array('yesno')
+                        );
+                    }
+                }
+
+                $columnConfig[] = $fieldConfig;
+            }
+        }
+
+        return $columnConfig;
+    }
 }
