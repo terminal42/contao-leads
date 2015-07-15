@@ -12,6 +12,7 @@ namespace Leads\Exporter;
 
 
 use Leads\DataCollector;
+use Leads\Leads;
 
 abstract class AbstractExporter implements ExporterInterface
 {
@@ -73,7 +74,7 @@ abstract class AbstractExporter implements ExporterInterface
         $headerFields = array();
 
         if ($config->export == 'all') {
-            foreach ($this->getSystemColumns() as $systemColumn) {
+            foreach (Leads::getSystemColumns() as $systemColumn) {
                 $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $systemColumn['field']];
             }
 
@@ -94,7 +95,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $headerFields[] = $column['name'];
             } else {
                 // System column
-                if (in_array($column['field'], array_keys($this->getSystemColumns()))) {
+                if (in_array($column['field'], array_keys(Leads::getSystemColumns()))) {
                     $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $column['field']];
                 } else {
 
@@ -108,36 +109,5 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         return $headerFields;
-    }
-
-    /**
-     * Default system columns.
-     *
-     * @return array
-     */
-    protected function getSystemColumns()
-    {
-        \System::loadLanguageFile('tl_lead_export');
-
-        return array(
-            '_form' => array(
-                'field'     => '_form',
-                'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
-                'value'     => 'all',
-                'format'    => 'raw'
-            ),
-            '_created' => array(
-                'field'     => '_created',
-                'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
-                'value'     => 'all',
-                'format'    => 'datim'
-            ),
-            '_member' => array(
-                'field'     => '_member',
-                'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
-                'value'     => 'all',
-                'format'    => 'raw'
-            )
-        );
     }
 }

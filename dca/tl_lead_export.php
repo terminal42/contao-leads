@@ -354,29 +354,7 @@ class tl_lead_export extends Backend
         // Load the form fields
         if (empty($arrFields) && $dc->id) {
 
-            // Form ID
-            $arrFields[] = array(
-                'field' => '_form',
-                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
-                'value' => 'all',
-                'format' => 'raw'
-            );
-
-            // Date created
-            $arrFields[] = array(
-                'field' => '_created',
-                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
-                'value' => 'all',
-                'format' => 'datim'
-            );
-
-            // Member ID
-            $arrFields[] = array(
-                'field' => '_member',
-                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
-                'value' => 'all',
-                'format' => 'raw'
-            );
+            $arrFields = array_values(\Leads\Leads::getSystemColumns());
 
             $objFields = Database::getInstance()->prepare(
                 "SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)"
@@ -406,12 +384,13 @@ class tl_lead_export extends Backend
             return array();
         }
 
-        $arrFields = array(
-            '_form'     => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
-            '_created'  => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
-            '_member'   => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
-            '_skip'     => $GLOBALS['TL_LANG']['tl_lead_export']['field_skip'],
-        );
+        $arrFields = array();
+
+        $systemColumns = \Leads\Leads::getSystemColumns();
+
+        foreach ($systemColumns as $k => $systemColumn) {
+            $arrFields[$k] = $systemColumn['label'];
+        }
 
         $objFields = \Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
                                              ->execute(Input::get('id'));

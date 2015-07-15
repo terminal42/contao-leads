@@ -346,4 +346,40 @@ class Leads extends \Controller
             }
         }
     }
+
+    /**
+     * Default system columns.
+     *
+     * @return array
+     */
+    public static function getSystemColumns()
+    {
+        \System::loadLanguageFile('tl_lead_export');
+
+        return array(
+            '_form' => array(
+                'field'         => '_form',
+                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
+                'value'         => 'all',
+                'format'        => 'raw',
+                'valueColRef'   => 'form_id',
+                'labelColRef'   => 'form_name'
+            ),
+            '_created' => array(
+                'field'         => '_created',
+                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
+                'value'         => 'value',
+                'format'        => 'datim',
+                'valueColRef'   => 'created'
+            ),
+            '_member' => array(
+                'field'         => '_member',
+                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+                'value'         => 'all',
+                'format'        => 'raw',
+                'valueColRef'   => 'member_id',
+                'labelColRef'   => 'member_name'
+            )
+        );
+    }
 }
