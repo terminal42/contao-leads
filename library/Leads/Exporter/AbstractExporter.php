@@ -166,7 +166,7 @@ abstract class AbstractExporter implements ExporterInterface
 
     /**
      * Handles some Contao specific configurations.
-     * 
+     *
      * @param array     $fieldConfig
      * @return array
      */
