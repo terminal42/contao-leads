@@ -1,7 +1,6 @@
-var Leads =
-{
-    initializeExportMenu: function()
-    {
+var Leads = {
+
+    initializeExportMenu: function() {
         var tools = document.getElements('#tl_buttons .leads-export');
 
         if (tools.length < 1)

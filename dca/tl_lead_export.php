@@ -24,7 +24,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'onload_callback' => array
         (
             array('tl_lead_export', 'checkPermission'),
-            array('tl_lead_export', 'updatePalette')
+            array('tl_lead_export', 'updatePalette'),
         ),
         'sql' => array
         (
