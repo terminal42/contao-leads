@@ -55,4 +55,5 @@ $GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
     'date'      => 'Leads\\DataTransformer\\DateTransformer',
     'datim'     => 'Leads\\DataTransformer\\DatimTransformer',
     'time'      => 'Leads\\DataTransformer\\TimeTransformer',
+    'yesno'     => 'Leads\\DataTransformer\\YesNoTransformer',
 );
