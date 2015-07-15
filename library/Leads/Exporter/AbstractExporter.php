@@ -67,15 +67,12 @@ abstract class AbstractExporter implements ExporterInterface
         $headerFields = array();
 
         // Add base information columns (system columns)
-        foreach (array('_form', '_created', '_member') as $systemColumn) {
+        foreach ($this->getSystemColumns() as $systemColumn) {
             if ($config->export == 'all') {
-                // Will not get loaded multiple times
-                \System::loadLanguageFile('tl_lead_export');
-
-                $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $systemColumn];
+                $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $systemColumn['field']];
             } else {
-                if ($config->fields[$systemColumn]) {
-                    $headerFields[] = $config->fields[$systemColumn]['name'];
+                if ($config->fields[$systemColumn['field']]) {
+                    $headerFields[] = $config->fields[$systemColumn['field']]['name'];
                 }
             }
         }
@@ -92,5 +89,37 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         return $headerFields;
+    }
+
+
+    /**
+     * Default system columns.
+     *
+     * @return array
+     */
+    protected function getSystemColumns()
+    {
+        \System::loadLanguageFile('tl_lead_export');
+
+        return array(
+            array(
+                'field'     => '_form',
+                'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
+                'value'     => 'all',
+                'format'    => 'raw'
+            ),
+            array(
+                'field'     => '_created',
+                'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
+                'value'     => 'all',
+                'format'    => 'datim'
+            ),
+            array(
+                'field'     => '_member',
+                'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+                'value'     => 'all',
+                'format'    => 'raw'
+            )
+        );
     }
 }
