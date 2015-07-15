@@ -99,8 +99,8 @@ class Row
             // @todo where has the options transformation gone?
 
 
-            $value = $this->transformValue($data[$columnConfig['id']]['value'], $columnConfig);
-            $label = static::prepareLabel($columnConfig['label']);
+            $value      = static::transformValue($data[$columnConfig['id']]['value'], $columnConfig);
+            $label      = static::prepareLabel($columnConfig['label']);
             $compiled[] = static::getValueForOutput($this->config->fields[$columnConfig['id']]['value'], $value, $label);
 
         }
@@ -116,11 +116,12 @@ class Row
      *
      * @return string
      */
-    private function transformValue($value, array $columnConfig)
+    public static function transformValue($value, array $columnConfig)
     {
         $value = implode(', ', deserialize($value, true));
 
-        // Backwards compatibility
+        // Merge transformers chosen by user (format) with an array of arbitrary ones
+        // defined by any developer.
         if ($columnConfig['format']) {
             $columnConfig['transformers'] = array_merge(
                 (array) $columnConfig['format'],

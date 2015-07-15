@@ -367,9 +367,12 @@ class Leads extends \Controller
             $firstEntry = reset($data);
             $systemColumnConfig = $systemColumns[$columnConfig['field']];
 
+            $value = (isset($systemColumnConfig['valueColRef']) ? $firstEntry[$systemColumnConfig['valueColRef']] : null);
+            $value =  Row::transformValue($value, $systemColumnConfig);
+
             return Row::getValueForOutput(
                 $systemColumnConfig['value'],
-                (isset($systemColumnConfig['valueColRef']) ? $firstEntry[$systemColumnConfig['valueColRef']] : null),
+                $value,
                 (isset($systemColumnConfig['labelColRef']) ? $firstEntry[$systemColumnConfig['labelColRef']] : null)
             );
         }
