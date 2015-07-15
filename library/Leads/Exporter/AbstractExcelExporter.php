@@ -17,6 +17,7 @@ use Haste\IO\Writer\ExcelFileWriter;
 use Leads\Export;
 use Leads\Exporter\Utils\File;
 use Leads\Exporter\Utils\Row;
+use PHPExcel_IOFactory;
 
 abstract class AbstractExcelExporter extends AbstractExporter
 {
@@ -27,7 +28,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
      */
     public function isAvailable()
     {
-        return class_exists('PHPExcel');
+        return class_exists('PHPExcel') && class_exists('PHPExcel_IOFactory');
     }
 
     /**
@@ -53,16 +54,39 @@ abstract class AbstractExcelExporter extends AbstractExporter
     {
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
         $reader = new ArrayReader($dataCollector->getExportData());
+
+        if ($config->headerFields) {
+            $reader->setHeaderFields($this->prepareDefaultHeaderFields($config, $dataCollector));
+        }
+
+        $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
+
+
+        if ($config->useTemplate) {
+            $this->exportWithTemplate($config, $reader, $row, $format);
+        } else {
+            $this->exportWithoutTemplate($config, $reader, $row, $format);
+        }
+
+    }
+
+    /**
+     * Default export without template.
+     *
+     * @param             $config
+     * @param ArrayReader $reader
+     * @param Row         $row
+     * @param             $format
+     */
+    protected function exportWithoutTemplate($config, ArrayReader $reader, Row $row, $format)
+    {
         $writer = new ExcelFileWriter('system/tmp/' . File::getName($config));
         $writer->setFormat($format);
 
         // Add header fields
         if ($config->headerFields) {
-            $reader->setHeaderFields($this->prepareDefaultHeaderFields($config, $dataCollector));
             $writer->enableHeaderFields();
         }
-
-        $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
         $writer->setRowCallback(function($data) use ($row) {
             return $row->compile($data);
@@ -75,5 +99,55 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();
+    }
+
+    /**
+     * Export with template.
+     *
+     * @param             $config
+     * @param ArrayReader $reader
+     * @param Row         $row
+     * @param             $format
+     */
+    protected function exportWithTemplate($config, ArrayReader $reader, Row $row, $format)
+    {
+        // Fetch the template and make a copy of it
+        $template = \FilesModel::findByPk($config->template);
+
+        if (null === $template) {
+            $objResponse = new Response('Could not find template.', 500);
+            $objResponse->send();
+        }
+
+        $tmpPath = 'system/tmp/' . File::getName($config);
+        \Files::getInstance()->copy($template->path, $tmpPath);
+
+        $excelReader = PHPExcel_IOFactory::createReader($format);
+        $excel = $excelReader->load(TL_ROOT . '/' . $tmpPath);
+
+        $excel->setActiveSheetIndex(0);
+
+        $currentRow = (int) $config->startIndex;
+        $currentColumn = 0;
+
+        foreach ($reader as $readerRow) {
+
+            $compiledRow = $row->compile($readerRow);
+
+            foreach ($compiledRow as $value) {
+                $excel->getActiveSheet()->setCellValueExplicitByColumnAndRow(
+                    $currentColumn++,
+                    $currentRow,
+                    (string) $value,
+                    \PHPExcel_Cell_DataType::TYPE_STRING2
+                );
+            }
+        }
+
+        $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
+        $excelWriter->save(TL_ROOT . '/' . $tmpPath);
+
+        $tmpFile = new \File($tmpPath);
+        $tmpFile->sendToBrowser();
     }
 }

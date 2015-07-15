@@ -98,17 +98,18 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__'                => array('type'),
+        '__selector__'                => array('type', 'useTemplate'),
         'default'                     => '{name_legend},name,type,filename;{config_legend},export',
         'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
-        'xls'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
-        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},headerFields,export',
+        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export',
+        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export',
     ),
 
     // Subpalettes
     'subpalettes' => array
     (
-        'export'                      => 'fields'
+        'export'                      => 'fields',
+        'useTemplate'                 => 'startIndex,template',
     ),
 
     // Fields
@@ -182,13 +183,40 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'explanation'             => 'leadsTags',
             'sql'                     => "varchar(128) NOT NULL default ''"
         ),
+        'useTemplate' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['useTemplate'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => array('tl_class'=>'w50 m12', 'submitOnChange'=>true),
+            'sql'                     => "char(1) NOT NULL default ''"
+        ),
+        'startIndex' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['startIndex'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'text',
+            'eval'                    => array('tl_class'=>'w50', 'rgxp'=>'digit'),
+            'sql'                     => "int(10) NOT NULL default '0'"
+        ),
+        'template' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['template'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'fileTree',
+            'eval'                    => array('filesOnly'=>true, 'fieldType'=>'radio', 'mandatory'=>true, 'tl_class'=>'clr'),
+            'sql'                     => "binary(16) NULL",
+        ),
         'headerFields' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['headerFields'],
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
+            'eval'                    => array('tl_class'=>'clr'),
             'sql'                     => "char(1) NOT NULL default ''"
         ),
         'export' => array
