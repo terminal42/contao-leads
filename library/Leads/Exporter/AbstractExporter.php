@@ -94,7 +94,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $headerFields[] = $column['name'];
             } else {
                 // System column
-                if (in_array($column['field'], $this->getSystemColumns())) {
+                if (in_array($column['field'], array_keys($this->getSystemColumns()))) {
                     $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $column['field']];
                 } else {
 
