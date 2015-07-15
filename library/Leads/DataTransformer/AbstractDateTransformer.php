@@ -11,7 +11,7 @@
 namespace Leads\DataTransformer;
 
 
-abstract class AbstractDateTransformer implements DataTransformerInterface
+abstract class AbstractDateTransformer implements DataTransformerInterface, DisplayInBackendInterface
 {
     /**
      * PHP date format

@@ -11,7 +11,7 @@
 namespace Leads\DataTransformer;
 
 
-class RawTransformer implements DataTransformerInterface
+class RawTransformer implements DataTransformerInterface, DisplayInBackendInterface
 {
     /**
      * Transforms a value from the original representation to a transformed representation.

@@ -245,7 +245,26 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                     'exclude'                 => true,
                     'inputType'               => 'select',
                     'options_callback'        => function() {
-                        return array_keys($GLOBALS['LEADS_DATA_TRANSFORMERS']);
+
+                        $options = array();
+
+                        foreach (array_keys($GLOBALS['LEADS_DATA_TRANSFORMERS']) as $transformerClassKey) {
+
+                            /** @var Leads\DataTransformer\DataTransformerInterface $transformer */
+                            $transformer = new $GLOBALS['LEADS_DATA_TRANSFORMERS'][$transformerClassKey]();
+
+                            if ($transformer instanceof \Leads\DataTransformer\DataTransformerInterface
+                                && $transformer instanceof \Leads\DataTransformer\DisplayInBackendInterface
+                            ) {
+                                    $options[] = $transformerClassKey;
+                            }
+                        }
+
+                        // Backwards compatibility
+                        return array_merge(
+                            (array) $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['format']['options'],
+                            $options
+                        );
                     },
                     'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_format'],
                     'eval'                    => array('style'=>'width:150px;')
@@ -388,9 +407,10 @@ class tl_lead_export extends Backend
         }
 
         $arrFields = array(
-            '_form' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
-            '_created' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
-            '_member' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+            '_form'     => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
+            '_created'  => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
+            '_member'   => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+            '_skip'     => $GLOBALS['TL_LANG']['tl_lead_export']['field_skip'],
         );
 
         $objFields = \Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
