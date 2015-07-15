@@ -44,7 +44,13 @@ abstract class AbstractExporter implements ExporterInterface
 
         // Limit the fields
         if ($config->export != 'all') {
-            $dataCollector->setFieldIds(array_map('intval', array_keys($config->fields)));
+
+            $limitFields = array();
+            foreach ($config->fields as $fieldsConfig) {
+                $limitFields[] = $fieldsConfig['field'];
+            }
+
+            $dataCollector->setFieldIds($limitFields);
         }
 
         if (null !== $ids) {

@@ -339,6 +339,8 @@ class Leads extends \Controller
             // Note the difference here: Fields are not touched and thus every field can be exported multiple times
             $exporter = new $exporterDefinition();
 
+            $objConfig->fields = deserialize($objConfig->fields, true);
+
             if ($exporter instanceof ExporterInterface) {
                 $exporter->export($objConfig, $arrIds);
             }
