@@ -12,7 +12,6 @@
 namespace Leads;
 
 use Haste\IO\Reader\ArrayReader;
-use Leads\DataTransformer\DataTransformerInterface;
 use Leads\Exporter\Csv;
 use Leads\Exporter\Utils\File;
 use Leads\Exporter\Xls;
