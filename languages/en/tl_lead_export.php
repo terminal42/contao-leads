@@ -59,6 +59,8 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = &$GLOBALS['TL_
 $GLOBALS['TL_LANG']['tl_lead_export']['field_form']             = 'Form';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_created']          = 'Date created';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_member']           = 'Member';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_skip']             = 'Skip one column';
+
 
 
 /**

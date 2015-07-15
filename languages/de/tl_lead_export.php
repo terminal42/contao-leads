@@ -57,6 +57,8 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = &$GLOBALS['TL_
 $GLOBALS['TL_LANG']['tl_lead_export']['field_form']             = 'Formular';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_created']          = 'Erstellungsdatum';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_member']           = 'Mitglied';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_skip']             = 'Spalte überspringen';
+
 
 
 /**

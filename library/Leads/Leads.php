@@ -364,6 +364,11 @@ class Leads extends \Controller
             && in_array($columnConfig['field'], array_keys($systemColumns))
         ) {
 
+            if ($columnConfig['field'] === '_field') {
+
+                return null;
+            }
+
             $firstEntry = reset($data);
             $systemColumnConfig = $systemColumns[$columnConfig['field']];
 
@@ -410,6 +415,12 @@ class Leads extends \Controller
                 'format'        => 'raw',
                 'valueColRef'   => 'member_id',
                 'labelColRef'   => 'member_name'
+            ),
+            '_skip' => array(
+                'field'         => '_skip',
+                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_skip'],
+                'value'         => 'value',
+                'format'        => 'raw'
             )
         );
     }
