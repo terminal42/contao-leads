@@ -96,9 +96,6 @@ class Row
                 }
             }
 
-            // @todo where has the options transformation gone?
-
-
             $value      = static::transformValue($data[$columnConfig['id']]['value'], $columnConfig);
             $label      = static::prepareLabel($columnConfig['label']);
             $compiled[] = static::getValueForOutput($this->config->fields[$columnConfig['id']]['value'], $value, $label);
