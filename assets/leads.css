@@ -45,3 +45,8 @@
     padding-bottom: 1px;
     vertical-align: middle;
 }
+
+table.multicolumnwizard td.column_display div {
+    color: #ccc;
+    font-size: 8px;
+}

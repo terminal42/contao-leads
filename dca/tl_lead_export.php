@@ -25,6 +25,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         (
             array('tl_lead_export', 'checkPermission'),
             array('tl_lead_export', 'updatePalette'),
+            array('tl_lead_export', 'loadJsAndCss'),
         ),
         'sql' => array
         (
@@ -209,6 +210,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'inputType'               => 'multiColumnWizard',
             'eval'                    => array('mandatory'=>true, 'columnFields'=>array
             (
+                'column_display' => array
+                (
+                    'inputType'               => 'text', // dummy
+                    'eval'                    => array('tl_class'=>'column_display', 'hideHead'=>true),
+                ),
                 'field' => array
                 (
                     'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_field'],
@@ -402,5 +408,14 @@ class tl_lead_export extends Backend
         }
 
         return $arrFields;
+    }
+
+    /**
+     * Loads JS and CSS.
+     */
+    public function loadJsAndCss()
+    {
+        $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
+        $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];
     }
 }
