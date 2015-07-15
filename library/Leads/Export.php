@@ -18,6 +18,10 @@ use Leads\Exporter\Utils\File;
 use Leads\Exporter\Xls;
 use Leads\Exporter\Xlsx;
 
+/**
+ * Class Export
+ * @deprecated This class will be removed in 2.0.
+ */
 class Export
 {
     /**
