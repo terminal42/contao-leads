@@ -62,7 +62,7 @@ abstract class AbstractExporter implements ExporterInterface
      *
      * @return array
      */
-    protected function prepareHeaderFields(\Database_Result $config, DataCollector $dataCollector)
+    protected function prepareDefaultHeaderFields(\Database_Result $config, DataCollector $dataCollector)
     {
         $headerFields = array();
 

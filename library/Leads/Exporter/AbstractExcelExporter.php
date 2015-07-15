@@ -57,7 +57,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         // Add header fields
         if ($config->headerFields) {
-            $reader->setHeaderFields($this->prepareHeaderFields($config, $dataCollector));
+            $reader->setHeaderFields($this->prepareDefaultHeaderFields($config, $dataCollector));
             $writer->enableHeaderFields();
         }
 
