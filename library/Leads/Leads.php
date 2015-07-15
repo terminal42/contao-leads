@@ -12,6 +12,7 @@
 namespace Leads;
 
 use Leads\Exporter\ExporterInterface;
+use Leads\Exporter\Utils\Row;
 
 class Leads extends \Controller
 {
@@ -344,6 +345,33 @@ class Leads extends \Controller
             if ($exporter instanceof ExporterInterface) {
                 $exporter->export($objConfig, $arrIds);
             }
+        }
+    }
+
+    /**
+     * Handles the system columns when exporting.
+     *
+     * @param $columnConfig
+     * @param $data
+     * @param $config
+     * @param $value
+     */
+    public function handleSystemColumnExports($columnConfig, $data, $config, $value)
+    {
+        $systemColumns = static::getSystemColumns();
+
+        if (isset($columnConfig['field'])
+            && in_array($columnConfig['field'], array_keys($systemColumns))
+        ) {
+
+            $firstEntry = reset($data);
+            $systemColumnConfig = $systemColumns[$columnConfig['field']];
+
+            return Row::getValueForOutput(
+                $systemColumnConfig['value'],
+                (isset($systemColumnConfig['valueColRef']) ? $firstEntry[$systemColumnConfig['valueColRef']] : null),
+                (isset($systemColumnConfig['labelColRef']) ? $firstEntry[$systemColumnConfig['labelColRef']] : null)
+            );
         }
     }
 
