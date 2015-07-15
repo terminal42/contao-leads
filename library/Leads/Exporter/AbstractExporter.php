@@ -72,31 +72,43 @@ abstract class AbstractExporter implements ExporterInterface
     {
         $headerFields = array();
 
-        // Add base information columns (system columns)
-        foreach ($this->getSystemColumns() as $systemColumn) {
-            if ($config->export == 'all') {
+        if ($config->export == 'all') {
+            foreach ($this->getSystemColumns() as $systemColumn) {
                 $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $systemColumn['field']];
-            } else {
-                if ($config->fields[$systemColumn['field']]) {
-                    $headerFields[] = $config->fields[$systemColumn['field']]['name'];
-                }
             }
+
+            foreach ($dataCollector->getHeaderFields() as $fieldId => $label) {
+
+                $headerFields[] = $label;
+            }
+
+            return $headerFields;
         }
 
-        // Add export data header fields
-        foreach ($dataCollector->getHeaderFields() as $fieldId => $label) {
+        // We do this here so we don't have to do it in the loop
+        $dataHeaderFields = $dataCollector->getHeaderFields();
 
-            // Use a custom header field
-            if ($config->fields[$fieldId]['name'] != '') {
-                $headerFields[] = $config->fields[$fieldId]['name'];
+        foreach ($config->fields as $column) {
+            if ($column['name'] != '') {
+
+                $headerFields[] = $column['name'];
             } else {
-                $headerFields[] = $label;
+                // System column
+                if (in_array($column['field'], $this->getSystemColumns())) {
+                    $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $column['field']];
+                } else {
+
+                    if (isset($dataHeaderFields[$column['field']])) {
+                        $headerFields[] = $dataHeaderFields[$column['field']];
+                    } else {
+                        $headerFields[] = '';
+                    }
+                }
             }
         }
 
         return $headerFields;
     }
-
 
     /**
      * Default system columns.
