@@ -389,7 +389,7 @@ class tl_lead_export extends Backend
         $systemColumns = \Leads\Leads::getSystemColumns();
 
         foreach ($systemColumns as $k => $systemColumn) {
-            $arrFields[$k] = $systemColumn['label'];
+            $arrFields[$k] = $systemColumn['name'];
         }
 
         $objFields = \Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
