@@ -74,7 +74,7 @@ class DataCollector
      */
     public function setFieldIds(array $fieldIds)
     {
-        $this->fieldIds = $fieldIds;
+        $this->fieldIds = array_map('intval', $fieldIds);
     }
 
     /**
