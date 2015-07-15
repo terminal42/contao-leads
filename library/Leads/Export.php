@@ -108,11 +108,14 @@ class Export
                 'format' => 'raw'
             );
         } else {
-
-            foreach (array('_form', '_created', '_member', '_skip') as $specialField) {
-                if ($objConfig->fields[$specialField]) {
-                    $arrFields[] = $objConfig->fields[$specialField];
-                }
+            if ($objConfig->fields['_form']) {
+                $arrFields[] = $objConfig->fields['_form'];
+            }
+            if ($objConfig->fields['_created']) {
+                $arrFields[] = $objConfig->fields['_created'];
+            }
+            if ($objConfig->fields['_member']) {
+                $arrFields[] = $objConfig->fields['_member'];
             }
         }
 
@@ -174,11 +177,6 @@ class Export
                         $varValue = $arrFirst['member_id'];
                         $strLabel = $arrFirst['member_name'];
                         break;
-
-                    case '_skip':
-                        $varValue = null;
-                        $strLabel = null;
-                        break;
                 }
 
                 $strFormat = $arrField['format'];
@@ -196,20 +194,15 @@ class Export
                 }
             }
 
-            /**
-             * Apply special formatting
-             * @var $dataTransformer DataTransformerInterface
-             */
-            if (in_array($strFormat, array_keys($GLOBALS['LEADS_DATA_TRANSFORMERS']))) {
-
-                $dataTransformer = new $GLOBALS['LEADS_DATA_TRANSFORMERS'][$strFormat]();
-
-                $arrRow[] = $dataTransformer->transform($varValue);
-
-                continue;
+            // Apply special formatting
+            switch ($strFormat) {
+                case 'date':
+                case 'datim':
+                case 'time':
+                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG'][$strFormat . 'Format'], $varValue);
+                    continue 2; break;
             }
 
-            // Fallback formatting if no data transformer specified
             switch ($objConfig->fields[$arrField['id']]['value']) {
                 case 'value':
                     $arrRow[] = $varValue;
@@ -234,7 +227,7 @@ class Export
                     break;
             }
         }
-        
+
         return $arrRow;
     }
 
