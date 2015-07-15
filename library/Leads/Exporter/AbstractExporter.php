@@ -130,6 +130,9 @@ abstract class AbstractExporter implements ExporterInterface
 
             // Add export data column config.
             foreach ($dataCollector->getFieldsData() as $fieldId => $fieldConfig) {
+
+                $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
+
                 $fieldConfig['value'] = 'all';
                 $columnConfig[] = $fieldConfig;
             }
@@ -151,25 +154,39 @@ abstract class AbstractExporter implements ExporterInterface
 
                 $fieldConfig = $fieldsData[$column['field']];
 
-                // Yes and No transformer for checkboxes with only one option
-                if ($fieldConfig['label'] == $fieldConfig['name']
-                    && $fieldConfig['type'] == 'checkbox'
-                    && $fieldConfig['options'] != ''
-                ) {
-                    $options = deserialize($fieldConfig['options'], true);
+                $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
 
-                    if (count($options) == 1) {
-                        $fieldConfig['transformers'] = array_merge(
-                            (array) $fieldConfig['transformers'],
-                            array('yesno')
-                        );
-                    }
-                }
 
                 $columnConfig[] = $fieldConfig;
             }
         }
 
         return $columnConfig;
+    }
+
+    /**
+     * Handles some Contao specific configurations.
+     * 
+     * @param array     $fieldConfig
+     * @return array
+     */
+    protected function handleContaoSpecificConfig(array $fieldConfig)
+    {
+        // Yes and No transformer for checkboxes with only one option
+        if ($fieldConfig['label'] == $fieldConfig['name']
+            && $fieldConfig['type'] == 'checkbox'
+            && $fieldConfig['options'] != ''
+        ) {
+            $options = deserialize($fieldConfig['options'], true);
+
+            if (count($options) == 1) {
+                $fieldConfig['transformers'] = array_merge(
+                    (array) $fieldConfig['transformers'],
+                    array('yesno')
+                );
+            }
+        }
+
+        return $fieldConfig;
     }
 }
