@@ -24,7 +24,7 @@ class Export
      * Export data to CSV
      * @param object
      * @param array
-     * @deprecated Use the Csv class instead.
+     * @deprecated Use the Csv class instead. To be removed in 2.0.
      */
     public function exportCsv($objConfig, $arrIds=null)
     {
@@ -35,7 +35,7 @@ class Export
     /**
      * Export data to XLS
      * @param object
-     * @deprecated Use the Xls class instead.
+     * @deprecated Use the Xls class instead. To be removed in 2.0.
      */
     public function exportXls($objConfig, $arrIds=null)
     {
@@ -46,7 +46,7 @@ class Export
     /**
      * Export data to XLSX
      * @param object
-     * @deprecated Use the Xlsx class instead.
+     * @deprecated Use the Xlsx class instead. To be removed in 2.0.
      */
     public function exportXlsx($objConfig, $arrIds=null)
     {
@@ -58,7 +58,7 @@ class Export
      * Get the filename from config
      * @param object
      * @return string
-     * @deprecated Use File::getName() instead.
+     * @deprecated Use File::getName() instead. To be removed in 2.0.
      */
     public function getFilename($objConfig)
     {
@@ -66,12 +66,11 @@ class Export
     }
 
     /**
-     * @todo Move this somewhere more appropriate.
-     *
      * Generate the export row
      * @param array
      * @param object
      * @return array
+     * @deprecated Use the Row class instead. To be removed in 2.0.
      */
     public static function generateExportRow($arrData, $objConfig)
     {
