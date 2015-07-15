@@ -120,19 +120,19 @@ abstract class AbstractExporter implements ExporterInterface
         \System::loadLanguageFile('tl_lead_export');
 
         return array(
-            array(
+            '_form' => array(
                 'field'     => '_form',
                 'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
                 'value'     => 'all',
                 'format'    => 'raw'
             ),
-            array(
+            '_created' => array(
                 'field'     => '_created',
                 'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
                 'value'     => 'all',
                 'format'    => 'datim'
             ),
-            array(
+            '_member' => array(
                 'field'     => '_member',
                 'name'      => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
                 'value'     => 'all',
