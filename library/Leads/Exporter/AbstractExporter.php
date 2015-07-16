@@ -152,10 +152,15 @@ abstract class AbstractExporter implements ExporterInterface
                 $columnConfig[] = $systemColumns[$column['field']];
             } else {
 
+                // Skip non exisiting fields
+                if (!isset($fieldsData[$column['field']])) {
+
+                    continue;
+                }
+
                 $fieldConfig = $fieldsData[$column['field']];
 
                 $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
-
 
                 $columnConfig[] = $fieldConfig;
             }
