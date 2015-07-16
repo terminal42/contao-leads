@@ -158,7 +158,11 @@ abstract class AbstractExporter implements ExporterInterface
                     continue;
                 }
 
-                $fieldConfig = $fieldsData[$column['field']];
+                // Merge form field config with custom export config
+                $fieldConfig = array_merge(
+                    $fieldsData[$column['field']],
+                    $column
+                );
 
                 $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
 

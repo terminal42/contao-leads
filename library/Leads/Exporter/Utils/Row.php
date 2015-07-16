@@ -98,7 +98,7 @@ class Row
 
             $value      = static::transformValue($data[$columnConfig['id']]['value'], $columnConfig);
             $label      = static::prepareLabel($columnConfig['label']);
-            $compiled[] = static::getValueForOutput($this->config->fields[$columnConfig['id']]['value'], $value, $label);
+            $compiled[] = static::getValueForOutput($columnConfig['value'], $value, $label);
 
         }
 
