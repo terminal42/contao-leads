@@ -142,6 +142,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
                     \PHPExcel_Cell_DataType::TYPE_STRING2
                 );
             }
+
+            $currentColumn = 0;
+            $currentRow++;
         }
 
         $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
