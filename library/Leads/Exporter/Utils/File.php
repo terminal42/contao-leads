@@ -24,7 +24,14 @@ class File
     {
         if ($config->filename == '') {
 
-            return '';
+            $filename = 'export_' . md5(uniqid());
+
+            if ($config->type) {
+
+                $filename .= '.' . $config->type;
+            }
+
+            return $filename;
         }
 
         $tokens = array
