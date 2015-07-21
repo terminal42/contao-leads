@@ -104,6 +104,16 @@ class DataCollector
     }
 
     /**
+     * Gets a cache key for the instance of the data collector
+     *
+     * @return string
+     */
+    public function getCacheKey()
+    {
+        return md5($this->formId . ':' . implode(',', $this->fieldIds));
+    }
+
+    /**
      * Fetches the form field data. Use setFieldIds() if you want to limit the
      * result to a given array of form field ids.
      *
@@ -111,7 +121,7 @@ class DataCollector
      */
     public function getFieldsData()
     {
-        $cacheKey = md5($this->formId . ':' . implode(',', $this->fieldIds));
+        $cacheKey = $this->getCacheKey();
 
         if (isset($this->getFieldsDataCache[$cacheKey])) {
 
@@ -156,7 +166,7 @@ class DataCollector
      */
     public function getExportData()
     {
-        $cacheKey = md5($this->formId . ':' . implode(',', $this->fieldIds));
+        $cacheKey = $this->getCacheKey();
 
         if (isset($this->getExportDataCache[$cacheKey])) {
 
