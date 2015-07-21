@@ -413,7 +413,7 @@ class Leads extends \Controller
 
             $tokens[$fieldConfig['name']] = $value;
         }
-        
+
         return Tokens::recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens);
     }
 
