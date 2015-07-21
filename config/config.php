@@ -36,6 +36,7 @@ $GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads\\Leads', 'loadLeadNam
 $GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads\\Leads', 'loadBackendModules');
 $GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads\\Leads', 'processFormData');
 $GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Leads\\Leads', 'handleSystemColumnExports');
+$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Leads\\Leads', 'handleTokenExports');
 
 /**
  * Leads export types

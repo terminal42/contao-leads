@@ -98,7 +98,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__'                => array('type', 'useTemplate'),
+        '__selector__'                => array('type', 'useTemplate', 'export'),
         'default'                     => '{name_legend},name,type,filename;{config_legend},export',
         'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
         'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export',
@@ -108,7 +108,8 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Subpalettes
     'subpalettes' => array
     (
-        'export'                      => 'fields',
+        'export_fields'               => 'fields',
+        'export_tokens'               => 'tokenFields',
         'useTemplate'                 => 'startIndex,template',
     ),
 
@@ -226,7 +227,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'radio',
-            'options'                 => array('all', 'fields'),
+            'options'                 => array('all', 'fields', 'tokens'),
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
             'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
             'sql'                     => "varchar(8) NOT NULL default ''"
@@ -303,6 +304,37 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             (
                 array('tl_lead_export', 'loadLeadFields')
             )
+        ),
+        'tokenFields' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields'],
+            'exclude'                 => true,
+            'inputType'               => 'multiColumnWizard',
+            'eval'                    => array('mandatory'=>true, 'columnFields'=>array
+            (
+                'targetColumn' => array
+                (
+                    'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_targetColumn'],
+                    'exclude'                 => true,
+                    'inputType'               => 'text',
+                    'eval'                    => array('mandatory'=>true, 'style'=>'width:50px;'),
+                ),
+                'headerField' => array
+                (
+                    'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_name'],
+                    'exclude'                 => true,
+                    'inputType'               => 'text',
+                    'eval'                    => array('style'=>'width:100px;')
+                ),
+                'tokensValue' => array
+                (
+                    'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_tokensValue'],
+                    'exclude'                 => true,
+                    'inputType'               => 'textarea',
+                    'eval'                    => array('style'=>'width:420px;')
+                ),
+            )),
+            'sql'                     => "blob NULL",
         ),
     )
 );

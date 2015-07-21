@@ -13,6 +13,7 @@ namespace Leads;
 
 use Leads\Exporter\ExporterInterface;
 use Leads\Exporter\Utils\Row;
+use Leads\Exporter\Utils\Tokens;
 
 class Leads extends \Controller
 {
@@ -340,7 +341,8 @@ class Leads extends \Controller
             // Note the difference here: Fields are not touched and thus every field can be exported multiple times
             $exporter = new $exporterDefinition();
 
-            $objConfig->fields = deserialize($objConfig->fields, true);
+            $objConfig->fields      = deserialize($objConfig->fields, true);
+            $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
 
             if ($exporter instanceof ExporterInterface) {
                 $exporter->export($objConfig, $arrIds);
@@ -381,6 +383,38 @@ class Leads extends \Controller
                 (isset($systemColumnConfig['labelColRef']) ? $firstEntry[$systemColumnConfig['labelColRef']] : null)
             );
         }
+    }
+
+    /**
+     * Handles the Simple Tokens and Insert Tags when exporting.
+     *
+     * @param $columnConfig
+     * @param $data
+     * @param $config
+     * @param $value
+     */
+    public function handleTokenExports($columnConfig, $data, $config, $value)
+    {
+
+        if ($config->export != 'tokens') {
+
+            return null;
+        }
+
+        $tokens = array();
+
+        foreach ($columnConfig['allFieldsConfig'] as $fieldConfig) {
+
+            $value = '';
+
+            if (isset($data[$fieldConfig['id']])) {
+                $value = Row::transformValue($data[$fieldConfig['id']]['value'], $fieldConfig);
+            }
+
+            $tokens[$fieldConfig['name']] = $value;
+        }
+        
+        return Tokens::recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens);
     }
 
     /**

@@ -12,6 +12,7 @@ namespace Leads\Exporter;
 
 
 use Leads\DataCollector;
+use Leads\Exporter\Utils\Tokens;
 use Leads\Leads;
 
 abstract class AbstractExporter implements ExporterInterface
@@ -44,7 +45,7 @@ abstract class AbstractExporter implements ExporterInterface
         $dataCollector = new DataCollector($config->master);
 
         // Limit the fields
-        if ($config->export != 'all') {
+        if ($config->export == 'fields') {
 
             $limitFields = array();
             foreach ($config->fields as $fieldsConfig) {
@@ -73,6 +74,7 @@ abstract class AbstractExporter implements ExporterInterface
     {
         $headerFields = array();
 
+        // Config: all
         if ($config->export == 'all') {
             foreach (Leads::getSystemColumns() as $systemColumn) {
                 $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $systemColumn['field']];
@@ -86,6 +88,18 @@ abstract class AbstractExporter implements ExporterInterface
             return $headerFields;
         }
 
+        // Config: tokens
+        if ($config->export == 'tokens') {
+
+            foreach ($config->tokenFields as $column) {
+
+                $headerFields[] = $column['headerField'];
+            }
+
+            return $headerFields;
+        }
+
+        // Config: fields
         // We do this here so we don't have to do it in the loop
         $dataHeaderFields = $dataCollector->getHeaderFields();
 
@@ -122,6 +136,7 @@ abstract class AbstractExporter implements ExporterInterface
     {
         $columnConfig = array();
 
+        // Config: all
         if ($config->export == 'all') {
             // Add base information columns (system columns)
             foreach (Leads::getSystemColumns() as $systemColumn) {
@@ -141,8 +156,31 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         // We do this here so we don't have to do it in the loop
-        $systemColumns =  Leads::getSystemColumns();
         $fieldsData = $dataCollector->getFieldsData();
+
+        // Config: tokens
+        if ($config->export == 'tokens') {
+
+            $allFieldsConfig = array();
+            foreach ($fieldsData as $fieldConfig) {
+                $allFieldsConfig[] = $this->handleContaoSpecificConfig($fieldConfig);
+            }
+
+
+            foreach ($config->tokenFields as $column) {
+
+                $column = array_merge($column, array(
+                    'allFieldsConfig' => $allFieldsConfig
+                ));
+
+                $columnConfig[] = $column;
+            }
+
+            return $columnConfig;
+        }
+
+        // Config: custom
+        $systemColumns =  Leads::getSystemColumns();
 
         foreach ($config->fields as $column) {
 
@@ -152,7 +190,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $columnConfig[] = $systemColumns[$column['field']];
             } else {
 
-                // Skip non exisiting fields
+                // Skip non existing fields
                 if (!isset($fieldsData[$column['field']])) {
 
                     continue;
