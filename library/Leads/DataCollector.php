@@ -38,6 +38,12 @@ class DataCollector
     private $getFieldsDataCache = array();
 
     /**
+     * Cache for getExportData()
+     * @var array
+     */
+    private $getExportDataCache = array();
+
+    /**
      * Constructor.
      *
      * @param int $formId
@@ -150,6 +156,13 @@ class DataCollector
      */
     public function getExportData()
     {
+        $cacheKey = md5($this->formId . ':' . implode(',', $this->fieldIds));
+
+        if (isset($this->getExportDataCache[$cacheKey])) {
+
+            return $this->getExportDataCache[$cacheKey];
+        }
+
         $data = array();
         $db = \Database::getInstance()->prepare("
             SELECT
@@ -168,6 +181,8 @@ class DataCollector
         while ($db->next()) {
             $data[$db->pid][$db->field_id] = $db->row();
         }
+
+        $this->getExportDataCache[$cacheKey] = $data;
 
         return $data;
     }
