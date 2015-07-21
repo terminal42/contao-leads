@@ -17,6 +17,7 @@ use Haste\IO\Writer\ExcelFileWriter;
 use Leads\Export;
 use Leads\Exporter\Utils\File;
 use Leads\Exporter\Utils\Row;
+use PHPExcel_Cell;
 use PHPExcel_IOFactory;
 
 abstract class AbstractExcelExporter extends AbstractExporter
@@ -134,13 +135,28 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
             $compiledRow = $row->compile($readerRow);
 
-            foreach ($compiledRow as $value) {
+            foreach ($compiledRow as $k => $value) {
+
+                $specificColumn = null;
+
+                // Support explicit target column
+                if ($config->export == 'tokens'
+                    && isset($config->tokenFields[$k]['targetColumn'])
+                ) {
+                    $specificColumn = $config->tokenFields[$k]['targetColumn'];
+
+                    if (!is_numeric($specificColumn)) {
+                        $specificColumn = PHPExcel_Cell::columnIndexFromString($specificColumn) - 1;
+                    }
+                }
+
                 $excel->getActiveSheet()->setCellValueExplicitByColumnAndRow(
-                    $currentColumn++,
+                    ($specificColumn) ?: $currentColumn++,
                     $currentRow,
                     (string) $value,
                     \PHPExcel_Cell_DataType::TYPE_STRING2
                 );
+
             }
 
             $currentColumn = 0;
