@@ -408,6 +408,17 @@ class Leads extends \Controller
             $value = '';
 
             if (isset($data[$fieldConfig['id']])) {
+
+                $value = $data[$fieldConfig['id']]['value'];
+                $value = deserialize($value, true);
+
+                // Add multiple tokens (<fieldname>_<option_name>) for multi-choice fields
+                if (count($value) > 1) {
+                    foreach ($value as $choice) {
+                        $tokens[$fieldConfig['name'] . '_' . $choice] = 1;
+                    }
+                }
+
                 $value = Row::transformValue($data[$fieldConfig['id']]['value'], $fieldConfig);
             }
 
