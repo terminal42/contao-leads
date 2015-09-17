@@ -22,8 +22,9 @@ ClassLoader::addClasses(array
 /**
  * Register PSR-0 namespace
  */
-NamespaceClassLoader::add('Leads', 'system/modules/leads/library');
-
+if (class_exists('NamespaceClassLoader')) {
+    NamespaceClassLoader::add('Leads', 'system/modules/leads/library');
+}
 
 /**
  * Register the templates
