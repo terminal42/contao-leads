@@ -14,7 +14,6 @@ namespace Leads\Exporter;
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
-use Leads\Export;
 use Leads\Exporter\Utils\File;
 use Leads\Exporter\Utils\Row;
 

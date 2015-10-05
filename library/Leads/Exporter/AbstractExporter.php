@@ -12,7 +12,6 @@ namespace Leads\Exporter;
 
 
 use Leads\DataCollector;
-use Leads\Exporter\Utils\Tokens;
 use Leads\Leads;
 
 abstract class AbstractExporter implements ExporterInterface
