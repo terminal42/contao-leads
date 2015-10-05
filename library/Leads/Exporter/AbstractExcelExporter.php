@@ -35,10 +35,10 @@ abstract class AbstractExcelExporter extends AbstractExporter
     /**
      * Exports a given set of data row ids using a given configuration.
      *
-     * @param \Database_Result $config
+     * @param \Database\Result $config
      * @param array|null       $ids
      */
-    public function export(\Database_Result $config, $ids = null)
+    public function export($config, $ids = null)
     {
         throw new \RuntimeException('export() has to be implemented by a child class of AbstractExcelExporter.');
     }
@@ -47,7 +47,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
     /**
      * Exports based on Excel format.
      *
-     * @param \Database_Result $config
+     * @param \Database\Result $config
      * @param array|null       $ids
      * @param string           $format
      */

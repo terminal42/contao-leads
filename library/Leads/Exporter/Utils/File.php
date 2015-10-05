@@ -17,7 +17,7 @@ class File
     /**
      * Get the filename from a database config.
      *
-     * @param   \Database_Result $config
+     * @param   \Database\Result $config
      * @return  string
      */
     public static function getName($config)

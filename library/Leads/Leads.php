@@ -21,7 +21,7 @@ class Leads extends \Controller
      * Prepare a form value for storage in lead table.
      *
      * @param mixed
-     * @param Database_Result
+     * @param \Database\Result
      */
     public static function prepareValue($varValue, $objField)
     {
@@ -53,7 +53,7 @@ class Leads extends \Controller
      * Get the label for a form value to store in lead table.
      *
      * @param mixed $varValue
-     * @param \Database_Result $objField
+     * @param \Database\Result $objField
      *
      * @return mixed
      */

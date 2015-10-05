@@ -27,20 +27,20 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Exports a given set of data row ids using a given configuration.
      *
-     * @param \Database_Result $config
+     * @param \Database\Result $config
      * @param array|null       $ids
      */
-    abstract public function export(\Database_Result $config, $ids = null);
+    abstract public function export($config, $ids = null);
 
     /**
      * Prepares the default DataCollector instance based on the configuration.
      *
-     * @param \Database_Result $config
+     * @param \Database\Result $config
      * @param null             $ids
      *
      * @return DataCollector
      */
-    protected function prepareDefaultDataCollector(\Database_Result $config, $ids = null)
+    protected function prepareDefaultDataCollector($config, $ids = null)
     {
         $dataCollector = new DataCollector($config->master);
 
@@ -65,12 +65,12 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the header fields according to the configuration.
      *
-     * @param \Database_Result $config
+     * @param \Database\Result $config
      * @param DataCollector    $dataCollector
      *
      * @return array
      */
-    protected function prepareDefaultHeaderFields(\Database_Result $config, DataCollector $dataCollector)
+    protected function prepareDefaultHeaderFields($config, DataCollector $dataCollector)
     {
         $headerFields = array();
 
@@ -128,11 +128,11 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the default export configuration according to the configuration.
      *
-     * @param \Database_Result $config
+     * @param \Database\Result $config
      * @param DataCollector    $dataCollector
      * @return array
      */
-    protected function prepareDefaultExportConfig(\Database_Result $config, DataCollector $dataCollector)
+    protected function prepareDefaultExportConfig($config, DataCollector $dataCollector)
     {
         $columnConfig = array();
 

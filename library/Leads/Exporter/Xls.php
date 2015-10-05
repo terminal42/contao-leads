@@ -15,10 +15,10 @@ class Xls extends AbstractExcelExporter
     /**
      * Exports a given set of data row ids using a given configuration.
      *
-     * @param \Database_Result $config
+     * @param \Database\Result $config
      * @param array|null       $ids
      */
-    public function export(\Database_Result $config, $ids = null)
+    public function export($config, $ids = null)
     {
         $this->exportWithFormat($config, $ids, 'Excel5');
     }
