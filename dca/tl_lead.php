@@ -247,11 +247,10 @@ class tl_lead extends Backend
         $objData = \Database::getInstance()->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
 
         while ($objData->next()) {
-            $varValue = deserialize($objData->value);
-            $arrTokens[$objData->name] = is_array($varValue) ? implode(', ', $varValue) : $varValue;
+            Haste\Util\StringUtil::flatten(deserialize($objData->value), $objData->name, $arrTokens);
         }
 
-        return \String::parseSimpleTokens($objForm->leadLabel, $arrTokens);
+        return \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($objForm->leadLabel, $arrTokens);
     }
 
     /**
