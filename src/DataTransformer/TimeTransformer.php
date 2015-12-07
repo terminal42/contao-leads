@@ -8,16 +8,16 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Leads\DataTransformer;
 
+namespace Terminal42\Leads\DataTransformer;
 
-class DateTransformer extends AbstractDateTransformer
+class TimeTransformer extends AbstractDateTransformer
 {
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->format = $GLOBALS['TL_CONFIG']['dateFormat'];
+        $this->format = $GLOBALS['TL_CONFIG']['timeFormat'];
     }
 }

@@ -9,13 +9,13 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Leads;
+namespace Terminal42\Leads;
 
 use Haste\IO\Reader\ArrayReader;
-use Leads\Exporter\Csv;
-use Leads\Exporter\Utils\File;
-use Leads\Exporter\Xls;
-use Leads\Exporter\Xlsx;
+use Terminal42\Leads\Exporter\Csv;
+use Terminal42\Leads\Exporter\Utils\File;
+use Terminal42\Leads\Exporter\Xls;
+use Terminal42\Leads\Exporter\Xlsx;
 
 /**
  * Class Export

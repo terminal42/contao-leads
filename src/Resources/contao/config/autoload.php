@@ -10,8 +10,9 @@
  */
 
 /**
- * Backwards compatibility
- *
- * @deprecated Use \Leads\Leads instead.
+ * Register the templates
  */
-class Leads extends \Leads\Leads {}
+TemplateLoader::addFiles(array
+(
+    'be_leads_show' => 'system/modules/leads/templates',
+));

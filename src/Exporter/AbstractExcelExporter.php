@@ -8,14 +8,14 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Leads\Exporter;
+namespace Terminal42\Leads\Exporter;
 
 
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
-use Leads\Exporter\Utils\File;
-use Leads\Exporter\Utils\Row;
+use Terminal42\Leads\Exporter\Utils\File;
+use Terminal42\Leads\Exporter\Utils\Row;
 use PHPExcel_Cell;
 use PHPExcel_IOFactory;
 

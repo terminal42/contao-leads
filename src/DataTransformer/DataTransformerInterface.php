@@ -8,10 +8,10 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Leads\DataTransformer;
 
+namespace Terminal42\Leads\DataTransformer;
 
-class RawTransformer implements DataTransformerInterface, DisplayInBackendInterface
+interface DataTransformerInterface
 {
     /**
      * Transforms a value from the original representation to a transformed representation.
@@ -23,10 +23,7 @@ class RawTransformer implements DataTransformerInterface, DisplayInBackendInterf
      *
      * @throws TransformationFailedException When the transformation fails.
      */
-    public function transform($value)
-    {
-        return $value;
-    }
+    public function transform($value);
 
     /**
      * Transforms a value from the transformed representation to its original
@@ -39,8 +36,5 @@ class RawTransformer implements DataTransformerInterface, DisplayInBackendInterf
      *
      * @throws TransformationFailedException When the transformation fails.
      */
-    public function reverseTransform($value)
-    {
-        return $value;
-    }
+    public function reverseTransform($value);
 }

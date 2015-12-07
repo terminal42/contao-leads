@@ -9,7 +9,7 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Leads;
+namespace Terminal42\Leads;
 
 class DataCollector
 {

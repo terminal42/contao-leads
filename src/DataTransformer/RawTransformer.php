@@ -9,10 +9,9 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Leads\DataTransformer;
+namespace Terminal42\Leads\DataTransformer;
 
-
-interface DataTransformerInterface
+class RawTransformer implements DataTransformerInterface, DisplayInBackendInterface
 {
     /**
      * Transforms a value from the original representation to a transformed representation.
@@ -24,7 +23,10 @@ interface DataTransformerInterface
      *
      * @throws TransformationFailedException When the transformation fails.
      */
-    public function transform($value);
+    public function transform($value)
+    {
+        return $value;
+    }
 
     /**
      * Transforms a value from the transformed representation to its original
@@ -37,5 +39,8 @@ interface DataTransformerInterface
      *
      * @throws TransformationFailedException When the transformation fails.
      */
-    public function reverseTransform($value);
+    public function reverseTransform($value)
+    {
+        return $value;
+    }
 }

@@ -9,9 +9,9 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
+namespace Terminal42\Leads\Exporter\Utils;
 
-namespace Leads\Exporter\Utils;
-use Leads\DataTransformer\DataTransformerInterface;
+use Terminal42\Leads\DataTransformer\DataTransformerInterface;
 
 /**
  * Class Row

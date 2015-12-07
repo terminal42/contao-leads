@@ -9,8 +9,7 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-
-namespace Leads\Exporter\Utils;
+namespace Terminal42\Leads\Exporter\Utils;
 
 class File
 {

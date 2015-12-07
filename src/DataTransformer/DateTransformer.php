@@ -9,11 +9,15 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Leads\DataTransformer;
+namespace Terminal42\Leads\DataTransformer;
 
-/**
- * Interface DisplayInBackendInterface
- *
- * Defines whether a DataTransformer can be chosen in the back end by any user or not.
- */
-interface DisplayInBackendInterface {}
+class DateTransformer extends AbstractDateTransformer
+{
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->format = $GLOBALS['TL_CONFIG']['dateFormat'];
+    }
+}

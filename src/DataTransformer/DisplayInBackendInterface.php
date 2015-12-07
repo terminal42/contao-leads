@@ -9,6 +9,11 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Leads\DataTransformer;
+namespace Terminal42\Leads\DataTransformer;
 
-class TransformationFailedException extends \Exception {}
+/**
+ * Interface DisplayInBackendInterface
+ *
+ * Defines whether a DataTransformer can be chosen in the back end by any user or not.
+ */
+interface DisplayInBackendInterface {}
