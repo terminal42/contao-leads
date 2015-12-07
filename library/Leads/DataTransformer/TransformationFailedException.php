@@ -9,8 +9,6 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
+namespace Leads\DataTransformer;
 
-/**
- * Backend modules
- */
-$GLOBALS['TL_LANG']['MOD']['leads'] = array('Anfragen', 'Anfragen für Formular "%s" verwalten.');
+class TransformationFailedException extends \Exception {}

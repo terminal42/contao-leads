@@ -8,9 +8,16 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
+namespace Leads\DataTransformer;
 
 
-/**
- * Backend modules
- */
-$GLOBALS['TL_LANG']['MOD']['leads'] = array('Anfragen', 'Anfragen für Formular "%s" verwalten.');
+class DateTransformer extends AbstractDateTransformer
+{
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->format = $GLOBALS['TL_CONFIG']['dateFormat'];
+    }
+}

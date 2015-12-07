@@ -3,7 +3,7 @@
 /**
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2014, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -24,7 +24,8 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'onload_callback' => array
         (
             array('tl_lead_export', 'checkPermission'),
-            array('tl_lead_export', 'updatePalette')
+            array('tl_lead_export', 'updatePalette'),
+            array('tl_lead_export', 'loadJsAndCss'),
         ),
         'sql' => array
         (
@@ -97,17 +98,19 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__'                => array('type'),
+        '__selector__'                => array('type', 'useTemplate', 'export'),
         'default'                     => '{name_legend},name,type,filename;{config_legend},export',
         'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
-        'xls'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
-        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},headerFields,export',
+        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export',
+        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export',
     ),
 
     // Subpalettes
     'subpalettes' => array
     (
-        'export'                      => 'fields'
+        'export_fields'               => 'fields',
+        'export_tokens'               => 'tokenFields',
+        'useTemplate'                 => 'startIndex,template',
     ),
 
     // Fields
@@ -141,7 +144,32 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'select',
-            'options'                 => array_keys($GLOBALS['LEADS_EXPORT']),
+            'options_callback'        => function() {
+
+                $options = array();
+
+                foreach (array_keys($GLOBALS['LEADS_EXPORT']) as $exporterClassKey) {
+
+                    $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$exporterClassKey];
+
+                    if (!is_array($exporterDefinition)) {
+
+                        /** @var Leads\Exporter\ExporterInterface $exporter */
+                        $exporter = new $exporterDefinition();
+
+                        if ($exporter instanceof \Leads\Exporter\ExporterInterface) {
+                            if ($exporter->isAvailable()) {
+                                $options[] = $exporterClassKey;
+                            }
+                        }
+                    } else {
+                        // Backwards compatibility
+                        $options[] = $exporterClassKey;
+                    }
+                }
+
+                return $options;
+            },
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['type'],
             'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'w50'),
             'sql'                     => "varchar(32) NOT NULL default ''"
@@ -156,44 +184,42 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'explanation'             => 'leadsTags',
             'sql'                     => "varchar(128) NOT NULL default ''"
         ),
+        'useTemplate' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['useTemplate'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => array('tl_class'=>'w50 m12', 'submitOnChange'=>true),
+            'sql'                     => "char(1) NOT NULL default ''"
+        ),
+        'startIndex' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['startIndex'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'text',
+            'eval'                    => array('tl_class'=>'w50', 'rgxp'=>'digit'),
+            'sql'                     => "int(10) NOT NULL default '0'"
+        ),
+        'template' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['template'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'fileTree',
+            'eval'                    => array('filesOnly'=>true, 'fieldType'=>'radio', 'mandatory'=>true, 'tl_class'=>'clr'),
+            'sql'                     => "binary(16) NULL",
+        ),
         'headerFields' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['headerFields'],
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
+            'eval'                    => array('tl_class'=>'clr'),
             'sql'                     => "char(1) NOT NULL default ''"
         ),
-/*
-        'includeFormId' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['includeFormId'],
-            'exclude'                 => true,
-            'filter'                  => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
-            'sql'                     => "char(1) NOT NULL default ''"
-        ),
-        'includeCreated' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['includeCreated'],
-            'exclude'                 => true,
-            'filter'                  => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
-            'sql'                     => "char(1) NOT NULL default ''"
-        ),
-        'includeMember' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['includeMember'],
-            'exclude'                 => true,
-            'filter'                  => true,
-            'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50'),
-            'sql'                     => "char(1) NOT NULL default ''"
-        ),
-*/
         'export' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
@@ -201,7 +227,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'radio',
-            'options'                 => array('all', 'fields'),
+            'options'                 => array('all', 'fields', 'tokens'),
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
             'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
             'sql'                     => "varchar(8) NOT NULL default ''"
@@ -213,6 +239,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'inputType'               => 'multiColumnWizard',
             'eval'                    => array('mandatory'=>true, 'columnFields'=>array
             (
+                'column_display' => array
+                (
+                    'inputType'               => 'text', // dummy
+                    'eval'                    => array('tl_class'=>'column_display', 'hideHead'=>true),
+                ),
                 'field' => array
                 (
                     'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_field'],
@@ -233,7 +264,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                     'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
                     'exclude'                 => true,
                     'inputType'               => 'select',
-                    'options'                 => array('all', 'label', 'value'),
+                    'options'                 => array('label', 'all', 'value'),
                     'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
                     'eval'                    => array('style'=>'width:125px;')
                 ),
@@ -242,7 +273,28 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                     'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_format'],
                     'exclude'                 => true,
                     'inputType'               => 'select',
-                    'options'                 => array('raw', 'date', 'datim', 'time'),
+                    'options_callback'        => function() {
+
+                        $options = array();
+
+                        foreach (array_keys($GLOBALS['LEADS_DATA_TRANSFORMERS']) as $transformerClassKey) {
+
+                            /** @var Leads\DataTransformer\DataTransformerInterface $transformer */
+                            $transformer = new $GLOBALS['LEADS_DATA_TRANSFORMERS'][$transformerClassKey]();
+
+                            if ($transformer instanceof \Leads\DataTransformer\DataTransformerInterface
+                                && $transformer instanceof \Leads\DataTransformer\DisplayInBackendInterface
+                            ) {
+                                    $options[] = $transformerClassKey;
+                            }
+                        }
+
+                        // Backwards compatibility
+                        return array_merge(
+                            (array) $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['format']['options'],
+                            $options
+                        );
+                    },
                     'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_format'],
                     'eval'                    => array('style'=>'width:150px;')
                 ),
@@ -252,6 +304,37 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             (
                 array('tl_lead_export', 'loadLeadFields')
             )
+        ),
+        'tokenFields' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields'],
+            'exclude'                 => true,
+            'inputType'               => 'multiColumnWizard',
+            'eval'                    => array('mandatory'=>true, 'columnFields'=>array
+            (
+                'targetColumn' => array
+                (
+                    'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_targetColumn'],
+                    'exclude'                 => true,
+                    'inputType'               => 'text',
+                    'eval'                    => array('mandatory'=>true, 'style'=>'width:50px;'),
+                ),
+                'headerField' => array
+                (
+                    'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_name'],
+                    'exclude'                 => true,
+                    'inputType'               => 'text',
+                    'eval'                    => array('style'=>'width:100px;')
+                ),
+                'tokensValue' => array
+                (
+                    'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_tokensValue'],
+                    'exclude'                 => true,
+                    'inputType'               => 'textarea',
+                    'eval'                    => array('style'=>'width:420px;')
+                ),
+            )),
+            'sql'                     => "blob NULL",
         ),
     )
 );
@@ -266,41 +349,49 @@ class tl_lead_export extends Backend
 {
 
     /**
-     * Check permissions to edit table
+     * Check permissions to edit table.
      */
     public function checkPermission()
     {
         if (!\BackendUser::getInstance()->isAdmin) {
             \System::log('Not enough permissions to access leads export ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
     }
 
     /**
-     * Update the palette depending on the export type
-     * @param \DataContainer
+     * Update the palette depending on the export type.
+     *
+     * @param $dc
      */
-    public function updatePalette($dc=null)
+    public function updatePalette($dc = null)
     {
         if (!$dc->id) {
             return;
         }
 
-        $objRecord = $this->Database->prepare("SELECT * FROM tl_lead_export WHERE id=?")
-                                    ->limit(1)
-                                    ->execute($dc->id);
+        $objRecord = \Database::getInstance()->prepare(
+            "SELECT * FROM tl_lead_export WHERE id=?"
+        )->execute($dc->id);
 
         if (!$objRecord->export || $objRecord->export == 'all') {
+
             return;
         }
 
         $strPalette = $objRecord->type ? $objRecord->type : 'default';
-        $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace('export', 'export,' . $GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'], $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]);
+        $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace(
+            'export',
+            'export,' . $GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'],
+            $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]
+        );
     }
 
     /**
-     * Generate the label and return it as HTML string
-     * @param array
+     * Generate the label and return it as HTML string.
+     *
+     * @param array $arrRow
+     *
      * @return string
      */
     public function generateLabel($arrRow)
@@ -309,51 +400,28 @@ class tl_lead_export extends Backend
     }
 
     /**
-     * Load the lead fields
-     * @param mixed
-     * @param DataContainer
-     * @return mixed
+     * Load the lead fields.
+     *
+     * @param mixed  $varValue
+     * @param object $dc
+     *
+     * @return string
      */
-    public function loadLeadFields($varValue, $dc=null)
+    public function loadLeadFields($varValue, $dc = null)
     {
         $arrFields = deserialize($varValue, true);
 
         // Load the form fields
         if (empty($arrFields) && $dc->id) {
 
-            // Form ID
-            $arrFields[] = array
-            (
-                'field' => '_form',
-                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
-                'value' => 'all',
-                'format' => 'raw'
-            );
+            $arrFields = array_values(\Leads\Leads::getSystemColumns());
 
-            // Date created
-            $arrFields[] = array
-            (
-                'field' => '_created',
-                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
-                'value' => 'all',
-                'format' => 'datim'
-            );
-
-            // Member ID
-            $arrFields[] = array
-            (
-                'field' => '_member',
-                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
-                'value' => 'all',
-                'format' => 'raw'
-            );
-
-            $objFields = Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
-                                                ->execute($dc->id);
+            $objFields = Database::getInstance()->prepare(
+                "SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)"
+            )->execute($dc->id);
 
             while ($objFields->next()) {
-                $arrFields[] = array
-                (
+                $arrFields[] = array(
                     'field' => $objFields->id,
                     'name' => '',
                     'value' => 'all',
@@ -366,24 +434,26 @@ class tl_lead_export extends Backend
     }
 
     /**
-     * Get the export fields as array
+     * Get the export fields as array.
+     *
      * @return array
      */
     public function getExportFields()
     {
-        if (!Input::get('id')) {
+        if (!\Input::get('id')) {
             return array();
         }
 
-        $arrFields = array
-        (
-            '_form' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
-            '_created' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
-            '_member' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
-        );
+        $arrFields = array();
 
-        $objFields = Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
-                                            ->execute(Input::get('id'));
+        $systemColumns = \Leads\Leads::getSystemColumns();
+
+        foreach ($systemColumns as $k => $systemColumn) {
+            $arrFields[$k] = $systemColumn['name'];
+        }
+
+        $objFields = \Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
+                                             ->execute(Input::get('id'));
 
         while ($objFields->next()) {
             $strLabel = $objFields->name;
@@ -397,5 +467,14 @@ class tl_lead_export extends Backend
         }
 
         return $arrFields;
+    }
+
+    /**
+     * Loads JS and CSS.
+     */
+    public function loadJsAndCss()
+    {
+        $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
+        $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];
     }
 }

@@ -3,7 +3,7 @@
 /**
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2014, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -32,22 +32,30 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads', 'loadLeadName');
-$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads', 'loadBackendModules');
-$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads', 'processFormData');
+$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads\\Leads', 'loadLeadName');
+$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads\\Leads', 'loadBackendModules');
+$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads\\Leads', 'processFormData');
+$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Leads\\Leads', 'handleSystemColumnExports');
+$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Leads\\Leads', 'handleTokenExports');
 
 /**
  * Leads export types
  */
 $GLOBALS['LEADS_EXPORT'] = array
 (
-    'csv' => array('LeadsExport', 'exportCsv'),
+    'csv'   => 'Leads\\Exporter\\Csv',
+    'xls'   => 'Leads\\Exporter\\Xls',
+    'xlsx'  => 'Leads\\Exporter\\Xlsx',
 );
 
 /**
- * Add the XLS export if the PHPExcel extension is installed
+ * Data transformers
  */
-if (class_exists('PHPExcel')) {
-    $GLOBALS['LEADS_EXPORT']['xls'] = array('LeadsExport', 'exportXls');
-    $GLOBALS['LEADS_EXPORT']['xlsx'] = array('LeadsExport', 'exportXlsx');
-}
+$GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
+(
+    'raw'       => 'Leads\\DataTransformer\\RawTransformer',
+    'date'      => 'Leads\\DataTransformer\\DateTransformer',
+    'datim'     => 'Leads\\DataTransformer\\DatimTransformer',
+    'time'      => 'Leads\\DataTransformer\\TimeTransformer',
+    'yesno'     => 'Leads\\DataTransformer\\YesNoTransformer',
+);

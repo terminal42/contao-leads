@@ -3,7 +3,7 @@
 /**
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2014, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -29,6 +29,14 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = array
         'onload_callback' => array
         (
             array('tl_lead_data', 'checkPermission')
+        ),
+        'sql' => array
+        (
+            'keys' => array
+            (
+                'id'    => 'primary',
+                'pid'   => 'index'
+            )
         )
     ),
 
@@ -48,7 +56,45 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = array
     ),
 
     // Fields
-    'fields' => array()
+    'fields' => array
+    (
+        'id' => array
+        (
+            'sql'                     => "int(10) unsigned NOT NULL auto_increment"
+        ),
+        'pid' => array
+        (
+            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'tstamp' => array
+        (
+            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'sorting' => array
+        (
+            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'master_id' => array
+        (
+            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'field_id' => array
+        (
+            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'name' => array
+        (
+            'sql'                     => "varchar(64) NOT NULL default ''"
+        ),
+        'value' => array
+        (
+            'sql'                     => "text NULL"
+        ),
+        'label' => array
+        (
+            'sql'                     => "text NULL"
+        ),
+    )
 );
 
 
@@ -68,7 +114,7 @@ class tl_lead_data extends Backend
 
         if (!is_array($objUser->forms)) {
             \System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
 
         $objLeads = \Database::getInstance()->prepare("SELECT master_id FROM tl_lead WHERE id=(SELECT pid FROM tl_lead_data WHERE id=?)")
@@ -77,7 +123,7 @@ class tl_lead_data extends Backend
 
         if (!$objLeads->numRows || !in_array($objLeads->master_id, $objUser->forms)) {
             \System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
-            $this->redirect('contao/main.php?act=error');
+            \Controller::redirect('contao/main.php?act=error');
         }
     }
 
@@ -89,6 +135,6 @@ class tl_lead_data extends Backend
      */
     public function listRows($row)
     {
-        return $row['name'] . ': ' . Leads::formatValue((object) $row);
+        return $row['name'] . ': ' . \Leads\Leads::formatValue((object) $row);
     }
 }

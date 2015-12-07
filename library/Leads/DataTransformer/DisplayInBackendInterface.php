@@ -9,8 +9,11 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
+namespace Leads\DataTransformer;
 
 /**
- * Backend modules
+ * Interface DisplayInBackendInterface
+ *
+ * Defines whether a DataTransformer can be chosen in the back end by any user or not.
  */
-$GLOBALS['TL_LANG']['MOD']['leads'] = array('Anfragen', 'Anfragen für Formular "%s" verwalten.');
+interface DisplayInBackendInterface {}
