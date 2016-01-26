@@ -18,7 +18,7 @@
         "menatwork/contao-multicolumnwizard": "~3.2"
     },
     "suggest": {
-        "phpoffice/phpexcel": "1.8.*"
+        "phpoffice/phpexcel": "To enable excel export of lead data."
     },
     "autoload":{
         "psr-0":{
