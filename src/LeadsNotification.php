@@ -36,15 +36,14 @@ class LeadsNotification
     }
 
     /**
-     * Send lead data using given notification
+     * Generate simple tokens for a lead record.
      *
-     * @param int                                    $leadId
-     * @param \FormModel                             $form
-     * @param \NotificationCenter\Model\Notification $notification
+     * @param            $leadId
+     * @param \FormModel $form
      *
-     * @return bool
+     * @return array
      */
-    public static function send($leadId, \FormModel $form, \NotificationCenter\Model\Notification $notification)
+    public static function generateTokens($leadId, \FormModel $form)
     {
         $data   = array();
         $labels = array();
@@ -66,8 +65,21 @@ class LeadsNotification
 
         $formHelper = new \NotificationCenter\tl_form();
 
-        // Send the notification
-        $result = $notification->send($formHelper->generateTokens($data, $form->row(), array(), $labels));
+        return $formHelper->generateTokens($data, $form->row(), array(), $labels);
+    }
+
+    /**
+     * Send lead data using given notification
+     *
+     * @param int                                    $leadId
+     * @param \FormModel                             $form
+     * @param \NotificationCenter\Model\Notification $notification
+     *
+     * @return bool
+     */
+    public static function send($leadId, \FormModel $form, \NotificationCenter\Model\Notification $notification)
+    {
+        $result = $notification->send(static::generateTokens($leadId, $form));
 
         return !in_array(false, $result);
     }
