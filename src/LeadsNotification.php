@@ -39,7 +39,7 @@ class LeadsNotification
      * Send lead data using given notification
      *
      * @param int                                    $leadId
-     * @param FormModel                              $form
+     * @param \FormModel                             $form
      * @param \NotificationCenter\Model\Notification $notification
      *
      * @return bool

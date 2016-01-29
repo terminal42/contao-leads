@@ -8,8 +8,6 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-use Terminal42\Leads\Leads;
-
 
 /**
  * Table tl_lead
@@ -228,7 +226,7 @@ class tl_lead extends Backend
      */
     public function addNotificationCenterSupport()
     {
-        if (!\LeadsNotification::available(true)) {
+        if (!\Terminal42\Leads\LeadsNotification::available(true)) {
             return;
         }
 
@@ -245,7 +243,7 @@ class tl_lead extends Backend
     public function sendNotification()
     {
         if (!\Input::get('master')
-            || !\LeadsNotification::available()
+            || !\Terminal42\Leads\LeadsNotification::available()
         ) {
             \Controller::redirect('contao/main.php?act=error');
         }
@@ -286,17 +284,17 @@ class tl_lead extends Backend
             }
 
             foreach ($ids as $id) {
-                if (LeadsNotification::send($id, $form, $notification)) {
+                if (\Terminal42\Leads\LeadsNotification::send($id, $form, $notification)) {
                     \Message::addConfirmation(
                         sprintf($GLOBALS['TL_LANG']['tl_lead']['notification_confirm'], $id)
                     );
                 }
             }
 
-            \Controller::redirect($this->getReferer());
+            \Controller::redirect(\System::getReferer());
         }
 
-        return LeadsNotification::generateForm($notifications, array(\Input::get('id')));
+        return \Terminal42\Leads\LeadsNotification::generateForm($notifications, array(\Input::get('id')));
     }
 
 
@@ -478,7 +476,7 @@ class tl_lead extends Backend
             $arrButtons['export_' . $config['id']] = '<input type="submit" name="export_' . $config['id'] . '" id="export_' . $config['id'] . '" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' "' . $config['name'] . '"').'">';
         }
 
-        if (\LeadsNotification::available(true)) {
+        if (\Terminal42\Leads\LeadsNotification::available(true)) {
             $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="' . specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]) . '">';
         }
 
