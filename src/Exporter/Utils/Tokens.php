@@ -11,7 +11,7 @@
 
 namespace Terminal42\LeadsBundle\Exporter\Utils;
 
-use Terminal42\LeadsBundle\DataCollector;
+use Haste\Haste;
 
 class Tokens
 {
@@ -45,7 +45,7 @@ class Tokens
         $buffer = str_replace($replacement, $original, $buffer);
 
         // Replace the Insert Tags
-        $buffer = \Haste\Haste::getInstance()->call('replaceInsertTags', array($buffer, false));
+        $buffer = Haste::getInstance()->call('replaceInsertTags', array($buffer, false));
 
         // Check if the Insert Tags have returned a Simple Token or an Insert Tag to parse
         if (

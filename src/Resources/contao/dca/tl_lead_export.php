@@ -154,10 +154,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
 
                     if (!is_array($exporterDefinition)) {
 
-                        /** @var Leads\Exporter\ExporterInterface $exporter */
+                        /** @var \Terminal42\LeadsBundle\Exporter\ExporterInterface $exporter */
                         $exporter = new $exporterDefinition();
 
-                        if ($exporter instanceof \Leads\Exporter\ExporterInterface) {
+                        if ($exporter instanceof \Terminal42\LeadsBundle\Exporter\ExporterInterface) {
                             if ($exporter->isAvailable()) {
                                 $options[] = $exporterClassKey;
                             }
@@ -279,11 +279,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
 
                         foreach (array_keys($GLOBALS['LEADS_DATA_TRANSFORMERS']) as $transformerClassKey) {
 
-                            /** @var Leads\DataTransformer\DataTransformerInterface $transformer */
+                            /** @var \Terminal42\LeadsBundle\DataTransformer\DataTransformerInterface $transformer */
                             $transformer = new $GLOBALS['LEADS_DATA_TRANSFORMERS'][$transformerClassKey]();
 
-                            if ($transformer instanceof \Leads\DataTransformer\DataTransformerInterface
-                                && $transformer instanceof \Leads\DataTransformer\DisplayInBackendInterface
+                            if ($transformer instanceof \Terminal42\LeadsBundle\DataTransformer\DataTransformerInterface
+                                && $transformer instanceof \Terminal42\LeadsBundle\DataTransformer\DisplayInBackendInterface
                             ) {
                                     $options[] = $transformerClassKey;
                             }
@@ -414,7 +414,7 @@ class tl_lead_export extends Backend
         // Load the form fields
         if (empty($arrFields) && $dc->id) {
 
-            $arrFields = array_values(\Leads\Leads::getSystemColumns());
+            $arrFields = array_values(\Terminal42\LeadsBundle\Leads::getSystemColumns());
 
             $objFields = Database::getInstance()->prepare(
                 "SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)"
@@ -446,7 +446,7 @@ class tl_lead_export extends Backend
 
         $arrFields = array();
 
-        $systemColumns = \Leads\Leads::getSystemColumns();
+        $systemColumns = \Terminal42\LeadsBundle\Leads::getSystemColumns();
 
         foreach ($systemColumns as $k => $systemColumn) {
             $arrFields[$k] = $systemColumn['name'];

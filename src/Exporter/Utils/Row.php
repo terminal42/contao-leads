@@ -54,7 +54,7 @@ class Row
      * @param \Database\Result $config
      * @param array            $columnConfig
      */
-    function __construct($config, array $columnConfig)
+    public function __construct($config, array $columnConfig)
     {
         $this->config = $config;
         $this->columnConfig = $columnConfig;
