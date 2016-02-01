@@ -98,7 +98,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             (
                 'label'         => &$GLOBALS['TL_LANG']['tl_lead']['data'],
                 'href'          => 'table=tl_lead_data',
-                'icon'          => 'system/modules/leads/assets/field.png'
+                'icon'          => 'bundles/terminal42leads/field.png'
             ),
         )
     ),
@@ -233,7 +233,7 @@ class tl_lead extends Backend
         $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['notification'] = array(
             'label' => &$GLOBALS['TL_LANG']['tl_lead']['notification'],
             'href'  => 'key=notification',
-            'icon'  => 'system/modules/notification_center/assets/notification.png',
+            'icon'  => 'system/modules/notification_center/notification.png',
         );
     }
 
