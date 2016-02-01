@@ -16,8 +16,11 @@
         "codefog/contao-haste": "dev-feature/contao4",
         "menatwork/contao-multicolumnwizard": "~3.2"
     },
-    "suggest": {
+    "require-dev": {
         "phpoffice/phpexcel": "1.8.*"
+    },
+    "suggest": {
+        "phpoffice/phpexcel": "To enable excel export of lead data."
     },
     "autoload":{
         "psr-4": {
