@@ -226,7 +226,7 @@ class tl_lead extends Backend
      */
     public function addNotificationCenterSupport()
     {
-        if (!\Terminal42\Leads\LeadsNotification::available(true)) {
+        if (!\Terminal42\LeadsBundle\LeadsNotification::available(true)) {
             return;
         }
 
@@ -243,7 +243,7 @@ class tl_lead extends Backend
     public function sendNotification()
     {
         if (!\Input::get('master')
-            || !\Terminal42\Leads\LeadsNotification::available()
+            || !\Terminal42\LeadsBundle\LeadsNotification::available()
         ) {
             \Controller::redirect('contao/main.php?act=error');
         }
@@ -284,7 +284,7 @@ class tl_lead extends Backend
             }
 
             foreach ($ids as $id) {
-                if (\Terminal42\Leads\LeadsNotification::send($id, $form, $notification)) {
+                if (\Terminal42\LeadsBundle\LeadsNotification::send($id, $form, $notification)) {
                     \Message::addConfirmation(
                         sprintf($GLOBALS['TL_LANG']['tl_lead']['notification_confirm'], $id)
                     );
@@ -294,7 +294,7 @@ class tl_lead extends Backend
             \Controller::redirect(\System::getReferer());
         }
 
-        return \Terminal42\Leads\LeadsNotification::generateForm($notifications, array(\Input::get('id')));
+        return \Terminal42\LeadsBundle\LeadsNotification::generateForm($notifications, array(\Input::get('id')));
     }
 
 
@@ -476,7 +476,7 @@ class tl_lead extends Backend
             $arrButtons['export_' . $config['id']] = '<input type="submit" name="export_' . $config['id'] . '" id="export_' . $config['id'] . '" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' "' . $config['name'] . '"').'">';
         }
 
-        if (\Terminal42\Leads\LeadsNotification::available(true)) {
+        if (\Terminal42\LeadsBundle\LeadsNotification::available(true)) {
             $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="' . specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]) . '">';
         }
 

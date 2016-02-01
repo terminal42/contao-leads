@@ -9,7 +9,7 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\Leads;
+namespace Terminal42\LeadsBundle;
 
 class LeadsNotification
 {
