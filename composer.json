@@ -20,7 +20,8 @@
         "phpoffice/phpexcel": "1.8.*"
     },
     "suggest": {
-        "phpoffice/phpexcel": "To enable excel export of lead data."
+        "phpoffice/phpexcel": "To enable excel export of lead data.",
+        "terminal42/notification_center": "Send notifications for leads."
     },
     "autoload":{
         "psr-4": {
