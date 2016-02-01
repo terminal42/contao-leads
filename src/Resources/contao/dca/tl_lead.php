@@ -203,7 +203,7 @@ class tl_lead extends Backend
      *
      * @param $dc
      */
-    public function checkPermission($dc)
+    public function checkPermission()
     {
         if (\Input::get('master') == '') {
             \Controller::redirect('contao/main.php?act=error');
@@ -300,6 +300,7 @@ class tl_lead extends Backend
             ORDER BY d.sorting
         ")->execute($dc->id);
 
+        /** @var \BackendTemplate|object $template */
         $template = new \BackendTemplate('be_leads_show');
         $template->recordId         = $dc->id;
         $template->referer          = \System::getReferer(true);

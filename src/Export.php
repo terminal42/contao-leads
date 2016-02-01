@@ -208,7 +208,7 @@ class Export
                     break;
 
                 case 'label':
-                    $arrRow[] = $strLabel ? $strLabel : $varValue;
+                    $arrRow[] = $strLabel ?: $varValue;
                     break;
 
                 default:

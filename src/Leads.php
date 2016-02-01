@@ -52,8 +52,8 @@ class Leads extends \Controller
     /**
      * Get the label for a form value to store in lead table.
      *
-     * @param mixed $varValue
-     * @param \Database\Result $objField
+     * @param mixed                   $varValue
+     * @param \Database\Result|object $objField
      *
      * @return mixed
      */
@@ -69,7 +69,7 @@ class Leads extends \Controller
         }
 
         // File upload
-        if ($objField->type == 'upload') {
+        if ('upload' === $objField->type) {
             $objFile = \FilesModel::findByUuid($varValue);
 
             if ($objFile !== null) {
@@ -128,12 +128,12 @@ class Leads extends \Controller
      * @param string
      * @param string
      */
-    public function loadLeadName($strName, $strLanguage)
+    public function loadLeadName($strName)
     {
-        if ($strName == 'modules' && $this->Input->get('do') == 'lead') {
+        if ('modules' === $strName && 'lead' === \Input::get('do')) {
             $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute(\Input::get('master'));
 
-            $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ? $objForm->leadMenuLabel : $objForm->title;
+            $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ?: $objForm->title;
         }
     }
 
@@ -230,7 +230,7 @@ class Leads extends \Controller
                 $time,
                 $GLOBALS['TL_LANGUAGE'],
                 $arrForm['id'],
-                ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']),
+                ($arrForm['leadMaster'] ?: $arrForm['id']),
                 (FE_USER_LOGGED_IN === true ? \FrontendUser::getInstance()->id : 0),
                 serialize($arrPost)
             )->insertId;
@@ -289,7 +289,7 @@ class Leads extends \Controller
                         }
                     }
 
-                    \Database::getInstance()->prepare("INSERT INTO tl_lead_data %s")->set($arrSet)->executeUncached();
+                    \Database::getInstance()->prepare("INSERT INTO tl_lead_data %s")->set($arrSet)->execute();
                 }
             }
 
@@ -355,10 +355,10 @@ class Leads extends \Controller
      *
      * @param $columnConfig
      * @param $data
-     * @param $config
-     * @param $value
+     *
+     * @return null|string
      */
-    public function handleSystemColumnExports($columnConfig, $data, $config, $value)
+    public function handleSystemColumnExports($columnConfig, $data)
     {
         $systemColumns = static::getSystemColumns();
 
@@ -391,12 +391,13 @@ class Leads extends \Controller
      * @param $columnConfig
      * @param $data
      * @param $config
-     * @param $value
+     *
+     * @return string
      */
-    public function handleTokenExports($columnConfig, $data, $config, $value)
+    public function handleTokenExports($columnConfig, $data, $config)
     {
 
-        if ($config->export != 'tokens') {
+        if ('tokens' !== $config->export) {
 
             return null;
         }

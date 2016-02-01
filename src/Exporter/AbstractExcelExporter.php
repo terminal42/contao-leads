@@ -46,9 +46,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
     /**
      * Exports based on Excel format.
      *
-     * @param \Database\Result $config
-     * @param array|null       $ids
-     * @param string           $format
+     * @param \Database\Result|object $config
+     * @param array|null              $ids
+     * @param string                  $format
      */
     protected function exportWithFormat($config, $ids, $format)
     {
@@ -150,7 +150,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
                 }
 
                 $excel->getActiveSheet()->setCellValueExplicitByColumnAndRow(
-                    ($specificColumn) ?: $currentColumn++,
+                    $specificColumn ?: $currentColumn++,
                     $currentRow,
                     (string) $value,
                     \PHPExcel_Cell_DataType::TYPE_STRING2

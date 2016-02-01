@@ -157,10 +157,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                         /** @var \Terminal42\LeadsBundle\Exporter\ExporterInterface $exporter */
                         $exporter = new $exporterDefinition();
 
-                        if ($exporter instanceof \Terminal42\LeadsBundle\Exporter\ExporterInterface) {
-                            if ($exporter->isAvailable()) {
+                        if ($exporter instanceof \Terminal42\LeadsBundle\Exporter\ExporterInterface
+                            && $exporter->isAvailable()
+                        ) {
                                 $options[] = $exporterClassKey;
-                            }
                         }
                     } else {
                         // Backwards compatibility
@@ -379,7 +379,7 @@ class tl_lead_export extends Backend
             return;
         }
 
-        $strPalette = $objRecord->type ? $objRecord->type : 'default';
+        $strPalette = $objRecord->type ?: 'default';
         $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace(
             'export',
             'export,' . $GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'],

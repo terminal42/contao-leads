@@ -16,25 +16,23 @@ class File
     /**
      * Get the filename from a database config.
      *
-     * @param   \Database\Result $config
-     * @return  string
+     * @param \Database\Result|object $config
+     *
+     * @return string
      */
     public static function getName($config)
     {
         if ($config->filename == '') {
-
             $filename = 'export_' . md5(uniqid());
 
             if ($config->type) {
-
                 $filename .= '.' . $config->type;
             }
 
             return $filename;
         }
 
-        $tokens = array
-        (
+        $tokens = array(
             'time'  => \Date::parse($GLOBALS['TL_CONFIG']['timeFormat']),
             'date'  => \Date::parse($GLOBALS['TL_CONFIG']['dateFormat']),
             'datim' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat']),

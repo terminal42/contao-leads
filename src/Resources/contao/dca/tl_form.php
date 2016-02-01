@@ -64,7 +64,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = array
     'exclude'               => true,
     'inputType'             => 'textarea',
     'eval'                  => array('mandatory'=>true, 'decodeEntities'=>true, 'style'=>'height:60px', 'allowHtml'=>true, 'tl_class'=>'clr'),
-    'sql'                   => "text NULL"
+    'sql'                   => 'text NULL'
 );
 
 

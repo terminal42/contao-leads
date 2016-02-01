@@ -161,7 +161,7 @@ class Row
 
         if ($outputFormat === 'label') {
 
-            return $label ? $label : $value;
+            return $label ?: $value;
         }
 
         if ($label === '' && $value === '') {

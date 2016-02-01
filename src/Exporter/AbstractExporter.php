@@ -34,8 +34,8 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the default DataCollector instance based on the configuration.
      *
-     * @param \Database\Result $config
-     * @param null             $ids
+     * @param \Database\Result|object $config
+     * @param array                   $ids
      *
      * @return DataCollector
      */
@@ -44,7 +44,7 @@ abstract class AbstractExporter implements ExporterInterface
         $dataCollector = new DataCollector($config->master);
 
         // Limit the fields
-        if ($config->export == 'fields') {
+        if ('fields' === $config->export) {
 
             $limitFields = array();
             foreach ($config->fields as $fieldsConfig) {
@@ -64,8 +64,8 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the header fields according to the configuration.
      *
-     * @param \Database\Result $config
-     * @param DataCollector    $dataCollector
+     * @param \Database\Result|object $config
+     * @param DataCollector           $dataCollector
      *
      * @return array
      */
@@ -74,7 +74,7 @@ abstract class AbstractExporter implements ExporterInterface
         $headerFields = array();
 
         // Config: all
-        if ($config->export == 'all') {
+        if ('all' === $config->export) {
             foreach (Leads::getSystemColumns() as $systemColumn) {
                 $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $systemColumn['field']];
             }
@@ -88,7 +88,7 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         // Config: tokens
-        if ($config->export == 'tokens') {
+        if ('tokens' === $config->export) {
 
             foreach ($config->tokenFields as $column) {
 
@@ -127,8 +127,9 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the default export configuration according to the configuration.
      *
-     * @param \Database\Result $config
-     * @param DataCollector    $dataCollector
+     * @param \Database\Result|object $config
+     * @param DataCollector           $dataCollector
+     *
      * @return array
      */
     protected function prepareDefaultExportConfig($config, DataCollector $dataCollector)
@@ -136,7 +137,7 @@ abstract class AbstractExporter implements ExporterInterface
         $columnConfig = array();
 
         // Config: all
-        if ($config->export == 'all') {
+        if ('all' === $config->export) {
             // Add base information columns (system columns)
             foreach (Leads::getSystemColumns() as $systemColumn) {
                 $columnConfig[] = $systemColumn;
@@ -158,7 +159,7 @@ abstract class AbstractExporter implements ExporterInterface
         $fieldsData = $dataCollector->getFieldsData();
 
         // Config: tokens
-        if ($config->export == 'tokens') {
+        if ('tokens' === $config->export) {
 
             $allFieldsConfig = array();
             foreach ($fieldsData as $fieldConfig) {
@@ -213,14 +214,15 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Handles some Contao specific configurations.
      *
-     * @param array     $fieldConfig
+     * @param array $fieldConfig
+     *
      * @return array
      */
     protected function handleContaoSpecificConfig(array $fieldConfig)
     {
         // Yes and No transformer for checkboxes with only one option
         if ($fieldConfig['label'] == $fieldConfig['name']
-            && $fieldConfig['type'] == 'checkbox'
+            && 'checkbox' === $fieldConfig['type']
             && $fieldConfig['options'] != ''
         ) {
             $options = deserialize($fieldConfig['options'], true);
