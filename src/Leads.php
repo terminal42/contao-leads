@@ -20,13 +20,15 @@ class Leads extends \Controller
     /**
      * Prepare a form value for storage in lead table.
      *
-     * @param mixed
-     * @param \Database\Result
+     * @param mixed                   $varValue
+     * @param \Database\Result|object $objField
+     *
+     * @return array|int
      */
     public static function prepareValue($varValue, $objField)
     {
         // File upload
-        if ($objField->type == 'upload') {
+        if ('upload' === $objField->type) {
             return $varValue['uuid'];
         }
 
@@ -99,7 +101,7 @@ class Leads extends \Controller
     /**
      * Format a lead field for list view.
      *
-     * @param object
+     * @param object $objData
      *
      * @return string
      */
@@ -125,13 +127,15 @@ class Leads extends \Controller
     /**
      * Dynamically load the name for the current lead view.
      *
-     * @param string
-     * @param string
+     * @param string $strName
      */
     public function loadLeadName($strName)
     {
         if ('modules' === $strName && 'lead' === \Input::get('do')) {
-            $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute(\Input::get('master'));
+            $objForm = \Database::getInstance()
+                ->prepare("SELECT * FROM tl_form WHERE id=?")
+                ->execute(\Input::get('master'))
+            ;
 
             $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ?: $objForm->title;
         }
@@ -141,8 +145,8 @@ class Leads extends \Controller
     /**
      * Add leads to the backend navigation.
      *
-     * @param array
-     * @param bool
+     * @param array $arrModules
+     * @param bool $blnShowAll
      *
      * @return array
      */
@@ -214,9 +218,9 @@ class Leads extends \Controller
     /**
      * Process data submitted through the form generator.
      *
-     * @param array
-     * @param array
-     * @param array
+     * @param array $arrPost
+     * @param array $arrForm
+     * @param array $arrFiles
      */
     public function processFormData(&$arrPost, &$arrForm, &$arrFiles)
     {
@@ -308,13 +312,21 @@ class Leads extends \Controller
      * Export the data.
      *
      * @param integer $intConfig
-     * @param array
+     * @param array   $arrIds
      */
     public static function export($intConfig, $arrIds=null)
     {
-        $objConfig = \Database::getInstance()->prepare("SELECT *, (SELECT leadMaster FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS master FROM tl_lead_export WHERE id=?")
-                                            ->limit(1)
-                                            ->execute($intConfig);
+        /** @var \Database\Result|object $objConfig */
+        $objConfig = \Database::getInstance()
+            ->prepare("
+                SELECT *,
+                (SELECT leadMaster FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS master
+                FROM tl_lead_export
+                WHERE id=?
+            ")
+            ->limit(1)
+            ->execute($intConfig)
+        ;
 
         if (!$objConfig->numRows || !isset($GLOBALS['LEADS_EXPORT'][$objConfig->type])) {
             return;
@@ -353,8 +365,8 @@ class Leads extends \Controller
     /**
      * Handles the system columns when exporting.
      *
-     * @param $columnConfig
-     * @param $data
+     * @param array $columnConfig
+     * @param array $data
      *
      * @return null|string
      */
@@ -388,9 +400,9 @@ class Leads extends \Controller
     /**
      * Handles the Simple Tokens and Insert Tags when exporting.
      *
-     * @param $columnConfig
-     * @param $data
-     * @param $config
+     * @param array $columnConfig
+     * @param array $data
+     * @param array $config
      *
      * @return string
      */

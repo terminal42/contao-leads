@@ -32,8 +32,8 @@ class Csv extends AbstractExporter
     /**
      * Exports a given set of data row ids using a given configuration.
      *
-     * @param \Database\Result $config
-     * @param array|null       $ids
+     * @param \Database\Result|object $config
+     * @param array|null              $ids
      */
     public function export($config, $ids = null)
     {

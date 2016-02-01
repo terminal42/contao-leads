@@ -362,7 +362,7 @@ class tl_lead_export extends Backend
     /**
      * Update the palette depending on the export type.
      *
-     * @param $dc
+     * @param \Contao\DataContainer $dc
      */
     public function updatePalette($dc = null)
     {

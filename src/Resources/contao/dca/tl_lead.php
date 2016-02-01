@@ -256,9 +256,11 @@ class tl_lead extends Backend
     /**
      * Return the export config icon.
      *
-     * @param string
-     * @param string
-     * @param string
+     * @param string $href
+     * @param string $label
+     * @param string $title
+     * @param string $class
+     * @param string $attributes
      *
      * @return string
      */

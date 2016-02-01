@@ -18,8 +18,8 @@ class Tokens
     /**
      * Recursively replace simple tokens and insert tags
      *
-     * @param   string $strText
-     * @param   array  $arrTokens Array of Tokens
+     * @param string $text
+     * @param array  $tokens
      *
      * @return  string
      */
