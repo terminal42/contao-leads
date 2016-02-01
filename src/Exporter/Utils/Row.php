@@ -9,16 +9,14 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\Leads\Exporter\Utils;
+namespace Terminal42\LeadsBundle\Exporter\Utils;
 
-use Terminal42\Leads\DataTransformer\DataTransformerInterface;
+use Terminal42\LeadsBundle\DataTransformer\DataTransformerInterface;
 
 /**
  * Class Row
  *
  * Represents a row in any export format (whether you use it in csv, excel, xml etc.).
- *
- * @package Leads\Exporter\Utils
  */
 class Row
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminal42\Leads;
+namespace Terminal42\LeadsBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

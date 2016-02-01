@@ -9,11 +9,11 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\Leads;
+namespace Terminal42\LeadsBundle;
 
-use Terminal42\Leads\Exporter\ExporterInterface;
-use Terminal42\Leads\Exporter\Utils\Row;
-use Terminal42\Leads\Exporter\Utils\Tokens;
+use Terminal42\LeadsBundle\Exporter\ExporterInterface;
+use Terminal42\LeadsBundle\Exporter\Utils\Row;
+use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
 
 class Leads extends \Controller
 {

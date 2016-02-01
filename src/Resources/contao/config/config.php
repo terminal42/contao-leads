@@ -32,20 +32,20 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Leads\\Leads', 'loadLeadName');
-$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Leads\\Leads', 'loadBackendModules');
-$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Leads\\Leads', 'processFormData');
-$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Leads\\Leads', 'handleSystemColumnExports');
-$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Leads\\Leads', 'handleTokenExports');
+$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Terminal42\LeadsBundle\Leads', 'loadLeadName');
+$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Terminal42\LeadsBundle\Leads', 'loadBackendModules');
+$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Terminal42\LeadsBundle\Leads', 'processFormData');
+$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Leads', 'handleSystemColumnExports');
+$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Leads', 'handleTokenExports');
 
 /**
  * Leads export types
  */
 $GLOBALS['LEADS_EXPORT'] = array
 (
-    'csv'   => 'Leads\\Exporter\\Csv',
-    'xls'   => 'Leads\\Exporter\\Xls',
-    'xlsx'  => 'Leads\\Exporter\\Xlsx',
+    'csv'   => 'Terminal42\LeadsBundle\Exporter\Csv',
+    'xls'   => 'Terminal42\LeadsBundle\Exporter\Xls',
+    'xlsx'  => 'Terminal42\LeadsBundle\Exporter\Xlsx',
 );
 
 /**
@@ -53,9 +53,9 @@ $GLOBALS['LEADS_EXPORT'] = array
  */
 $GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
 (
-    'raw'       => 'Leads\\DataTransformer\\RawTransformer',
-    'date'      => 'Leads\\DataTransformer\\DateTransformer',
-    'datim'     => 'Leads\\DataTransformer\\DatimTransformer',
-    'time'      => 'Leads\\DataTransformer\\TimeTransformer',
-    'yesno'     => 'Leads\\DataTransformer\\YesNoTransformer',
+    'raw'       => 'Terminal42\LeadsBundle\DataTransformer\RawTransformer',
+    'date'      => 'Terminal42\LeadsBundle\DataTransformer\DateTransformer',
+    'datim'     => 'Terminal42\LeadsBundle\DataTransformer\DatimTransformer',
+    'time'      => 'Terminal42\LeadsBundle\DataTransformer\TimeTransformer',
+    'yesno'     => 'Terminal42\LeadsBundle\DataTransformer\YesNoTransformer',
 );

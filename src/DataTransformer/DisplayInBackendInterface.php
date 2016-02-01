@@ -9,7 +9,7 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\Leads\DataTransformer;
+namespace Terminal42\LeadsBundle\DataTransformer;
 
 /**
  * Interface DisplayInBackendInterface

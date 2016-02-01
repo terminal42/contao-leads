@@ -8,14 +8,14 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Terminal42\Leads\Exporter;
+namespace Terminal42\LeadsBundle\Exporter;
 
 
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
-use Terminal42\Leads\Exporter\Utils\File;
-use Terminal42\Leads\Exporter\Utils\Row;
+use Terminal42\LeadsBundle\Exporter\Utils\File;
+use Terminal42\LeadsBundle\Exporter\Utils\Row;
 
 class Csv extends AbstractExporter
 {

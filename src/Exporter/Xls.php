@@ -8,7 +8,7 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Terminal42\Leads\Exporter;
+namespace Terminal42\LeadsBundle\Exporter;
 
 class Xls extends AbstractExcelExporter
 {

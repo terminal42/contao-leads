@@ -9,9 +9,9 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\Leads\Exporter\Utils;
+namespace Terminal42\LeadsBundle\Exporter\Utils;
 
-use Terminal42\Leads\DataCollector;
+use Terminal42\LeadsBundle\DataCollector;
 
 class Tokens
 {
