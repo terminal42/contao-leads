@@ -25,7 +25,7 @@
     },
     "autoload":{
         "psr-4": {
-            "Terminal42\\Leads\\": "src"
+            "Terminal42\\LeadsBundle\\": "src"
         }
     },
     "extra": {
