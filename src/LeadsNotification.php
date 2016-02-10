@@ -11,6 +11,9 @@
 
 namespace Terminal42\LeadsBundle;
 
+use Contao\FormModel;
+use NotificationCenter\Model\Notification;
+
 class LeadsNotification
 {
 
@@ -27,7 +30,7 @@ class LeadsNotification
 
         if ($result
             && $checkOptions
-            && \NotificationCenter\Model\Notification::countBy('type', 'core_form') === 0
+            && Notification::countBy('type', 'core_form') === 0
         ) {
             $result = false;
         }
@@ -38,12 +41,12 @@ class LeadsNotification
     /**
      * Generate simple tokens for a lead record.
      *
-     * @param            $leadId
-     * @param \FormModel $form
+     * @param int       $leadId
+     * @param FormModel $form
      *
      * @return array
      */
-    public static function generateTokens($leadId, \FormModel $form)
+    public static function generateTokens($leadId, FormModel $form)
     {
         $data   = array();
         $labels = array();
@@ -72,12 +75,12 @@ class LeadsNotification
      * Send lead data using given notification
      *
      * @param int                                    $leadId
-     * @param \FormModel                             $form
-     * @param \NotificationCenter\Model\Notification $notification
+     * @param FormModel                             $form
+     * @param Notification $notification
      *
      * @return bool
      */
-    public static function send($leadId, \FormModel $form, \NotificationCenter\Model\Notification $notification)
+    public static function send($leadId, FormModel $form, Notification $notification)
     {
         $result = $notification->send(static::generateTokens($leadId, $form));
 
@@ -86,7 +89,7 @@ class LeadsNotification
 
 
     /**
-     * @param \NotificationCenter\Model\Notification[] $notifications
+     * @param Notification[] $notifications
      * @param int[]                                    $ids
      *
      * @return string
