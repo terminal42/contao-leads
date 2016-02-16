@@ -14,5 +14,5 @@
  */
 TemplateLoader::addFiles(array
 (
-    'be_leads_show' => 'vendor/terminal42/contao-leads/src/Resources/templates',
+    'be_leads_show' => 'vendor/terminal42/contao-leads/src/Resources/contao/templates',
 ));
