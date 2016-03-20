@@ -112,7 +112,9 @@ class tl_lead_data extends Backend
             return;
         }
 
-        if (!is_array($objUser->forms)) {
+        $objUser->forms = deserialize($objUser->forms);
+
+        if (!is_array($objUser->forms) || empty($objUser->forms)) {
             \System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
             \Controller::redirect('contao/main.php?act=error');
         }

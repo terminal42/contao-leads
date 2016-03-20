@@ -200,7 +200,7 @@ class Leads extends \Controller
                     'tables'    => array('tl_lead'),
                     'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $objForms->title)),
                     'label'     => $objForms->leadMenuLabel,
-                    'icon'      => 'style="background-image:url(\'bundles/terminal42leads/icon.png\')"',
+                    'icon'      => ' style="background-image:url(\'bundles/terminal42leads/icon.png\')"',
                     'class'     => 'navigation leads',
                     'href'      => 'contao/main.php?do=lead&master='.$objForms->id,
                 );
