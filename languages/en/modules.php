@@ -14,3 +14,4 @@
  * Backend modules
  */
 $GLOBALS['TL_LANG']['MOD']['leads'] = array('Leads', 'Manage incoming leads from form "%s".');
+$GLOBALS['TL_LANG']['MOD']['lead'] = &$GLOBALS['TL_LANG']['MOD']['leads'];
