@@ -96,8 +96,19 @@ class Row
                 }
             }
 
-            $value      = static::transformValue($data[$columnConfig['id']]['value'], $columnConfig);
-            $label      = static::prepareLabel($columnConfig['label']);
+            // Regular form field
+            if (isset($columnConfig['id'])) {
+                $value = $data[$columnConfig['id']]['value'];
+                $label = $columnConfig['label'];
+            } else {
+                // Internal field
+                $row   = current($data);
+                $value = $row[$columnConfig['valueColRef']];
+                $label = $row[$columnConfig['labelColRef']];
+            }
+
+            $value      = static::transformValue($value, $columnConfig);
+            $label      = static::prepareLabel($label);
             $compiled[] = static::getValueForOutput($columnConfig['value'], $value, $label);
 
         }
