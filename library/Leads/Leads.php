@@ -158,7 +158,7 @@ class Leads extends \Controller
 
         // Check permissions
         if (!$objUser->isAdmin) {
-            if ($objUser->hasAccess('leads', 'modules') || !is_array($objUser->forms) || empty($objUser->forms)) {
+            if (!$objUser->hasAccess('lead', 'modules') || !is_array($objUser->forms) || empty($objUser->forms)) {
                 unset($arrModules['leads']);
                 return $arrModules;
             }
