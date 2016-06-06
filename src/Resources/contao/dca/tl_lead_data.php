@@ -119,7 +119,7 @@ class tl_lead_data extends Backend
             \Controller::redirect('contao/main.php?act=error');
         }
 
-        $objLeads = \Database::getInstance()->prepare("SELECT master_id FROM tl_lead WHERE id=(SELECT pid FROM tl_lead_data WHERE id=?)")
+        $objLeads = \Database::getInstance()->prepare("SELECT master_id FROM tl_lead WHERE id=?")
                                             ->limit(1)
                                             ->execute(\Input::get('id'));
 
