@@ -29,6 +29,12 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
     ),
 )));
 
+// Load icon in Contao 4.2 backend
+if ('BE' === TL_MODE) {
+    $GLOBALS['TL_CSS'][] = 'system/modules/leads/assets/leads.min.css';
+}
+
+
 /**
  * Hooks
  */
