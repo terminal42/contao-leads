@@ -1,3 +1,7 @@
+#tl_navigation .tl_level_1_group .group-leads {
+    background: url(icon.png) 7px center no-repeat;
+}
+
 .header_leads_export {
     background-image: url("export.png");
     background-position: left center;
