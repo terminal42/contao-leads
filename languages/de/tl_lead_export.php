@@ -20,22 +20,24 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_lead_export']['name']                       = array('Konfigurationsname', 'Bitte geben Sie hier einen Konfigurationsnamen ein.');
-$GLOBALS['TL_LANG']['tl_lead_export']['type']                       = array('Datentyp', 'Bitte wählen Sie einen Datentyp für den Export.');
-$GLOBALS['TL_LANG']['tl_lead_export']['filename']                   = array('Individueller Dateiname', 'Hier können Sie einen individuellen Dateinamen vergeben. Sie können Platzhalter verwenden (z.B. ##date##). Siehe Help-Wizard für Details.');
-$GLOBALS['TL_LANG']['tl_lead_export']['useTemplate']                = array('Template verwenden', 'Aktivieren Sie diese Checkbox, wenn Sie Ihre Daten in ein Template exportieren möchten.');
-$GLOBALS['TL_LANG']['tl_lead_export']['startIndex']                 = array('Start-Index', 'Hier können Sie definieren, auf welcher Zeile leads die Daten einfügen soll. Starten Sie bei 1 (nicht 0)!');
-$GLOBALS['TL_LANG']['tl_lead_export']['template']                   = array('Template', 'Wählen Sie hier Ihr Template.');
-$GLOBALS['TL_LANG']['tl_lead_export']['headerFields']               = array('Kopfzeile anzeigen', 'Wählen Sie hier ob die Kopfzeile ebenfalls exportiert werden soll.');
-$GLOBALS['TL_LANG']['tl_lead_export']['export']                     = array('Export-Typ', 'Bitte wählen Sie hier, welche Daten exportiert werden sollen.');
-$GLOBALS['TL_LANG']['tl_lead_export']['fields']                     = array('Felder', 'Bitte wählen Sie, welche Felder exportiert werden sollen.');
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_field']               = array('Feld');
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_name']                = array('Bezeichnung für Kopfzeile');
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']               = array('Wert');
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']              = array('Format');
-$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']                = array('Spalten', 'Bitte definieren Sie Ihre Export-Konfiguration.');
-$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_targetColumn']   = array('Spalte');
-$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_tokensValue']    = array('Simple Tokens (und Insert Tags)');
+$GLOBALS['TL_LANG']['tl_lead_export']['name']                          = array('Konfigurationsname', 'Bitte geben Sie hier einen Konfigurationsnamen ein.');
+$GLOBALS['TL_LANG']['tl_lead_export']['type']                          = array('Datentyp', 'Bitte wählen Sie einen Datentyp für den Export.');
+$GLOBALS['TL_LANG']['tl_lead_export']['filename']                      = array('Individueller Dateiname', 'Hier können Sie einen individuellen Dateinamen vergeben. Sie können Platzhalter verwenden (z.B. ##date##). Siehe Help-Wizard für Details.');
+$GLOBALS['TL_LANG']['tl_lead_export']['useTemplate']                   = array('Template verwenden', 'Aktivieren Sie diese Checkbox, wenn Sie Ihre Daten in ein Template exportieren möchten.');
+$GLOBALS['TL_LANG']['tl_lead_export']['startIndex']                    = array('Start-Index', 'Hier können Sie definieren, auf welcher Zeile leads die Daten einfügen soll. Starten Sie bei 1 (nicht 0)!');
+$GLOBALS['TL_LANG']['tl_lead_export']['template']                      = array('Template', 'Wählen Sie hier Ihr Template.');
+$GLOBALS['TL_LANG']['tl_lead_export']['headerFields']                  = array('Kopfzeile anzeigen', 'Wählen Sie hier ob die Kopfzeile ebenfalls exportiert werden soll.');
+$GLOBALS['TL_LANG']['tl_lead_export']['export']                        = array('Export-Typ', 'Bitte wählen Sie hier, welche Daten exportiert werden sollen.');
+$GLOBALS['TL_LANG']['tl_lead_export']['fields']                        = array('Felder', 'Bitte wählen Sie, welche Felder exportiert werden sollen.');
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_field']                  = array('Feld');
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_name']                   = array('Bezeichnung für Kopfzeile');
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']                  = array('Wert');
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']                 = array('Format');
+$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']                   = array('Spalten', 'Bitte definieren Sie Ihre Export-Konfiguration.');
+$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_targetColumn']      = array('Spalte');
+$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_tokensValue']       = array('Simple Tokens (und Insert Tags)');
+$GLOBALS['TL_LANG']['tl_lead_export']['onlyExportSinceLastExportDate'] = array('Nur neue Anfrage-Daten seit letztem Exportdatum exportieren', 'Wählen Sie hier ob nur die neuen Anfrage-Daten seit dem letzten Exportdatum exportiert werden sollen.');
+$GLOBALS['TL_LANG']['tl_lead_export']['lastExportDate']                = array('Letztes Exportdatum', 'Bitte geben Sie hier das letzte Exportdatum an. Der Wert wird automatisch bei aktivierter Option geändert.');
 
 
 /**

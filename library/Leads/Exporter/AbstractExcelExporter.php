@@ -52,8 +52,16 @@ abstract class AbstractExcelExporter extends AbstractExporter
      */
     protected function exportWithFormat($config, $ids, $format)
     {
+        $actTime = time();
+        
+        $lastExportDate = null;
+        if ($config->onlyExportSinceLastExportDate && \Validator::isDatim($config->lastExportDate))
+        {
+          $lastExportDate = $config->lastExportDate;
+        }
+        
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
-        $reader = new ArrayReader($dataCollector->getExportData());
+        $reader = new ArrayReader($dataCollector->getExportData($lastExportDate));
 
         if ($config->headerFields) {
             $reader->setHeaderFields($this->prepareDefaultHeaderFields($config, $dataCollector));
@@ -61,7 +69,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
-
+        \Database::getInstance()->prepare('UPDATE tl_lead_export SET lastExportDate = ? WHERE id = ?')
+                                ->execute(array($actTime, $config->id));
+        
         if ($config->useTemplate) {
             $this->exportWithTemplate($config, $reader, $row, $format);
         } else {
