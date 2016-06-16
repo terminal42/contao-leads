@@ -164,7 +164,7 @@ class DataCollector
      *
      * @return array
      */
-    public function getExportData()
+    public function getExportData($lastExportDate = null)
     {
         $cacheKey = $this->getCacheKey();
 
@@ -184,7 +184,7 @@ class DataCollector
                 IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
             FROM tl_lead_data ld
             LEFT JOIN tl_lead l ON l.id=ld.pid
-            WHERE l.master_id=?" . ((!empty($this->leadDataIds)) ? (" AND l.id IN(" . implode(',', $this->leadDataIds) . ")") : "") . "
+            WHERE l.master_id=?" . ((!empty($this->leadDataIds)) ? (" AND l.id IN(" . implode(',', $this->leadDataIds) . ")") : "") . ((!empty($lastExportDate)) ? (" AND l.created > " . $lastExportDate) : "") . "
             ORDER BY l.created DESC
         ")->execute($this->formId);
 
