@@ -69,13 +69,10 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
-        \Database::getInstance()->prepare('UPDATE tl_lead_export SET lastExportDate = ? WHERE id = ?')
-                                ->execute(array($actTime, $config->id));
-        
         if ($config->useTemplate) {
-            $this->exportWithTemplate($config, $reader, $row, $format);
+            $this->exportWithTemplate($config, $reader, $row, $format, $actTime);
         } else {
-            $this->exportWithoutTemplate($config, $reader, $row, $format);
+            $this->exportWithoutTemplate($config, $reader, $row, $format, $actTime);
         }
 
     }
@@ -87,8 +84,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param ArrayReader $reader
      * @param Row         $row
      * @param             $format
+     * @param             $actTime
      */
-    protected function exportWithoutTemplate($config, ArrayReader $reader, Row $row, $format)
+    protected function exportWithoutTemplate($config, ArrayReader $reader, Row $row, $format, $actTime)
     {
         $writer = new ExcelFileWriter('system/tmp/' . File::getName($config));
         $writer->setFormat($format);
@@ -107,6 +105,8 @@ abstract class AbstractExcelExporter extends AbstractExporter
             $objResponse->send();
         }
 
+        $this->updateLastExportDateIfEnabled($config, $actTime);
+
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();
     }
@@ -118,8 +118,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param ArrayReader $reader
      * @param Row         $row
      * @param             $format
+     * @param             $actTime
      */
-    protected function exportWithTemplate($config, ArrayReader $reader, Row $row, $format)
+    protected function exportWithTemplate($config, ArrayReader $reader, Row $row, $format, $actTime)
     {
         // Fetch the template and make a copy of it
         $template = \FilesModel::findByPk($config->template);
@@ -175,7 +176,24 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
         $excelWriter->save(TL_ROOT . '/' . $tmpPath);
 
+        $this->updateLastExportDateIfEnabled($config, $actTime);
+
         $tmpFile = new \File($tmpPath);
         $tmpFile->sendToBrowser();
+    }
+
+    /**
+     * Update the last export date if the option is enabled.
+     *
+     * @param             $config
+     * @param             $actTime
+     */
+    private function updateLastExportDateIfEnabled($config, $actTime)
+    {
+      if ($config->onlyExportSinceLastExportDate && !empty($config->lastExportDate))
+      {
+        \Database::getInstance()->prepare('UPDATE tl_lead_export SET lastExportDate = ? WHERE id = ?')
+                                ->execute(array($actTime, $config->id));
+      }
     }
 }
