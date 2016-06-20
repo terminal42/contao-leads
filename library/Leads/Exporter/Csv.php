@@ -67,8 +67,11 @@ class Csv extends AbstractExporter
             $objResponse->send();
         }
 
-        \Database::getInstance()->prepare('UPDATE tl_lead_export SET lastExportDate = ? WHERE id = ?')
-                                ->execute(array($actTime, $config->id));
+        if ($config->onlyExportSinceLastExportDate && !empty($config->lastExportDate))
+        {
+          \Database::getInstance()->prepare('UPDATE tl_lead_export SET lastExportDate = ? WHERE id = ?')
+                                  ->execute(array($actTime, $config->id));
+        }
 
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();
