@@ -55,7 +55,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $actTime = time();
         
         $lastExportDate = null;
-        if ($config->onlyExportSinceLastExportDate && \Validator::isDatim($config->lastExportDate))
+        if ($config->onlyExportSinceLastExportDate && !empty($config->lastExportDate))
         {
           $lastExportDate = $config->lastExportDate;
         }
@@ -180,20 +180,5 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $tmpFile = new \File($tmpPath);
         $tmpFile->sendToBrowser();
-    }
-
-    /**
-     * Update the last export date if the option is enabled.
-     *
-     * @param             $config
-     * @param             $actTime
-     */
-    private function updateLastExportDateIfEnabled($config, $actTime)
-    {
-      if ($config->onlyExportSinceLastExportDate && !empty($config->lastExportDate))
-      {
-        \Database::getInstance()->prepare('UPDATE tl_lead_export SET lastExportDate = ? WHERE id = ?')
-                                ->execute(array($actTime, $config->id));
-      }
     }
 }
