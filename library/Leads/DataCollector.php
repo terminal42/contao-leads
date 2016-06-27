@@ -123,8 +123,7 @@ class DataCollector
     {
         $cacheKey = $this->getCacheKey();
 
-        if (isset($this->getFieldsDataCache[$cacheKey])) {
-
+        if (array_key_exists($cacheKey, $this->getFieldsDataCache)) {
             return $this->getFieldsDataCache[$cacheKey];
         }
 
@@ -168,8 +167,7 @@ class DataCollector
     {
         $cacheKey = $this->getCacheKey();
 
-        if (isset($this->getExportDataCache[$cacheKey])) {
-
+        if (array_key_exists($cacheKey, $this->getExportDataCache)) {
             return $this->getExportDataCache[$cacheKey];
         }
 
@@ -210,7 +208,7 @@ class DataCollector
 
             // Show single checkbox label as field label
             if ($row['label'] == $row['name']
-                && $row['type'] == 'checkbox'
+                && 'checkbox' === $row['type']
                 && $row['options'] != ''
             ) {
                 $options = deserialize($row['options'], true);

@@ -35,7 +35,7 @@ abstract class AbstractExporter implements ExporterInterface
      * Prepares the default DataCollector instance based on the configuration.
      *
      * @param \Database\Result $config
-     * @param null             $ids
+     * @param array|null       $ids
      *
      * @return DataCollector
      */
@@ -44,9 +44,9 @@ abstract class AbstractExporter implements ExporterInterface
         $dataCollector = new DataCollector($config->master);
 
         // Limit the fields
-        if ($config->export == 'fields') {
-
+        if ('fields' === $config->export) {
             $limitFields = array();
+
             foreach ($config->fields as $fieldsConfig) {
                 $limitFields[] = $fieldsConfig['field'];
             }
@@ -74,13 +74,12 @@ abstract class AbstractExporter implements ExporterInterface
         $headerFields = array();
 
         // Config: all
-        if ($config->export == 'all') {
+        if ('all' === $config->export) {
             foreach (Leads::getSystemColumns() as $systemColumn) {
                 $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $systemColumn['field']];
             }
 
             foreach ($dataCollector->getHeaderFields() as $fieldId => $label) {
-
                 $headerFields[] = $label;
             }
 
@@ -88,10 +87,8 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         // Config: tokens
-        if ($config->export == 'tokens') {
-
+        if ('tokens' === $config->export) {
             foreach ($config->tokenFields as $column) {
-
                 $headerFields[] = $column['headerField'];
             }
 
@@ -104,14 +101,14 @@ abstract class AbstractExporter implements ExporterInterface
 
         foreach ($config->fields as $column) {
             if ($column['name'] != '') {
-
                 $headerFields[] = $column['name'];
+
             } else {
                 // System column
                 if (in_array($column['field'], array_keys(Leads::getSystemColumns()))) {
                     $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $column['field']];
-                } else {
 
+                } else {
                     if (isset($dataHeaderFields[$column['field']])) {
                         $headerFields[] = $dataHeaderFields[$column['field']];
                     } else {
@@ -136,7 +133,7 @@ abstract class AbstractExporter implements ExporterInterface
         $columnConfig = array();
 
         // Config: all
-        if ($config->export == 'all') {
+        if ('all' === $config->export) {
             // Add base information columns (system columns)
             foreach (Leads::getSystemColumns() as $systemColumn) {
                 $columnConfig[] = $systemColumn;
@@ -144,7 +141,6 @@ abstract class AbstractExporter implements ExporterInterface
 
             // Add export data column config.
             foreach ($dataCollector->getFieldsData() as $fieldId => $fieldConfig) {
-
                 $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
 
                 $fieldConfig['value'] = 'all';
@@ -158,16 +154,14 @@ abstract class AbstractExporter implements ExporterInterface
         $fieldsData = $dataCollector->getFieldsData();
 
         // Config: tokens
-        if ($config->export == 'tokens') {
-
+        if ('tokens' === $config->export) {
             $allFieldsConfig = array();
+
             foreach ($fieldsData as $fieldConfig) {
                 $allFieldsConfig[] = $this->handleContaoSpecificConfig($fieldConfig);
             }
 
-
             foreach ($config->tokenFields as $column) {
-
                 $column = array_merge($column, array(
                     'allFieldsConfig' => $allFieldsConfig
                 ));
@@ -185,13 +179,12 @@ abstract class AbstractExporter implements ExporterInterface
 
             // System column
             if (in_array($column['field'], array_keys($systemColumns))) {
-
                 $columnConfig[] = $systemColumns[$column['field']];
+
             } else {
 
                 // Skip non existing fields
                 if (!isset($fieldsData[$column['field']])) {
-
                     continue;
                 }
 
@@ -220,7 +213,7 @@ abstract class AbstractExporter implements ExporterInterface
     {
         // Yes and No transformer for checkboxes with only one option
         if ($fieldConfig['label'] == $fieldConfig['name']
-            && $fieldConfig['type'] == 'checkbox'
+            && 'checkbox' === $fieldConfig['type']
             && $fieldConfig['options'] != ''
         ) {
             $options = deserialize($fieldConfig['options'], true);

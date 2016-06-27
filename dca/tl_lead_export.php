@@ -381,7 +381,7 @@ class tl_lead_export extends Backend
     /**
      * Update the palette depending on the export type.
      *
-     * @param $dc
+     * @param \DataContainer $dc
      */
     public function updatePalette($dc = null)
     {
@@ -393,8 +393,7 @@ class tl_lead_export extends Backend
             "SELECT * FROM tl_lead_export WHERE id=?"
         )->execute($dc->id);
 
-        if (!$objRecord->export || $objRecord->export == 'all') {
-
+        if (!$objRecord->export || 'all' === $objRecord->export) {
             return;
         }
 
@@ -422,7 +421,7 @@ class tl_lead_export extends Backend
      * Load the lead fields.
      *
      * @param mixed  $varValue
-     * @param object $dc
+     * @param \DataContainer $dc
      *
      * @return string
      */
@@ -432,7 +431,6 @@ class tl_lead_export extends Backend
 
         // Load the form fields
         if (empty($arrFields) && $dc->id) {
-
             $arrFields = array_values(\Leads\Leads::getSystemColumns());
 
             $objFields = Database::getInstance()->prepare(
@@ -441,9 +439,9 @@ class tl_lead_export extends Backend
 
             while ($objFields->next()) {
                 $arrFields[] = array(
-                    'field' => $objFields->id,
-                    'name' => '',
-                    'value' => 'all',
+                    'field'  => $objFields->id,
+                    'name'   => '',
+                    'value'  => 'all',
                     'format' => 'raw',
                 );
             }
@@ -471,8 +469,10 @@ class tl_lead_export extends Backend
             $arrFields[$k] = $systemColumn['name'];
         }
 
-        $objFields = \Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
-                                             ->execute(Input::get('id'));
+        $objFields = \Database::getInstance()
+            ->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
+            ->execute(Input::get('id'))
+        ;
 
         while ($objFields->next()) {
             $strLabel = $objFields->name;

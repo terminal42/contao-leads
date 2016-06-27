@@ -175,8 +175,10 @@ class tl_lead extends Backend
      */
     public function loadExportConfigs()
     {
-        $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name")
-                                              ->execute(\Input::get('master'));
+        $objConfigs = \Database::getInstance()
+            ->prepare("SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name")
+            ->execute(\Input::get('master'))
+        ;
 
         if (!$objConfigs->numRows) {
             return;
@@ -185,8 +187,7 @@ class tl_lead extends Backend
         $arrOperations = array();
 
         while ($objConfigs->next()) {
-            $arrOperations['export_' . $objConfigs->id] = array
-            (
+            $arrOperations['export_' . $objConfigs->id] = array(
                 'label'         => $objConfigs->name,
                 'href'          => 'key=export&amp;config=' . $objConfigs->id,
                 'class'         => 'leads-export header_export_excel',
@@ -236,7 +237,6 @@ class tl_lead extends Backend
 
         // No form found, we can't format the label
         if (!$objForm->numRows) {
-
             return $label;
         }
 
@@ -265,7 +265,6 @@ class tl_lead extends Backend
     public function exportConfigIcon($href, $label, $title, $class, $attributes)
     {
         if (!\BackendUser::getInstance()->isAdmin) {
-
             return '';
         }
 
@@ -367,12 +366,14 @@ class tl_lead extends Backend
      */
     public function addExportButtons($arrButtons)
     {
-        $arrConfigs = \Database::getInstance()->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
-                                              ->execute(\Input::get('master'))
-                                              ->fetchAllAssoc();
+        $arrConfigs = \Database::getInstance()
+            ->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
+            ->execute(\Input::get('master'))
+            ->fetchAllAssoc()
+        ;
 
         // Run the export
-        if (\Input::post('FORM_SUBMIT') == 'tl_select') {
+        if ('tl_select' === \Input::post('FORM_SUBMIT')) {
             $arrIds = \Input::post('IDS');
 
             if (empty($arrIds)) {

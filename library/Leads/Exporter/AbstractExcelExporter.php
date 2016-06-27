@@ -74,7 +74,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
         } else {
             $this->exportWithoutTemplate($config, $reader, $row, $format, $actTime);
         }
-
     }
 
     /**
@@ -142,11 +141,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $currentColumn = 0;
 
         foreach ($reader as $readerRow) {
-
             $compiledRow = $row->compile($readerRow);
 
             foreach ($compiledRow as $k => $value) {
-
                 $specificColumn = null;
 
                 // Support explicit target column
@@ -166,7 +163,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
                     (string) $value,
                     \PHPExcel_Cell_DataType::TYPE_STRING2
                 );
-
             }
 
             $currentColumn = 0;
