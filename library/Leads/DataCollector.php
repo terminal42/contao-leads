@@ -127,25 +127,31 @@ class DataCollector
             return $this->getFieldsDataCache[$cacheKey];
         }
 
+        $where = array('tl_lead.master_id=?');
+
+        if (0 !== count($this->fieldIds)) {
+            $where[] = "tl_lead_data.field_id IN (" . implode(',', $this->fieldIds) . ")";
+        }
+
         $data = array();
         $db = \Database::getInstance()->prepare("
             SELECT * FROM (
                 SELECT
-                    ld.master_id AS id,
-                    IFNULL(ff.name, ld.name) AS name,
-                    IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label,
-                    ff.type,
-                    ff.options,
-                    ld.field_id,
-                    ld.sorting
-                FROM tl_lead_data ld
-                LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
-                LEFT JOIN tl_lead l ON ld.pid=l.id
-                WHERE l.master_id=?" . (!empty($this->fieldIds) ? (" AND ld.field_id IN (" . implode(',', $this->fieldIds) . ")") : "") . "
-                ORDER BY l.master_id!=l.form_id
-            ) ld
+                    tl_lead_data.master_id AS id,
+                    IFNULL(tl_form_field.name, tl_lead_data.name) AS name,
+                    IF(tl_form_field.label IS NULL OR tl_form_field.label='', tl_lead_data.name, tl_form_field.label) AS label,
+                    tl_form_field.type,
+                    tl_form_field.options,
+                    tl_lead_data.field_id,
+                    tl_lead_data.sorting
+                FROM tl_lead_data
+                LEFT JOIN tl_form_field ON tl_form_field.id=tl_lead_data.master_id
+                LEFT JOIN tl_lead ON tl_lead_data.pid=tl_lead.id
+                WHERE " . implode(' AND ', $where) . "
+                ORDER BY tl_lead.master_id!=tl_lead.form_id
+            )
             GROUP BY field_id
-            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet("ld.field_id", $this->fieldIds) : "sorting")
+            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet('tl_lead_data.field_id', $this->fieldIds) : 'sorting')
         )->execute($this->formId);
 
         while ($db->next()) {
@@ -171,19 +177,25 @@ class DataCollector
             return $this->getExportDataCache[$cacheKey];
         }
 
+        $where = array('tl_lead.master_id=?');
+
+        if (0 !== count($this->leadDataIds)) {
+            $where[] = 'tl_lead.id IN(' . implode(',', $this->leadDataIds) . ')';
+        }
+
         $data = array();
         $db = \Database::getInstance()->prepare("
             SELECT
-                ld.*,
-                l.created,
-                l.form_id AS form_id,
-                (SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
-                l.member_id AS member_id,
-                IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
-            FROM tl_lead_data ld
-            LEFT JOIN tl_lead l ON l.id=ld.pid
-            WHERE l.master_id=?" . ((!empty($this->leadDataIds)) ? (" AND l.id IN(" . implode(',', $this->leadDataIds) . ")") : "") . ((!empty($lastExportDate)) ? (" AND l.created > " . $lastExportDate) : "") . "
-            ORDER BY l.created DESC
+                tl_lead_data.*,
+                tl_lead.created,
+                tl_lead.form_id AS form_id,
+                (SELECT title FROM tl_form WHERE id=tl_lead.form_id) AS form_name,
+                tl_lead.member_id AS member_id,
+                IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=tl_lead.member_id), '') AS member_name
+            FROM tl_lead_data
+            LEFT JOIN tl_lead ON tl_lead.id=tl_lead_data.pid
+            WHERE " . implode(' AND ', $where) . "
+            ORDER BY tl_lead.created DESC
         ")->execute($this->formId);
 
         while ($db->next()) {
