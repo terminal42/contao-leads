@@ -37,16 +37,10 @@ class Csv extends AbstractExporter
      */
     public function export($config, $ids = null)
     {
-        $actTime = time();
-        
-        $lastExportDate = null;
-        if ($config->onlyExportSinceLastExportDate && !empty($config->lastExportDate))
-        {
-          $lastExportDate = $config->lastExportDate;
-        }
-        
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
-        $reader = new ArrayReader($dataCollector->getExportData($lastExportDate));
+        $dataCollector->setUseTableLocking(true);
+
+        $reader = new ArrayReader($dataCollector->getExportData());
         $writer = new CsvFileWriter('system/tmp/' . File::getName($config));
 
         // Add header fields
@@ -58,16 +52,18 @@ class Csv extends AbstractExporter
         $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
         $writer->setRowCallback(function($data) use ($row) {
-
             return $row->compile($data);
         });
 
         if (!$writer->writeFrom($reader)) {
+            $dataCollector->unlockTables();
+
             $objResponse = new Response('Data export failed.', 500);
             $objResponse->send();
         }
 
-        $this->updateLastExportDateIfEnabled($config, $actTime);
+        // Will also unlock tables
+        $dataCollector->updateLastRun($config->id);
 
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();

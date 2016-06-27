@@ -32,6 +32,12 @@ class DataCollector
     private $leadDataIds = array();
 
     /**
+     * Timestamp of when to start export
+     * @var int|null
+     */
+    private $skipUntil;
+
+    /**
      * Cache for getFieldsData()
      * @var array
      */
@@ -42,6 +48,16 @@ class DataCollector
      * @var array
      */
     private $getExportDataCache = array();
+
+    /**
+     * @var bool
+     */
+    private $useTableLocking = false;
+
+    /**
+     * @var bool
+     */
+    private $tablesLocked = false;
 
     /**
      * Constructor.
@@ -104,13 +120,55 @@ class DataCollector
     }
 
     /**
+     * A timestamp from when to start fetching data.
+     *
+     * @return int|null
+     */
+    public function getSkipUntil()
+    {
+        return $this->skipUntil;
+    }
+
+    /**
+     * Set a timestamp to skip lead records prior to that date/time.
+     *
+     * @param int|null $time
+     */
+    public function setSkipUntil($time)
+    {
+        $this->skipUntil = $time;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseTableLocking()
+    {
+        return $this->useTableLocking;
+    }
+
+    /**
+     * @param bool $useTableLocking
+     */
+    public function setUseTableLocking($useTableLocking)
+    {
+        $this->useTableLocking = $useTableLocking;
+    }
+
+    /**
      * Gets a cache key for the instance of the data collector
      *
      * @return string
      */
     public function getCacheKey()
     {
-        return md5($this->formId . ':' . implode(',', $this->fieldIds));
+        $key = md5($this->formId . ':' . implode(',', $this->fieldIds));
+
+        if (null !== $this->skipUntil) {
+            $key .= ':' . (int) $this->skipUntil;
+        }
+
+        return $key;
     }
 
     /**
@@ -126,6 +184,8 @@ class DataCollector
         if (array_key_exists($cacheKey, $this->getFieldsDataCache)) {
             return $this->getFieldsDataCache[$cacheKey];
         }
+
+        $this->lockTables();
 
         $where = array('tl_lead.master_id=?');
 
@@ -169,7 +229,7 @@ class DataCollector
      *
      * @return array
      */
-    public function getExportData($lastExportDate = null)
+    public function getExportData()
     {
         $cacheKey = $this->getCacheKey();
 
@@ -177,10 +237,16 @@ class DataCollector
             return $this->getExportDataCache[$cacheKey];
         }
 
+        $this->lockTables();
+
         $where = array('tl_lead.master_id=?');
 
         if (0 !== count($this->leadDataIds)) {
             $where[] = 'tl_lead.id IN(' . implode(',', $this->leadDataIds) . ')';
+        }
+
+        if (null !== $this->skipUntil) {
+            $where[] = 'tl_lead.created > ' . (int) $this->skipUntil;
         }
 
         $data = array();
@@ -235,5 +301,42 @@ class DataCollector
         }
 
         return $headerFields;
+    }
+
+    public function unlockTables()
+    {
+        \Database::getInstance()->unlockTables();
+
+        $this->tablesLocked = false;
+    }
+
+    public function updateLastRun($configId)
+    {
+        \Database::getInstance()
+             ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
+             ->execute(time(), $configId)
+        ;
+
+        $this->unlockTables();
+    }
+
+    private function lockTables()
+    {
+        if (!$this->useTableLocking || $this->tablesLocked) {
+            return;
+        }
+
+        \Database::getInstance()->lockTables(
+            array(
+                'tl_form' => 'READ',
+                'tl_form_field' => 'READ',
+                'tl_member' => 'READ',
+                'tl_lead' => 'READ',
+                'tl_lead_data' => 'READ',
+                'tl_lead_export' => 'WRITE'
+            )
+        );
+
+        $this->tablesLocked = true;
     }
 }

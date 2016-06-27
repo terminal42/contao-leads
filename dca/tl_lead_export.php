@@ -99,10 +99,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     'palettes' => array
     (
         '__selector__'                => array('type', 'useTemplate', 'export', 'onlyExportSinceLastExportDate'),
-        'default'                     => '{name_legend},name,type,filename;{config_legend},export,onlyExportSinceLastExportDate',
-        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export,onlyExportSinceLastExportDate',
-        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,onlyExportSinceLastExportDate',
-        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,onlyExportSinceLastExportDate',
+        'default'                     => '{name_legend},name,type,filename;{config_legend},export;{date_legend:hide},lastRun,skipLastRun',
+        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export;{date_legend:hide},lastRun,skipLastRun',
+        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export;{date_legend:hide},lastRun,skipLastRun',
+        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export;{date_legend:hide},lastRun,skipLastRun',
     ),
 
     // Subpalettes
@@ -111,7 +111,6 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'export_fields'                 => 'fields',
         'export_tokens'                 => 'tokenFields',
         'useTemplate'                   => 'startIndex,template',
-        'onlyExportSinceLastExportDate' => 'lastExportDate'
     ),
 
     // Fields
@@ -337,23 +336,22 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             )),
             'sql'                     => "blob NULL",
         ),
-        'onlyExportSinceLastExportDate' => array
+        'lastRun' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['onlyExportSinceLastExportDate'],
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['lastRun'],
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'nullIfEmpty'=>true, 'tl_class'=>'w50 wizard'),
+            'sql'                     => 'int(10) NULL'
+        ),
+        'skipLastRun' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun'],
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50 m12', 'submitOnChange'=>true),
+            'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'w50 m12'),
             'sql'                     => "char(1) NOT NULL default ''"
-        ),
-        'lastExportDate' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['lastExportDate'],
-            'exclude'                 => true,
-            'search'                  => true,
-            'inputType'               => 'text',
-            'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
-            'sql'                     => "varchar(10) NOT NULL default ''"
         ),
     )
 );

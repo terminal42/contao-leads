@@ -14,6 +14,7 @@ namespace Leads\Exporter;
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
+use Leads\DataCollector;
 use Leads\Exporter\Utils\File;
 use Leads\Exporter\Utils\Row;
 use PHPExcel_Cell;
@@ -21,6 +22,8 @@ use PHPExcel_IOFactory;
 
 abstract class AbstractExcelExporter extends AbstractExporter
 {
+    private $dataCollector;
+
     /**
      * Returns true if available.
      *
@@ -32,18 +35,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
     }
 
     /**
-     * Exports a given set of data row ids using a given configuration.
-     *
-     * @param \Database\Result $config
-     * @param array|null       $ids
-     */
-    public function export($config, $ids = null)
-    {
-        throw new \RuntimeException('export() has to be implemented by a child class of AbstractExcelExporter.');
-    }
-
-
-    /**
      * Exports based on Excel format.
      *
      * @param \Database\Result $config
@@ -52,16 +43,10 @@ abstract class AbstractExcelExporter extends AbstractExporter
      */
     protected function exportWithFormat($config, $ids, $format)
     {
-        $actTime = time();
-        
-        $lastExportDate = null;
-        if ($config->onlyExportSinceLastExportDate && !empty($config->lastExportDate))
-        {
-          $lastExportDate = $config->lastExportDate;
-        }
-        
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
-        $reader = new ArrayReader($dataCollector->getExportData($lastExportDate));
+        $dataCollector->setUseTableLocking(true);
+
+        $reader = new ArrayReader($dataCollector->getExportData());
 
         if ($config->headerFields) {
             $reader->setHeaderFields($this->prepareDefaultHeaderFields($config, $dataCollector));
@@ -70,23 +55,28 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
         if ($config->useTemplate) {
-            $this->exportWithTemplate($config, $reader, $row, $format, $actTime);
+            $this->exportWithTemplate($config, $reader, $row, $format, $dataCollector);
         } else {
-            $this->exportWithoutTemplate($config, $reader, $row, $format, $actTime);
+            $this->exportWithoutTemplate($config, $reader, $row, $format, $dataCollector);
         }
     }
 
     /**
      * Default export without template.
      *
-     * @param             $config
-     * @param ArrayReader $reader
-     * @param Row         $row
-     * @param             $format
-     * @param             $actTime
+     * @param               $config
+     * @param ArrayReader   $reader
+     * @param Row           $row
+     * @param               $format
+     * @param DataCollector $dataCollector
      */
-    protected function exportWithoutTemplate($config, ArrayReader $reader, Row $row, $format, $actTime)
-    {
+    protected function exportWithoutTemplate(
+        $config,
+        ArrayReader $reader,
+        Row $row,
+        $format,
+        DataCollector $dataCollector
+    ) {
         $writer = new ExcelFileWriter('system/tmp/' . File::getName($config));
         $writer->setFormat($format);
 
@@ -100,11 +90,13 @@ abstract class AbstractExcelExporter extends AbstractExporter
         });
 
         if (!$writer->writeFrom($reader)) {
+            $dataCollector->unlockTables();
+
             $objResponse = new Response('Data export failed.', 500);
             $objResponse->send();
         }
 
-        $this->updateLastExportDateIfEnabled($config, $actTime);
+        $dataCollector->updateLastRun($config->id);
 
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();
@@ -113,13 +105,13 @@ abstract class AbstractExcelExporter extends AbstractExporter
     /**
      * Export with template.
      *
-     * @param             $config
-     * @param ArrayReader $reader
-     * @param Row         $row
-     * @param             $format
-     * @param             $actTime
+     * @param               $config
+     * @param ArrayReader   $reader
+     * @param Row           $row
+     * @param               $format
+     * @param DataCollector $dataCollector
      */
-    protected function exportWithTemplate($config, ArrayReader $reader, Row $row, $format, $actTime)
+    protected function exportWithTemplate($config, ArrayReader $reader, Row $row, $format, DataCollector $dataCollector)
     {
         // Fetch the template and make a copy of it
         $template = \FilesModel::findByPk($config->template);
@@ -172,7 +164,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
         $excelWriter->save(TL_ROOT . '/' . $tmpPath);
 
-        $this->updateLastExportDateIfEnabled($config, $actTime);
+        $dataCollector->updateLastRun($config->id);
 
         $tmpFile = new \File($tmpPath);
         $tmpFile->sendToBrowser();

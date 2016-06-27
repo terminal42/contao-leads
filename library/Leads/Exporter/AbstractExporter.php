@@ -58,6 +58,10 @@ abstract class AbstractExporter implements ExporterInterface
             $dataCollector->setLeadDataIds($ids);
         }
 
+        if ($config->skipLastRun) {
+            $dataCollector->setSkipUntil($config->lastRun);
+        }
+
         return $dataCollector;
     }
 
@@ -227,20 +231,5 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         return $fieldConfig;
-    }
-    
-    /**
-     * Update the last export date if the option is enabled.
-     *
-     * @param             $config
-     * @param             $actTime
-     */
-    protected function updateLastExportDateIfEnabled($config, $actTime)
-    {
-      if ($config->onlyExportSinceLastExportDate)
-      {
-        \Database::getInstance()->prepare('UPDATE tl_lead_export SET lastExportDate = ? WHERE id = ?')
-                                ->execute(array($actTime, $config->id));
-      }
     }
 }
