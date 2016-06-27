@@ -36,8 +36,8 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']            = array('Forma
 $GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']              = array('Columns', 'Please specify your export configuration.');
 $GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_targetColumn'] = array('Column');
 $GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_tokensValue']  = array('Simple Tokens (and Insert Tags)');
-$GLOBALS['TL_LANG']['tl_lead_export']['lastRun']                  = array('Last export date', 'Please enter the last export date. The value is automatically changed when this option is enabled.');
-$GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun']              = array('Only export new lead data since last export date', 'Please select if only new lead data since last export date should be exportet.');
+$GLOBALS['TL_LANG']['tl_lead_export']['lastRun']                  = array('Last export date', 'Automatically updated when an export was performed.');
+$GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun']              = array('Only export new leads since last export date', 'Please select if only new lead data since last export date should be exportet.');
 
 
 /**

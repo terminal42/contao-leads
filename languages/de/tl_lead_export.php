@@ -36,8 +36,8 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']            = array('Forma
 $GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']              = array('Spalten', 'Bitte definieren Sie Ihre Export-Konfiguration.');
 $GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_targetColumn'] = array('Spalte');
 $GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_tokensValue']  = array('Simple Tokens (und Insert Tags)');
-$GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun']              = array('Nur neue Anfrage-Daten seit letztem Exportdatum exportieren', 'Wählen Sie hier ob nur die neuen Anfrage-Daten seit dem letzten Exportdatum exportiert werden sollen.');
 $GLOBALS['TL_LANG']['tl_lead_export']['lastRun']                  = array('Letztes Exportdatum', 'Bitte geben Sie hier das letzte Exportdatum an. Der Wert wird automatisch bei aktivierter Option geändert.');
+$GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun']              = array('Nur neue Anfragen seit letztem Export exportieren', 'Wählen Sie hier ob nur die neuen Anfrage-Daten seit dem letzten Exportdatum exportiert werden sollen.');
 
 
 /**
