@@ -98,7 +98,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__'                => array('type', 'useTemplate', 'export', 'onlyExportSinceLastExportDate'),
+        '__selector__'                => array('type', 'useTemplate', 'export'),
         'default'                     => '{name_legend},name,type,filename;{config_legend},export;{date_legend:hide},lastRun,skipLastRun',
         'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export;{date_legend:hide},lastRun,skipLastRun',
         'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export;{date_legend:hide},lastRun,skipLastRun',
@@ -350,7 +350,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'checkbox',
-            'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'w50 m12'),
+            'eval'                    => array('tl_class'=>'w50 m12'),
             'sql'                     => "char(1) NOT NULL default ''"
         ),
     )
