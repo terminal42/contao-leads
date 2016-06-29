@@ -45,6 +45,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun']              = array('Only 
  */
 $GLOBALS['TL_LANG']['tl_lead_export']['name_legend']   = 'Name and type';
 $GLOBALS['TL_LANG']['tl_lead_export']['config_legend'] = 'Configuration';
+$GLOBALS['TL_LANG']['tl_lead_export']['date_legend']   = 'Export date';
 
 
 /**
