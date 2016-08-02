@@ -50,20 +50,21 @@ $GLOBALS['TL_LANG']['tl_lead_export']['config_legend'] = 'Configuration';
 /**
  * Reference
  */
-$GLOBALS['TL_LANG']['tl_lead_export']['export']['all']          = 'Export all data';
-$GLOBALS['TL_LANG']['tl_lead_export']['export']['fields']       = 'Custom export';
-$GLOBALS['TL_LANG']['tl_lead_export']['export']['tokens']       = 'Custom export with Simple Tokens';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['all']    = 'Label and value';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']  = 'Label only (if available, fallback to value)';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']  = 'Value only';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']   = &$GLOBALS['TL_LANG']['tl_form']['raw'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']  = &$GLOBALS['TL_LANG']['tl_form_field']['date'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim'] = &$GLOBALS['TL_LANG']['tl_form_field']['datim'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = &$GLOBALS['TL_LANG']['tl_form_field']['time'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['field_form']             = 'Form';
-$GLOBALS['TL_LANG']['tl_lead_export']['field_created']          = 'Date created';
-$GLOBALS['TL_LANG']['tl_lead_export']['field_member']           = 'Member';
-$GLOBALS['TL_LANG']['tl_lead_export']['field_skip']             = 'Skip one column';
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['all']                      = 'Export all data';
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['fields']                   = 'Custom export';
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['tokens']                   = 'Custom export with Simple Tokens';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['all']                = 'Label and value';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']              = 'Label only (if available, fallback to value)';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']              = 'Value only';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']               = &$GLOBALS['TL_LANG']['tl_form']['raw'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']              = &$GLOBALS['TL_LANG']['tl_form_field']['date'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim']             = &$GLOBALS['TL_LANG']['tl_form_field']['datim'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']              = &$GLOBALS['TL_LANG']['tl_form_field']['time'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['uuidToFilePath']    = 'File UUID -> File path';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_form']                         = 'Form';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_created']                      = 'Date created';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_member']                       = 'Member';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_skip']                         = 'Skip one column';
 
 
 

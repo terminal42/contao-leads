@@ -48,20 +48,21 @@ $GLOBALS['TL_LANG']['tl_lead_export']['config_legend'] = 'Konfiguration';
 /**
  * Reference
  */
-$GLOBALS['TL_LANG']['tl_lead_export']['export']['all']          = 'Alle Daten exportieren';
-$GLOBALS['TL_LANG']['tl_lead_export']['export']['fields']       = 'Individueller Export';
-$GLOBALS['TL_LANG']['tl_lead_export']['export']['tokens']       = 'Individueller Export mit Simple Tokens';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['all']    = 'Bezeichnung und Wert';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']  = 'Nur die Bezeichnung (wenn vorhanden, Fallback auf Wert)';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']  = 'Nur den Wert';
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']   = &$GLOBALS['TL_LANG']['tl_form']['raw'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']  = &$GLOBALS['TL_LANG']['tl_form_field']['date'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim'] = &$GLOBALS['TL_LANG']['tl_form_field']['datim'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']  = &$GLOBALS['TL_LANG']['tl_form_field']['time'][0];
-$GLOBALS['TL_LANG']['tl_lead_export']['field_form']             = 'Formular';
-$GLOBALS['TL_LANG']['tl_lead_export']['field_created']          = 'Erstellungsdatum';
-$GLOBALS['TL_LANG']['tl_lead_export']['field_member']           = 'Mitglied';
-$GLOBALS['TL_LANG']['tl_lead_export']['field_skip']             = 'Spalte überspringen';
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['all']                      = 'Alle Daten exportieren';
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['fields']                   = 'Individueller Export';
+$GLOBALS['TL_LANG']['tl_lead_export']['export']['tokens']                   = 'Individueller Export mit Simple Tokens';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['all']                = 'Bezeichnung und Wert';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['label']              = 'Nur die Bezeichnung (wenn vorhanden, Fallback auf Wert)';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_value']['value']              = 'Nur den Wert';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['raw']               = &$GLOBALS['TL_LANG']['tl_form']['raw'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']              = &$GLOBALS['TL_LANG']['tl_form_field']['date'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim']             = &$GLOBALS['TL_LANG']['tl_form_field']['datim'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']              = &$GLOBALS['TL_LANG']['tl_form_field']['time'][0];
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['uuidToFilePath']    = 'Datei-UUID -> Dateipfad';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_form']                         = 'Formular';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_created']                      = 'Erstellungsdatum';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_member']                       = 'Mitglied';
+$GLOBALS['TL_LANG']['tl_lead_export']['field_skip']                         = 'Spalte überspringen';
 
 
 
