@@ -285,7 +285,7 @@ class Leads extends \Controller
                     if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'])) {
                         foreach ($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'] as $callback) {
                             $this->import($callback[0]);
-                            $this->$callback[0]->$callback[1]($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
+                            $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
                         }
                     }
 
@@ -297,7 +297,7 @@ class Leads extends \Controller
             if (isset($GLOBALS['TL_HOOKS']['storeLeadsData']) && is_array($GLOBALS['TL_HOOKS']['storeLeadsData'])) {
                 foreach ($GLOBALS['TL_HOOKS']['storeLeadsData'] as $callback) {
                     $this->import($callback[0]);
-                    $this->$callback[0]->$callback[1]($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
+                    $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
                 }
             }
         }

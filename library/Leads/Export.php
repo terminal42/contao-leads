@@ -128,7 +128,7 @@ class Export
 
                 foreach ($GLOBALS['TL_HOOKS']['getLeadsExportRow'] as $callback) {
                     if (is_array($callback)) {
-                        $varValue = \System::importStatic($callback[0])->$callback[1]($arrField, $arrData, $objConfig, $varValue);
+                        $varValue = \System::importStatic($callback[0])->{$callback[1]}($arrField, $arrData, $objConfig, $varValue);
                     } elseif (is_callable($callback)) {
                         $varValue = $callback($arrField, $arrData, $objConfig, $varValue);
                     }
