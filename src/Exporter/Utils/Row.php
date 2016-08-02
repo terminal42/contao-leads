@@ -81,7 +81,7 @@ class Row
 
                 foreach ($GLOBALS['TL_HOOKS']['getLeadsExportRow'] as $callback) {
                     if (is_array($callback)) {
-                        $value = \System::importStatic($callback[0])->$callback[1]($columnConfig, $data, $this->config, $value);
+                        $value = \System::importStatic($callback[0])->{$callback[1]}($columnConfig, $data, $this->config, $value);
                     } elseif (is_callable($callback)) {
                         $value = $callback($columnConfig, $data, $this->config, $value);
                     }

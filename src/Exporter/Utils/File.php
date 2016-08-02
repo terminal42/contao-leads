@@ -42,7 +42,7 @@ class File
         if (isset($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens']) && is_array($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens'])) {
             foreach ($GLOBALS['TL_HOOKS']['getLeadsFilenameTokens'] as $callback) {
                 if (is_array($callback)) {
-                    $tokens = \System::importStatic($callback[0])->$callback[1]($tokens, $config);
+                    $tokens = \System::importStatic($callback[0])->{$callback[1]}($tokens, $config);
                 } elseif (is_callable($callback)) {
                     $tokens = $callback($tokens, $config);
                 }
