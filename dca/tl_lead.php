@@ -28,6 +28,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
         (
             array('tl_lead', 'loadExportConfigs'),
             array('tl_lead', 'checkPermission'),
+            array('tl_lead', 'addNotificationCenterSupport'),
         ),
         'sql' => array
         (
@@ -108,7 +109,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
     (
         'buttons_callback' => array
         (
-            array('tl_lead', 'addExportButtons')
+            array('tl_lead', 'addButtons')
         )
     ),
 
@@ -359,13 +360,13 @@ class tl_lead extends Backend
     }
 
     /**
-     * Adds the export buttons to the buttons bar and exports the data.
+     * Adds the buttons to the buttons bar and exports the data if it is an export button.
      *
      * @param array $arrButtons
      *
      * @return mixed
      */
-    public function addExportButtons($arrButtons)
+    public function addButtons($arrButtons)
     {
         $arrConfigs = \Database::getInstance()->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
                                               ->execute(\Input::get('master'))
@@ -377,6 +378,10 @@ class tl_lead extends Backend
 
             if (empty($arrIds)) {
                 \Controller::reload();
+            }
+
+            if (\Input::post('notification')) {
+                \Controller::redirect(\Backend::addToUrl('key=notification'));
             }
 
             foreach ($arrConfigs as $config) {
@@ -393,6 +398,82 @@ class tl_lead extends Backend
             $arrButtons['export_' . $config['id']] = '<input type="submit" name="export_' . $config['id'] . '" id="export_' . $config['id'] . '" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' "' . $config['name'] . '"').'">';
         }
 
+        // Notification Center integration
+        if (\Leads\NotificationCenterIntegration::available(true)) {
+            $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="' . specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]) . '">';
+        }
+
         return $arrButtons;
+    }
+
+    /**
+     * Add the notification center support
+     */
+    public function addNotificationCenterSupport()
+    {
+        if (!\Leads\NotificationCenterIntegration::available(true)) {
+            return;
+        }
+
+        $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['notification'] = array(
+            'label' => &$GLOBALS['TL_LANG']['tl_lead']['notification'],
+            'href'  => 'key=notification',
+            'icon'  => 'system/modules/notification_center/assets/notification.png',
+        );
+    }
+
+    /**
+     * Send the notification
+     */
+    public function sendNotification()
+    {
+        if (!\Input::get('master')
+            || !\Leads\NotificationCenterIntegration::available(true)
+        ) {
+            \Controller::redirect('contao/main.php?act=error');
+        }
+
+        // No need to check for null as NotificationCenterIntegration::available(true) already does
+        $notificationsCollection = \NotificationCenter\Model\Notification::findBy('type', 'core_form');
+        $notifications = [];
+
+        // Generate the notifications
+        foreach ($notificationsCollection as $notification) {
+            $notifications[$notification->id] = $notification->title;
+        }
+
+        // Process the form
+        if ('tl_leads_notification' === \Input::post('FORM_SUBMIT')) {
+            /**
+             * @var \FormModel $form
+             * @var \NotificationCenter\Model\Notification $notification
+             */
+            if (!isset($notifications[\Input::post('notification')])
+                  || !is_array(\Input::post('IDS'))
+               || ($form = \FormModel::findByPk(\Input::get('master'))) === null
+               || null === ($notification = \NotificationCenter\Model\Notification::findByPk(\Input::post('notification')))
+            ) {
+                  \Controller::reload();
+            }
+
+            if (\Input::get('id')) {
+                $ids = [(int) \Input::get('id')];
+            } else {
+                $session = \Session::getInstance()->getData();
+                $ids = array_map('intval', $session['CURRENT']['IDS']);
+            }
+
+            foreach ($ids as $id) {
+                if (\Leads\NotificationCenterIntegration::send($id, $form, $notification)) {
+                    \Message::addConfirmation(
+                        sprintf($GLOBALS['TL_LANG']['tl_lead']['notification_confirm'], $id)
+                    );
+                }
+            }
+
+            \Controller::redirect($this->getReferer());
+        }
+
+        return \Leads\NotificationCenterIntegration::generateForm($notifications, [\Input::get('id')]);
     }
 }
