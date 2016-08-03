@@ -272,11 +272,4 @@ class DataCollector
 
         return $headerFields;
     }
-
-    public function updateLastRun($configId)
-    {
-        \Database::getInstance()
-             ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
-             ->execute(time(), $configId);
-    }
 }

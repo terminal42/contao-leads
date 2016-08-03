@@ -22,8 +22,6 @@ use PHPExcel_IOFactory;
 
 abstract class AbstractExcelExporter extends AbstractExporter
 {
-    private $dataCollector;
-
     /**
      * Returns true if available.
      *
@@ -54,9 +52,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
         if ($config->useTemplate) {
-            $this->exportWithTemplate($config, $reader, $row, $format, $dataCollector);
+            $this->exportWithTemplate($config, $reader, $row, $format);
         } else {
-            $this->exportWithoutTemplate($config, $reader, $row, $format, $dataCollector);
+            $this->exportWithoutTemplate($config, $reader, $row, $format);
         }
     }
 
@@ -67,7 +65,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param ArrayReader   $reader
      * @param Row           $row
      * @param               $format
-     * @param DataCollector $dataCollector
      *
      * @throws ExportFailedException
      */
@@ -75,8 +72,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $config,
         ArrayReader $reader,
         Row $row,
-        $format,
-        DataCollector $dataCollector
+        $format
     ) {
         $writer = new ExcelFileWriter('system/tmp/' . File::getName($config));
         $writer->setFormat($format);
@@ -92,7 +88,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $this->handleDefaultExportResult($writer->writeFrom($reader));
 
-        $dataCollector->updateLastRun($config->id);
+        $this->updateLastRun($config);
 
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();
@@ -105,10 +101,13 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param ArrayReader   $reader
      * @param Row           $row
      * @param               $format
-     * @param DataCollector $dataCollector
      */
-    protected function exportWithTemplate($config, ArrayReader $reader, Row $row, $format, DataCollector $dataCollector)
-    {
+    protected function exportWithTemplate(
+        $config,
+        ArrayReader $reader,
+        Row $row,
+        $format
+    ) {
         // Fetch the template and make a copy of it
         $template = \FilesModel::findByPk($config->template);
 
@@ -160,7 +159,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
         $excelWriter->save(TL_ROOT . '/' . $tmpPath);
 
-        $dataCollector->updateLastRun($config->id);
+        $this->updateLastRun($config);
 
         $tmpFile = new \File($tmpPath);
         $tmpFile->sendToBrowser();

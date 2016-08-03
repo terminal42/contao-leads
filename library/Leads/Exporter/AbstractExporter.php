@@ -234,6 +234,18 @@ abstract class AbstractExporter implements ExporterInterface
     }
 
     /**
+     * Update last export date.
+     *
+     * @param \Database\Result $config
+     */
+    protected function updateLastRun($config)
+    {
+        \Database::getInstance()
+            ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
+            ->execute(time(), $config->id);
+    }
+
+    /**
      * Checks if the result of the export is false (which means an error occured)
      * or if it equals 0 (which means no rows are to be exported).
      *

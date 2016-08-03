@@ -11,7 +11,6 @@
 
 namespace Leads\Exporter;
 
-
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
@@ -59,7 +58,7 @@ class Csv extends AbstractExporter
 
         $this->handleDefaultExportResult($writer->writeFrom($reader));
 
-        $dataCollector->updateLastRun($config->id);
+        $this->updateLastRun($config);
 
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();
