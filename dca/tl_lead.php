@@ -354,7 +354,7 @@ class tl_lead extends Backend
 
         $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
 
-        \Leads\Leads::export($intConfig, $arrIds);
+        $this->exportAndCatchExceptions($intConfig, $arrIds);
     }
 
     /**
@@ -382,6 +382,7 @@ class tl_lead extends Backend
 
             foreach ($arrConfigs as $config) {
                 if (\Input::post('export_' . $config['id'])) {
+                    $this->exportAndCatchExceptions($config['id'], $arrIds);
                     \Leads\Leads::export($config['id'], $arrIds);
                 }
             }
@@ -395,5 +396,21 @@ class tl_lead extends Backend
         }
 
         return $arrButtons;
+    }
+
+    /**
+     * Try to export and catch ExportFailedException.
+     *
+     * @param $intConfig
+     * @param $arrIds
+     */
+    public function exportAndCatchExceptions($intConfig, $arrIds)
+    {
+        try {
+            \Leads\Leads::export($intConfig, $arrIds);
+        } catch (\Leads\Exporter\ExportFailedException $e) {
+            \Message::addError($e->getMessage());
+            \Controller::redirect(\System::getReferer());
+        }
     }
 }

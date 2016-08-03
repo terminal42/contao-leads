@@ -68,6 +68,8 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param Row           $row
      * @param               $format
      * @param DataCollector $dataCollector
+     *
+     * @throws ExportFailedException
      */
     protected function exportWithoutTemplate(
         $config,
@@ -89,8 +91,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         });
 
         if (!$writer->writeFrom($reader)) {
-            $objResponse = new Response('Data export failed.', 500);
-            $objResponse->send();
+            throw new ExportFailedException('Data export failed.');
         }
 
         $dataCollector->updateLastRun($config->id);

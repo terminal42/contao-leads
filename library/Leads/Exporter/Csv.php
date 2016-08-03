@@ -8,6 +8,7 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
+
 namespace Leads\Exporter;
 
 
@@ -34,6 +35,8 @@ class Csv extends AbstractExporter
      *
      * @param \Database\Result $config
      * @param array|null       $ids
+     *
+     * @throws ExportFailedException
      */
     public function export($config, $ids = null)
     {
@@ -55,8 +58,7 @@ class Csv extends AbstractExporter
         });
 
         if (!$writer->writeFrom($reader)) {
-            $objResponse = new Response('Data export failed.', 500);
-            $objResponse->send();
+            throw new ExportFailedException('Data export failed.');
         }
 
         $dataCollector->updateLastRun($config->id);
