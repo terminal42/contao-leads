@@ -44,7 +44,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
     protected function exportWithFormat($config, $ids, $format)
     {
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
-        $dataCollector->setUseTableLocking(true);
 
         $reader = new ArrayReader($dataCollector->getExportData());
 
@@ -90,8 +89,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
         });
 
         if (!$writer->writeFrom($reader)) {
-            $dataCollector->unlockTables();
-
             $objResponse = new Response('Data export failed.', 500);
             $objResponse->send();
         }

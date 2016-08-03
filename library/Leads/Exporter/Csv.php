@@ -38,7 +38,6 @@ class Csv extends AbstractExporter
     public function export($config, $ids = null)
     {
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
-        $dataCollector->setUseTableLocking(true);
 
         $reader = new ArrayReader($dataCollector->getExportData());
         $writer = new CsvFileWriter('system/tmp/' . File::getName($config));
@@ -56,13 +55,10 @@ class Csv extends AbstractExporter
         });
 
         if (!$writer->writeFrom($reader)) {
-            $dataCollector->unlockTables();
-
             $objResponse = new Response('Data export failed.', 500);
             $objResponse->send();
         }
 
-        // Will also unlock tables
         $dataCollector->updateLastRun($config->id);
 
         $objFile = new \File($writer->getFilename());

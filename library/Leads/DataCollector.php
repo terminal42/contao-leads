@@ -50,16 +50,6 @@ class DataCollector
     private $getExportDataCache = array();
 
     /**
-     * @var bool
-     */
-    private $useTableLocking = false;
-
-    /**
-     * @var bool
-     */
-    private $tablesLocked = false;
-
-    /**
      * Constructor.
      *
      * @param int $formId
@@ -140,22 +130,6 @@ class DataCollector
     }
 
     /**
-     * @return bool
-     */
-    public function isUseTableLocking()
-    {
-        return $this->useTableLocking;
-    }
-
-    /**
-     * @param bool $useTableLocking
-     */
-    public function setUseTableLocking($useTableLocking)
-    {
-        $this->useTableLocking = $useTableLocking;
-    }
-
-    /**
      * Gets a cache key for the instance of the data collector
      *
      * @return string
@@ -184,8 +158,6 @@ class DataCollector
         if (array_key_exists($cacheKey, $this->getFieldsDataCache)) {
             return $this->getFieldsDataCache[$cacheKey];
         }
-
-        $this->lockTables();
 
         $where = array('tl_lead.master_id=?');
 
@@ -236,8 +208,6 @@ class DataCollector
         if (array_key_exists($cacheKey, $this->getExportDataCache)) {
             return $this->getExportDataCache[$cacheKey];
         }
-
-        $this->lockTables();
 
         $where = array('tl_lead.master_id=?');
 
@@ -303,40 +273,10 @@ class DataCollector
         return $headerFields;
     }
 
-    public function unlockTables()
-    {
-        \Database::getInstance()->unlockTables();
-
-        $this->tablesLocked = false;
-    }
-
     public function updateLastRun($configId)
     {
         \Database::getInstance()
              ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
-             ->execute(time(), $configId)
-        ;
-
-        $this->unlockTables();
-    }
-
-    private function lockTables()
-    {
-        if (!$this->useTableLocking || $this->tablesLocked) {
-            return;
-        }
-
-        \Database::getInstance()->lockTables(
-            array(
-                'tl_form' => 'READ',
-                'tl_form_field' => 'READ',
-                'tl_member' => 'READ',
-                'tl_lead' => 'READ',
-                'tl_lead_data' => 'READ',
-                'tl_lead_export' => 'WRITE'
-            )
-        );
-
-        $this->tablesLocked = true;
+             ->execute(time(), $configId);
     }
 }
