@@ -41,7 +41,9 @@ class Leads extends \Controller
 
         // Convert date formats into timestamps
         if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
-            $objDate = new \Date($varValue, $GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format']);
+            $key      = $objField->rgxp . 'Format';
+            $format   = isset($GLOBALS['objPage']) ? $GLOBALS['objPage']->{$key} : $GLOBALS['TL_CONFIG'][$key];
+            $objDate  = new \Date($varValue, $GLOBALS['TL_CONFIG'][$format]);
             $varValue = $objDate->tstamp;
         }
 
