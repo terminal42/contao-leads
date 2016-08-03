@@ -216,7 +216,7 @@ class DataCollector
         }
 
         if (null !== $this->skipUntil) {
-            $where[] = 'tl_lead.created > ' . (int) $this->skipUntil;
+            $where[] = 'tl_lead.created >= ' . \Date::floorToMinute((int) $this->skipUntil);
         }
 
         $data = array();
