@@ -85,3 +85,9 @@ $GLOBALS['TL_LANG']['tl_lead_export']['edit']   = array('Konfiguration editieren
 $GLOBALS['TL_LANG']['tl_lead_export']['cut']    = array('Konfiguration verschieben', 'Konfiguration ID %s verschieben');
 $GLOBALS['TL_LANG']['tl_lead_export']['copy']   = array('Konfiguration duplizieren', 'Konfiguration ID %s duplizieren');
 $GLOBALS['TL_LANG']['tl_lead_export']['delete'] = array('Konfiguration löschen', 'Konfiguration ID %s löschen');
+
+/**
+ * Errors
+ */
+$GLOBALS['TL_LANG']['tl_lead_export']['exportError']['general'] = 'Ein genereller Fehler ist aufgetreten. Bitte wenden Sie sich an den Systemadministrator.';
+$GLOBALS['TL_LANG']['tl_lead_export']['exportError']['noRows']  = 'Für diesen Export sind keine Daten vorhanden.';

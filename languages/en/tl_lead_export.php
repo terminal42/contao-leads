@@ -85,3 +85,10 @@ $GLOBALS['TL_LANG']['tl_lead_export']['edit']   = array('Edit config', 'Edit con
 $GLOBALS['TL_LANG']['tl_lead_export']['cut']    = array('Move config', 'Move config ID %s');
 $GLOBALS['TL_LANG']['tl_lead_export']['copy']   = array('Duplicate config', 'Duplicate config ID %s');
 $GLOBALS['TL_LANG']['tl_lead_export']['delete'] = array('Delete config', 'Delete config ID %s');
+
+
+/**
+ * Errors
+ */
+$GLOBALS['TL_LANG']['tl_lead_export']['exportError']['general'] = 'A general error occured. Please notify your system administrator.';
+$GLOBALS['TL_LANG']['tl_lead_export']['exportError']['noRows']  = 'There is no data to export for this configuration.';

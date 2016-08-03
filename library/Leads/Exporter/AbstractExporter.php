@@ -232,4 +232,25 @@ abstract class AbstractExporter implements ExporterInterface
 
         return $fieldConfig;
     }
+
+    /**
+     * Checks if the result of the export is false (which means an error occured)
+     * or if it equals 0 (which means no rows are to be exported).
+     *
+     * @param int|false $result
+     *
+     * @throws ExportFailedException
+     */
+    protected function handleDefaultExportResult($result)
+    {
+        // General error
+        if (false === $result) {
+            throw new ExportFailedException($GLOBALS['TL_LANG']['tl_lead_export']['exportError']['general']);
+        }
+
+        // No rows
+        if (0 === $result) {
+            throw new ExportFailedException($GLOBALS['TL_LANG']['tl_lead_export']['exportError']['noRows']);
+        }
+    }
 }

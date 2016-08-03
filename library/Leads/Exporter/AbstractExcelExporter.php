@@ -90,9 +90,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
             return $row->compile($data);
         });
 
-        if (!$writer->writeFrom($reader)) {
-            throw new ExportFailedException('Data export failed.');
-        }
+        $this->handleDefaultExportResult($writer->writeFrom($reader));
 
         $dataCollector->updateLastRun($config->id);
 
