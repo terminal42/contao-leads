@@ -32,10 +32,16 @@ class DataCollector
     private $leadDataIds = array();
 
     /**
-     * Timestamp of when to start export
+     * Export from
      * @var int|null
      */
-    private $skipUntil;
+    private $from;
+
+    /**
+     * Export to
+     * @var int|null
+     */
+    private $to;
 
     /**
      * Cache for getFieldsData()
@@ -114,19 +120,39 @@ class DataCollector
      *
      * @return int|null
      */
-    public function getSkipUntil()
+    public function getFrom()
     {
-        return $this->skipUntil;
+        return $this->from;
     }
 
     /**
-     * Set a timestamp to skip lead records prior to that date/time.
+     * Set a timestamp from when to start fechting data.
      *
      * @param int|null $time
      */
-    public function setSkipUntil($time)
+    public function setFrom($time)
     {
-        $this->skipUntil = $time;
+        $this->from = $time;
+    }
+
+    /**
+     * A timestamp to limit the export to.
+     *
+     * @return int|null
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
+
+    /**
+     * Set limit export timestamp.
+     *
+     * @param int|null $to
+     */
+    public function setTo($to)
+    {
+        $this->to = $to;
     }
 
     /**
@@ -138,8 +164,12 @@ class DataCollector
     {
         $key = md5($this->formId . ':' . implode(',', $this->fieldIds));
 
-        if (null !== $this->skipUntil) {
-            $key .= ':' . (int) $this->skipUntil;
+        if (null !== $this->getFrom()) {
+            $key .= ':' . (int) $this->getFrom();
+        }
+
+        if (null !== $this->getTo()) {
+            $key .= ':' . (int) $this->getTo();
         }
 
         return $key;
@@ -215,8 +245,12 @@ class DataCollector
             $where[] = 'tl_lead.id IN(' . implode(',', $this->leadDataIds) . ')';
         }
 
-        if (null !== $this->skipUntil) {
-            $where[] = 'tl_lead.created >= ' . \Date::floorToMinute((int) $this->skipUntil);
+        if (null !== $this->getFrom()) {
+            $where[] = 'tl_lead.created >= ' . $this->getFrom();
+        }
+
+        if (null !== $this->getTo()) {
+            $where[] = 'tl_lead.created < ' . $this->getTo();
         }
 
         $data = array();

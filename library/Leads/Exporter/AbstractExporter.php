@@ -59,7 +59,8 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         if ($config->skipLastRun) {
-            $dataCollector->setSkipUntil($config->lastRun);
+            $dataCollector->setFrom(\Date::floorToMinute($config->lastRun));
+            $dataCollector->setTo(time());
         }
 
         return $dataCollector;
