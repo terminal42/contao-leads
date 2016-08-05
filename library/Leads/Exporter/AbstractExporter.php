@@ -17,10 +17,10 @@ use Leads\Leads;
 abstract class AbstractExporter implements ExporterInterface
 {
     /**
-     * Export to
+     * Last run that will be updated
      * @var int
      */
-    private $to = null;
+    protected $newLastRun = null;
 
     /**
      * Returns true if available.
@@ -64,10 +64,11 @@ abstract class AbstractExporter implements ExporterInterface
             $dataCollector->setLeadDataIds($ids);
         }
 
+        $this->newLastRun = \Date::floorToMinute();
+
         if ($config->skipLastRun) {
-            $this->to = \Date::floorToMinute() - 1;
-            $dataCollector->setFrom(\Date::floorToMinute($config->lastRun));
-            $dataCollector->setTo($this->to);
+            $dataCollector->setFrom($config->lastRun);
+            $dataCollector->setTo($this->newLastRun - 1);
         }
 
         return $dataCollector;
@@ -248,11 +249,11 @@ abstract class AbstractExporter implements ExporterInterface
      */
     protected function updateLastRun($config)
     {
-        $to = $this->to ?: time();
-        
-        \Database::getInstance()
-            ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
-            ->execute($to, $config->id);
+       if (null !== $this->newLastRun) {
+           \Database::getInstance()
+               ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
+               ->execute($this->newLastRun, $config->id);
+       }
     }
 
     /**
