@@ -225,24 +225,32 @@ class Leads extends \Controller
         if ($arrForm['leadEnabled']) {
             $time = time();
 
-            $intLead = \Database::getInstance()->prepare("
-                INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id,post_data) VALUES (?,?,?,?,?,?,?)
-            ")->execute(
-                $time,
-                $time,
-                $GLOBALS['TL_LANGUAGE'],
-                $arrForm['id'],
-                ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']),
-                (FE_USER_LOGGED_IN === true ? \FrontendUser::getInstance()->id : 0),
-                serialize($arrPost)
-            )->insertId;
-
+            $intLead = \Database::getInstance()
+                ->prepare(
+                    "INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id,post_data) VALUES (?, UNIX_TIMESTAMP(), ?,?,?,?,?)"
+                )
+                ->execute(
+                    $time,
+                    $GLOBALS['TL_LANGUAGE'],
+                    $arrForm['id'],
+                    ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']),
+                    (FE_USER_LOGGED_IN === true ? \FrontendUser::getInstance()->id : 0),
+                    serialize($arrPost)
+                )
+                ->insertId
+            ;
 
             // Fetch master form fields
             if ($arrForm['leadMaster'] > 0) {
-                $objFields = \Database::getInstance()->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' ORDER BY f2.sorting")->execute($arrForm['id']);
+                $objFields = \Database::getInstance()
+                    ->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' ORDER BY f2.sorting")
+                    ->execute($arrForm['id'])
+                ;
             } else {
-                $objFields = \Database::getInstance()->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' ORDER BY sorting")->execute($arrForm['id']);
+                $objFields = \Database::getInstance()
+                    ->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' ORDER BY sorting")
+                    ->execute($arrForm['id'])
+                ;
             }
 
             while ($objFields->next()) {

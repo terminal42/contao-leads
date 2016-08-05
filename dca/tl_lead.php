@@ -176,8 +176,10 @@ class tl_lead extends Backend
      */
     public function loadExportConfigs()
     {
-        $objConfigs = \Database::getInstance()->prepare("SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name")
-                                              ->execute(\Input::get('master'));
+        $objConfigs = \Database::getInstance()
+            ->prepare("SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name")
+            ->execute(\Input::get('master'))
+        ;
 
         if (!$objConfigs->numRows) {
             return;
@@ -186,8 +188,7 @@ class tl_lead extends Backend
         $arrOperations = array();
 
         while ($objConfigs->next()) {
-            $arrOperations['export_' . $objConfigs->id] = array
-            (
+            $arrOperations['export_' . $objConfigs->id] = array(
                 'label'         => $objConfigs->name,
                 'href'          => 'key=export&amp;config=' . $objConfigs->id,
                 'class'         => 'leads-export header_export_excel',
@@ -237,7 +238,6 @@ class tl_lead extends Backend
 
         // No form found, we can't format the label
         if (!$objForm->numRows) {
-
             return $label;
         }
 
@@ -266,7 +266,6 @@ class tl_lead extends Backend
     public function exportConfigIcon($href, $label, $title, $class, $attributes)
     {
         if (!\BackendUser::getInstance()->isAdmin) {
-
             return '';
         }
 
@@ -356,7 +355,7 @@ class tl_lead extends Backend
 
         $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
 
-        \Leads\Leads::export($intConfig, $arrIds);
+        $this->exportAndCatchExceptions($intConfig, $arrIds);
     }
 
     /**
@@ -368,12 +367,14 @@ class tl_lead extends Backend
      */
     public function addButtons($arrButtons)
     {
-        $arrConfigs = \Database::getInstance()->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
-                                              ->execute(\Input::get('master'))
-                                              ->fetchAllAssoc();
+        $arrConfigs = \Database::getInstance()
+            ->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
+            ->execute(\Input::get('master'))
+            ->fetchAllAssoc()
+        ;
 
         // Run the export
-        if (\Input::post('FORM_SUBMIT') == 'tl_select') {
+        if ('tl_select' === \Input::post('FORM_SUBMIT')) {
             $arrIds = \Input::post('IDS');
 
             if (empty($arrIds)) {
@@ -386,7 +387,7 @@ class tl_lead extends Backend
 
             foreach ($arrConfigs as $config) {
                 if (\Input::post('export_' . $config['id'])) {
-                    \Leads\Leads::export($config['id'], $arrIds);
+                    $this->exportAndCatchExceptions($config['id'], $arrIds);
                 }
             }
         }
@@ -445,15 +446,15 @@ class tl_lead extends Backend
         // Process the form
         if ('tl_leads_notification' === \Input::post('FORM_SUBMIT')) {
             /**
-             * @var \FormModel $form
+             * @var \FormModel                             $form
              * @var \NotificationCenter\Model\Notification $notification
              */
             if (!isset($notifications[\Input::post('notification')])
-                  || !is_array(\Input::post('IDS'))
-               || ($form = \FormModel::findByPk(\Input::get('master'))) === null
-               || null === ($notification = \NotificationCenter\Model\Notification::findByPk(\Input::post('notification')))
+                || !is_array(\Input::post('IDS'))
+                || ($form = \FormModel::findByPk(\Input::get('master'))) === null
+                || null === ($notification = \NotificationCenter\Model\Notification::findByPk(\Input::post('notification')))
             ) {
-                  \Controller::reload();
+                \Controller::reload();
             }
 
             if (\Input::get('id')) {
@@ -475,5 +476,21 @@ class tl_lead extends Backend
         }
 
         return \Leads\NotificationCenterIntegration::generateForm($notifications, [\Input::get('id')]);
+    }
+
+    /**
+     * Try to export and catch ExportFailedException.
+     *
+     * @param $intConfig
+     * @param $arrIds
+     */
+    public function exportAndCatchExceptions($intConfig, $arrIds)
+    {
+        try {
+            \Leads\Leads::export($intConfig, $arrIds);
+        } catch (\Leads\Exporter\ExportFailedException $e) {
+            \Message::addError($e->getMessage());
+            \Controller::redirect(\System::getReferer());
+        }
     }
 }

@@ -32,6 +32,18 @@ class DataCollector
     private $leadDataIds = array();
 
     /**
+     * Export from
+     * @var int|null
+     */
+    private $from;
+
+    /**
+     * Export to
+     * @var int|null
+     */
+    private $to;
+
+    /**
      * Cache for getFieldsData()
      * @var array
      */
@@ -104,13 +116,63 @@ class DataCollector
     }
 
     /**
+     * A timestamp from when to start fetching data.
+     *
+     * @return int|null
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    /**
+     * Set a timestamp from when to start fechting data.
+     *
+     * @param int|null $time
+     */
+    public function setFrom($time)
+    {
+        $this->from = $time;
+    }
+
+    /**
+     * A timestamp to limit the export to.
+     *
+     * @return int|null
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
+
+    /**
+     * Set limit export timestamp.
+     *
+     * @param int|null $to
+     */
+    public function setTo($to)
+    {
+        $this->to = $to;
+    }
+
+    /**
      * Gets a cache key for the instance of the data collector
      *
      * @return string
      */
     public function getCacheKey()
     {
-        return md5($this->formId . ':' . implode(',', $this->fieldIds));
+        $key = md5($this->formId . ':' . implode(',', $this->fieldIds));
+
+        if (null !== $this->getFrom()) {
+            $key .= ':' . (int) $this->getFrom();
+        }
+
+        if (null !== $this->getTo()) {
+            $key .= ':' . (int) $this->getTo();
+        }
+
+        return $key;
     }
 
     /**
@@ -123,30 +185,35 @@ class DataCollector
     {
         $cacheKey = $this->getCacheKey();
 
-        if (isset($this->getFieldsDataCache[$cacheKey])) {
-
+        if (array_key_exists($cacheKey, $this->getFieldsDataCache)) {
             return $this->getFieldsDataCache[$cacheKey];
+        }
+
+        $where = array('tl_lead.master_id=?');
+
+        if (0 !== count($this->fieldIds)) {
+            $where[] = "tl_lead_data.field_id IN (" . implode(',', $this->fieldIds) . ")";
         }
 
         $data = array();
         $db = \Database::getInstance()->prepare("
             SELECT * FROM (
                 SELECT
-                    ld.master_id AS id,
-                    IFNULL(ff.name, ld.name) AS name,
-                    IF(ff.label IS NULL OR ff.label='', ld.name, ff.label) AS label,
-                    ff.type,
-                    ff.options,
-                    ld.field_id,
-                    ld.sorting
-                FROM tl_lead_data ld
-                LEFT JOIN tl_form_field ff ON ff.id=ld.master_id
-                LEFT JOIN tl_lead l ON ld.pid=l.id
-                WHERE l.master_id=?" . (!empty($this->fieldIds) ? (" AND ld.field_id IN (" . implode(',', $this->fieldIds) . ")") : "") . "
-                ORDER BY l.master_id!=l.form_id
-            ) ld
+                    tl_lead_data.master_id AS id,
+                    IFNULL(tl_form_field.name, tl_lead_data.name) AS name,
+                    IF(tl_form_field.label IS NULL OR tl_form_field.label='', tl_lead_data.name, tl_form_field.label) AS label,
+                    tl_form_field.type,
+                    tl_form_field.options,
+                    tl_lead_data.field_id,
+                    tl_lead_data.sorting
+                FROM tl_lead_data
+                LEFT JOIN tl_form_field ON tl_form_field.id=tl_lead_data.master_id
+                LEFT JOIN tl_lead ON tl_lead_data.pid=tl_lead.id
+                WHERE " . implode(' AND ', $where) . "
+                ORDER BY tl_lead.master_id!=tl_lead.form_id
+            ) result_set
             GROUP BY field_id
-            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet("ld.field_id", $this->fieldIds) : "sorting")
+            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet('field_id', $this->fieldIds) : 'sorting')
         )->execute($this->formId);
 
         while ($db->next()) {
@@ -168,24 +235,37 @@ class DataCollector
     {
         $cacheKey = $this->getCacheKey();
 
-        if (isset($this->getExportDataCache[$cacheKey])) {
-
+        if (array_key_exists($cacheKey, $this->getExportDataCache)) {
             return $this->getExportDataCache[$cacheKey];
+        }
+
+        $where = array('tl_lead.master_id=?');
+
+        if (0 !== count($this->leadDataIds)) {
+            $where[] = 'tl_lead.id IN(' . implode(',', $this->leadDataIds) . ')';
+        }
+
+        if (null !== $this->getFrom()) {
+            $where[] = 'tl_lead.created >= ' . $this->getFrom();
+        }
+
+        if (null !== $this->getTo()) {
+            $where[] = 'tl_lead.created <= ' . $this->getTo();
         }
 
         $data = array();
         $db = \Database::getInstance()->prepare("
             SELECT
-                ld.*,
-                l.created,
-                l.form_id AS form_id,
-                (SELECT title FROM tl_form WHERE id=l.form_id) AS form_name,
-                l.member_id AS member_id,
-                IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=l.member_id), '') AS member_name
-            FROM tl_lead_data ld
-            LEFT JOIN tl_lead l ON l.id=ld.pid
-            WHERE l.master_id=?" . ((!empty($this->leadDataIds)) ? (" AND l.id IN(" . implode(',', $this->leadDataIds) . ")") : "") . "
-            ORDER BY l.created DESC
+                tl_lead_data.*,
+                tl_lead.created,
+                tl_lead.form_id AS form_id,
+                (SELECT title FROM tl_form WHERE id=tl_lead.form_id) AS form_name,
+                tl_lead.member_id AS member_id,
+                IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=tl_lead.member_id), '') AS member_name
+            FROM tl_lead_data
+            LEFT JOIN tl_lead ON tl_lead.id=tl_lead_data.pid
+            WHERE " . implode(' AND ', $where) . "
+            ORDER BY tl_lead.created DESC
         ")->execute($this->formId);
 
         while ($db->next()) {
@@ -210,7 +290,7 @@ class DataCollector
 
             // Show single checkbox label as field label
             if ($row['label'] == $row['name']
-                && $row['type'] == 'checkbox'
+                && 'checkbox' === $row['type']
                 && $row['options'] != ''
             ) {
                 $options = deserialize($row['options'], true);

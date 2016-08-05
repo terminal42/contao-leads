@@ -99,18 +99,18 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     'palettes' => array
     (
         '__selector__'                => array('type', 'useTemplate', 'export'),
-        'default'                     => '{name_legend},name,type,filename;{config_legend},export',
-        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export',
-        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export',
-        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export',
+        'default'                     => '{name_legend},name,type,filename;{config_legend},export;{date_legend:hide},lastRun,skipLastRun',
+        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export;{date_legend:hide},lastRun,skipLastRun',
+        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export;{date_legend:hide},lastRun,skipLastRun',
+        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export;{date_legend:hide},lastRun,skipLastRun',
     ),
 
     // Subpalettes
     'subpalettes' => array
     (
-        'export_fields'               => 'fields',
-        'export_tokens'               => 'tokenFields',
-        'useTemplate'                 => 'startIndex,template',
+        'export_fields'                 => 'fields',
+        'export_tokens'                 => 'tokenFields',
+        'useTemplate'                   => 'startIndex,template',
     ),
 
     // Fields
@@ -336,6 +336,23 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             )),
             'sql'                     => "blob NULL",
         ),
+        'lastRun' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['lastRun'],
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'nullIfEmpty'=>true, 'tl_class'=>'w50 wizard'),
+            'sql'                     => 'int(10) NULL'
+        ),
+        'skipLastRun' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => array('tl_class'=>'w50 m12'),
+            'sql'                     => "char(1) NOT NULL default ''"
+        ),
     )
 );
 
@@ -362,7 +379,7 @@ class tl_lead_export extends Backend
     /**
      * Update the palette depending on the export type.
      *
-     * @param $dc
+     * @param \DataContainer $dc
      */
     public function updatePalette($dc = null)
     {
@@ -374,8 +391,7 @@ class tl_lead_export extends Backend
             "SELECT * FROM tl_lead_export WHERE id=?"
         )->execute($dc->id);
 
-        if (!$objRecord->export || $objRecord->export == 'all') {
-
+        if (!$objRecord->export || 'all' === $objRecord->export) {
             return;
         }
 
@@ -403,7 +419,7 @@ class tl_lead_export extends Backend
      * Load the lead fields.
      *
      * @param mixed  $varValue
-     * @param object $dc
+     * @param \DataContainer $dc
      *
      * @return string
      */
@@ -413,7 +429,6 @@ class tl_lead_export extends Backend
 
         // Load the form fields
         if (empty($arrFields) && $dc->id) {
-
             $arrFields = array_values(\Leads\Leads::getSystemColumns());
 
             $objFields = Database::getInstance()->prepare(
@@ -422,9 +437,9 @@ class tl_lead_export extends Backend
 
             while ($objFields->next()) {
                 $arrFields[] = array(
-                    'field' => $objFields->id,
-                    'name' => '',
-                    'value' => 'all',
+                    'field'  => $objFields->id,
+                    'name'   => '',
+                    'value'  => 'all',
                     'format' => 'raw',
                 );
             }
@@ -452,8 +467,10 @@ class tl_lead_export extends Backend
             $arrFields[$k] = $systemColumn['name'];
         }
 
-        $objFields = \Database::getInstance()->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
-                                             ->execute(Input::get('id'));
+        $objFields = \Database::getInstance()
+            ->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
+            ->execute(Input::get('id'))
+        ;
 
         while ($objFields->next()) {
             $strLabel = $objFields->name;
