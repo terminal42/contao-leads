@@ -17,6 +17,12 @@ use Leads\Leads;
 abstract class AbstractExporter implements ExporterInterface
 {
     /**
+     * Export to
+     * @var int
+     */
+    private $to = null;
+
+    /**
      * Returns true if available.
      *
      * @return bool
@@ -59,8 +65,9 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         if ($config->skipLastRun) {
+            $this->to = \Date::floorToMinute() - 1;
             $dataCollector->setFrom(\Date::floorToMinute($config->lastRun));
-            $dataCollector->setTo(time());
+            $dataCollector->setTo($this->to);
         }
 
         return $dataCollector;
@@ -241,9 +248,11 @@ abstract class AbstractExporter implements ExporterInterface
      */
     protected function updateLastRun($config)
     {
+        $to = $this->to ?: time();
+        
         \Database::getInstance()
             ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
-            ->execute(time(), $config->id);
+            ->execute($to, $config->id);
     }
 
     /**

@@ -250,7 +250,7 @@ class DataCollector
         }
 
         if (null !== $this->getTo()) {
-            $where[] = 'tl_lead.created < ' . $this->getTo();
+            $where[] = 'tl_lead.created <= ' . $this->getTo();
         }
 
         $data = array();
