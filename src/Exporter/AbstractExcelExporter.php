@@ -32,18 +32,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
     }
 
     /**
-     * Exports a given set of data row ids using a given configuration.
-     *
-     * @param \Database\Result $config
-     * @param array|null       $ids
-     */
-    public function export($config, $ids = null)
-    {
-        throw new \RuntimeException('export() has to be implemented by a child class of AbstractExcelExporter.');
-    }
-
-
-    /**
      * Exports based on Excel format.
      *
      * @param \Database\Result|object $config
@@ -53,6 +41,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
     protected function exportWithFormat($config, $ids, $format)
     {
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
+
         $reader = new ArrayReader($dataCollector->getExportData());
 
         if ($config->headerFields) {
@@ -61,25 +50,29 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
-
         if ($config->useTemplate) {
             $this->exportWithTemplate($config, $reader, $row, $format);
         } else {
             $this->exportWithoutTemplate($config, $reader, $row, $format);
         }
-
     }
 
     /**
      * Default export without template.
      *
-     * @param             $config
-     * @param ArrayReader $reader
-     * @param Row         $row
-     * @param             $format
+     * @param               $config
+     * @param ArrayReader   $reader
+     * @param Row           $row
+     * @param               $format
+     *
+     * @throws ExportFailedException
      */
-    protected function exportWithoutTemplate($config, ArrayReader $reader, Row $row, $format)
-    {
+    protected function exportWithoutTemplate(
+        $config,
+        ArrayReader $reader,
+        Row $row,
+        $format
+    ) {
         $writer = new ExcelFileWriter('system/tmp/' . File::getName($config));
         $writer->setFormat($format);
 
@@ -92,10 +85,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
             return $row->compile($data);
         });
 
-        if (!$writer->writeFrom($reader)) {
-            $objResponse = new Response('Data export failed.', 500);
-            $objResponse->send();
-        }
+        $this->handleDefaultExportResult($writer->writeFrom($reader));
+
+        $this->updateLastRun($config);
 
         $objFile = new \File($writer->getFilename());
         $objFile->sendToBrowser();
@@ -104,13 +96,17 @@ abstract class AbstractExcelExporter extends AbstractExporter
     /**
      * Export with template.
      *
-     * @param             $config
-     * @param ArrayReader $reader
-     * @param Row         $row
-     * @param             $format
+     * @param               $config
+     * @param ArrayReader   $reader
+     * @param Row           $row
+     * @param               $format
      */
-    protected function exportWithTemplate($config, ArrayReader $reader, Row $row, $format)
-    {
+    protected function exportWithTemplate(
+        $config,
+        ArrayReader $reader,
+        Row $row,
+        $format
+    ) {
         // Fetch the template and make a copy of it
         $template = \FilesModel::findByPk($config->template);
 
@@ -131,11 +127,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $currentColumn = 0;
 
         foreach ($reader as $readerRow) {
-
             $compiledRow = $row->compile($readerRow);
 
             foreach ($compiledRow as $k => $value) {
-
                 $specificColumn = null;
 
                 // Support explicit target column
@@ -155,7 +149,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
                     (string) $value,
                     \PHPExcel_Cell_DataType::TYPE_STRING2
                 );
-
             }
 
             $currentColumn = 0;
@@ -164,6 +157,8 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
         $excelWriter->save(TL_ROOT . '/' . $tmpPath);
+
+        $this->updateLastRun($config);
 
         $tmpFile = new \File($tmpPath);
         $tmpFile->sendToBrowser();

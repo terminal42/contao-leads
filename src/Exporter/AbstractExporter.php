@@ -17,6 +17,12 @@ use Terminal42\LeadsBundle\Leads;
 abstract class AbstractExporter implements ExporterInterface
 {
     /**
+     * Last run that will be updated
+     * @var int
+     */
+    protected $newLastRun = null;
+
+    /**
      * Returns true if available.
      *
      * @return bool
@@ -34,8 +40,8 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the default DataCollector instance based on the configuration.
      *
-     * @param \Database\Result|object $config
-     * @param array                   $ids
+     * @param \Database\Result $config
+     * @param array|null       $ids
      *
      * @return DataCollector
      */
@@ -45,8 +51,8 @@ abstract class AbstractExporter implements ExporterInterface
 
         // Limit the fields
         if ('fields' === $config->export) {
-
             $limitFields = array();
+
             foreach ($config->fields as $fieldsConfig) {
                 $limitFields[] = $fieldsConfig['field'];
             }
@@ -56,6 +62,13 @@ abstract class AbstractExporter implements ExporterInterface
 
         if (null !== $ids) {
             $dataCollector->setLeadDataIds($ids);
+        }
+
+        $this->newLastRun = \Date::floorToMinute();
+
+        if ($config->skipLastRun) {
+            $dataCollector->setFrom($config->lastRun);
+            $dataCollector->setTo($this->newLastRun - 1);
         }
 
         return $dataCollector;
@@ -80,7 +93,6 @@ abstract class AbstractExporter implements ExporterInterface
             }
 
             foreach ($dataCollector->getHeaderFields() as $fieldId => $label) {
-
                 $headerFields[] = $label;
             }
 
@@ -89,9 +101,7 @@ abstract class AbstractExporter implements ExporterInterface
 
         // Config: tokens
         if ('tokens' === $config->export) {
-
             foreach ($config->tokenFields as $column) {
-
                 $headerFields[] = $column['headerField'];
             }
 
@@ -104,14 +114,14 @@ abstract class AbstractExporter implements ExporterInterface
 
         foreach ($config->fields as $column) {
             if ($column['name'] != '') {
-
                 $headerFields[] = $column['name'];
+
             } else {
                 // System column
                 if (in_array($column['field'], array_keys(Leads::getSystemColumns()))) {
                     $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field' . $column['field']];
-                } else {
 
+                } else {
                     if (isset($dataHeaderFields[$column['field']])) {
                         $headerFields[] = $dataHeaderFields[$column['field']];
                     } else {
@@ -145,7 +155,6 @@ abstract class AbstractExporter implements ExporterInterface
 
             // Add export data column config.
             foreach ($dataCollector->getFieldsData() as $fieldId => $fieldConfig) {
-
                 $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
 
                 $fieldConfig['value'] = 'all';
@@ -160,15 +169,13 @@ abstract class AbstractExporter implements ExporterInterface
 
         // Config: tokens
         if ('tokens' === $config->export) {
-
             $allFieldsConfig = array();
+
             foreach ($fieldsData as $fieldConfig) {
                 $allFieldsConfig[] = $this->handleContaoSpecificConfig($fieldConfig);
             }
 
-
             foreach ($config->tokenFields as $column) {
-
                 $column = array_merge($column, array(
                     'allFieldsConfig' => $allFieldsConfig
                 ));
@@ -186,13 +193,12 @@ abstract class AbstractExporter implements ExporterInterface
 
             // System column
             if (in_array($column['field'], array_keys($systemColumns))) {
-
                 $columnConfig[] = $systemColumns[$column['field']];
+
             } else {
 
                 // Skip non existing fields
                 if (!isset($fieldsData[$column['field']])) {
-
                     continue;
                 }
 
@@ -236,5 +242,40 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         return $fieldConfig;
+    }
+
+    /**
+     * Update last export date.
+     *
+     * @param \Database\Result $config
+     */
+    protected function updateLastRun($config)
+    {
+       if (null !== $this->newLastRun) {
+           \Database::getInstance()
+               ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
+               ->execute($this->newLastRun, $config->id);
+       }
+    }
+
+    /**
+     * Checks if the result of the export is false (which means an error occured)
+     * or if it equals 0 (which means no rows are to be exported).
+     *
+     * @param int|false $result
+     *
+     * @throws ExportFailedException
+     */
+    protected function handleDefaultExportResult($result)
+    {
+        // General error
+        if (false === $result) {
+            throw new ExportFailedException($GLOBALS['TL_LANG']['tl_lead_export']['exportError']['general']);
+        }
+
+        // No rows
+        if (0 === $result) {
+            throw new ExportFailedException($GLOBALS['TL_LANG']['tl_lead_export']['exportError']['noRows']);
+        }
     }
 }

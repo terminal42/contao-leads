@@ -14,7 +14,7 @@
         "php":">=5.4",
         "contao/core-bundle":"^4.1",
         "codefog/contao-haste": "^4.11.4",
-        "menatwork/contao-multicolumnwizard": "~3.2"
+        "menatwork/contao-multicolumnwizard": "^3.3"
     },
     "require-dev": {
         "phpoffice/phpexcel": "^1.8",

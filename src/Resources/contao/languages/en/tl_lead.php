@@ -36,4 +36,8 @@ $GLOBALS['TL_LANG']['tl_lead']['export_config']     = array('Configuration', 'De
  * References
  */
 $GLOBALS['TL_LANG']['tl_lead']['label_format']         = 'Request from %s';
+
+/**
+ * Misc
+ */
 $GLOBALS['TL_LANG']['tl_lead']['notification_confirm'] = 'The notification has been sent for lead ID %s.';

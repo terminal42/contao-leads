@@ -43,7 +43,9 @@ class Leads extends \Controller
 
         // Convert date formats into timestamps
         if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
-            $objDate = new \Date($varValue, $GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format']);
+            $key      = $objField->rgxp . 'Format';
+            $format   = isset($GLOBALS['objPage']) ? $GLOBALS['objPage']->{$key} : $GLOBALS['TL_CONFIG'][$key];
+            $objDate  = new \Date($varValue, $GLOBALS['TL_CONFIG'][$format]);
             $varValue = $objDate->tstamp;
         }
 
@@ -239,12 +241,17 @@ class Leads extends \Controller
                 serialize($arrPost)
             )->insertId;
 
-
             // Fetch master form fields
             if ($arrForm['leadMaster'] > 0) {
-                $objFields = \Database::getInstance()->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' ORDER BY f2.sorting")->execute($arrForm['id']);
+                $objFields = \Database::getInstance()
+                    ->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' ORDER BY f2.sorting")
+                    ->execute($arrForm['id'])
+                ;
             } else {
-                $objFields = \Database::getInstance()->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' ORDER BY sorting")->execute($arrForm['id']);
+                $objFields = \Database::getInstance()
+                    ->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' ORDER BY sorting")
+                    ->execute($arrForm['id'])
+                ;
             }
 
             while ($objFields->next()) {

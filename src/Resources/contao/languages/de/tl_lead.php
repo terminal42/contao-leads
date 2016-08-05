@@ -13,11 +13,12 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_lead']['form_id']       = array('Quellformular');
-$GLOBALS['TL_LANG']['tl_lead']['master_id']     = array('Hauptformular');
-$GLOBALS['TL_LANG']['tl_lead']['language']      = array('Sprache');
-$GLOBALS['TL_LANG']['tl_lead']['created']       = array('Erhalten');
-$GLOBALS['TL_LANG']['tl_lead']['member']        = array('Mitglied');
+$GLOBALS['TL_LANG']['tl_lead']['form_id']           = array('Quellformular');
+$GLOBALS['TL_LANG']['tl_lead']['master_id']         = array('Hauptformular');
+$GLOBALS['TL_LANG']['tl_lead']['language']          = array('Sprache');
+$GLOBALS['TL_LANG']['tl_lead']['created']           = array('Erhalten');
+$GLOBALS['TL_LANG']['tl_lead']['member']            = array('Mitglied');
+$GLOBALS['TL_LANG']['tl_lead']['notification_list'] = array('Benachrichtigung', 'Bitte wählen Sie eine Benachrichtigung, welche Sie senden möchten.');
 
 
 /**
@@ -25,6 +26,7 @@ $GLOBALS['TL_LANG']['tl_lead']['member']        = array('Mitglied');
  */
 $GLOBALS['TL_LANG']['tl_lead']['delete']        = array('Anfrage löschen', 'Anfrage ID %s löschen');
 $GLOBALS['TL_LANG']['tl_lead']['show']          = array('Anfragedetails', 'Details der Anfrage ID %s anzeigen');
+$GLOBALS['TL_LANG']['tl_lead']['notification']  = array('Benachrichtigung senden', 'Benachrichtigung für Anfrage ID %s senden');
 $GLOBALS['TL_LANG']['tl_lead']['data']          = array('Anfrage-Daten', 'Formulardaten der Anfrage ID %s anzeigen');
 $GLOBALS['TL_LANG']['tl_lead']['export']        = array('Exportieren', 'Anfragen als Datei herunterladen');
 $GLOBALS['TL_LANG']['tl_lead']['export_config'] = array('Konfiguration', 'Definieren Sie Export-Konfigurationen');
@@ -34,3 +36,8 @@ $GLOBALS['TL_LANG']['tl_lead']['export_config'] = array('Konfiguration', 'Defini
  * References
  */
 $GLOBALS['TL_LANG']['tl_lead']['label_format']  = 'Anfrage vom %s';
+
+/**
+ * Misc
+ */
+$GLOBALS['TL_LANG']['tl_lead']['notification_confirm'] = 'Die Benachrichtigung für die Anfrage ID %s wurde versendet.';

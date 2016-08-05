@@ -59,9 +59,10 @@ $GLOBALS['LEADS_EXPORT'] = array
  */
 $GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
 (
-    'raw'       => 'Terminal42\LeadsBundle\DataTransformer\RawTransformer',
-    'date'      => 'Terminal42\LeadsBundle\DataTransformer\DateTransformer',
-    'datim'     => 'Terminal42\LeadsBundle\DataTransformer\DatimTransformer',
-    'time'      => 'Terminal42\LeadsBundle\DataTransformer\TimeTransformer',
-    'yesno'     => 'Terminal42\LeadsBundle\DataTransformer\YesNoTransformer',
+    'raw'               => 'Terminal42\LeadsBundle\DataTransformer\RawTransformer',
+    'date'              => 'Terminal42\LeadsBundle\DataTransformer\DateTransformer',
+    'datim'             => 'Terminal42\LeadsBundle\DataTransformer\DatimTransformer',
+    'time'              => 'Terminal42\LeadsBundle\DataTransformer\TimeTransformer',
+    'yesno'             => 'Terminal42\LeadsBundle\DataTransformer\YesNoTransformer',
+    'uuidToFilePath'    => 'Terminal42\LeadsBundle\DataTransformer\UuidToFilePathTransformer',
 );
