@@ -60,9 +60,10 @@ $GLOBALS['LEADS_EXPORT'] = array
  */
 $GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
 (
-    'raw'       => 'Leads\\DataTransformer\\RawTransformer',
-    'date'      => 'Leads\\DataTransformer\\DateTransformer',
-    'datim'     => 'Leads\\DataTransformer\\DatimTransformer',
-    'time'      => 'Leads\\DataTransformer\\TimeTransformer',
-    'yesno'     => 'Leads\\DataTransformer\\YesNoTransformer',
+    'raw'               => 'Leads\\DataTransformer\\RawTransformer',
+    'date'              => 'Leads\\DataTransformer\\DateTransformer',
+    'datim'             => 'Leads\\DataTransformer\\DatimTransformer',
+    'time'              => 'Leads\\DataTransformer\\TimeTransformer',
+    'yesno'             => 'Leads\\DataTransformer\\YesNoTransformer',
+    'uuidToFilePath'    => 'Leads\\DataTransformer\\UuidToFilePathTransformer',
 );
