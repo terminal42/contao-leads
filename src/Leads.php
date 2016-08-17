@@ -430,10 +430,10 @@ class Leads extends \Controller
             if (isset($data[$fieldConfig['id']])) {
 
                 $value = $data[$fieldConfig['id']]['value'];
-                $value = deserialize($value, true);
+                $value = deserialize($value);
 
                 // Add multiple tokens (<fieldname>_<option_name>) for multi-choice fields
-                if (count($value) > 1) {
+                if (is_array($value)) {
                     foreach ($value as $choice) {
                         $tokens[$fieldConfig['name'] . '_' . $choice] = 1;
                     }
