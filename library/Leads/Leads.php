@@ -11,7 +11,6 @@
 
 namespace Leads;
 
-use Haste\Util\StringUtil;
 use Leads\Exporter\ExporterInterface;
 use Leads\Exporter\Utils\Row;
 use Leads\Exporter\Utils\Tokens;
@@ -425,7 +424,9 @@ class Leads extends \Controller
 
                 // Add multiple tokens (<fieldname>_<option_name>) for multi-choice fields
                 if (is_array($value)) {
-                    StringUtil::flatten($value, $fieldConfig['name'], $tokens);
+                    foreach ($value as $choice) {
+                        $tokens[$fieldConfig['name'] . '_' . $choice] = 1;
+                    }
                 }
 
                 $value = Row::transformValue($data[$fieldConfig['id']]['value'], $fieldConfig);
