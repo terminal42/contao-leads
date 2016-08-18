@@ -223,22 +223,6 @@ class tl_lead extends Backend
     }
 
     /**
-     * Add the notification center support
-     */
-    public function addNotificationCenterSupport()
-    {
-        if (!\Terminal42\LeadsBundle\LeadsNotification::available(true)) {
-            return;
-        }
-
-        $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['notification'] = array(
-            'label' => &$GLOBALS['TL_LANG']['tl_lead']['notification'],
-            'href'  => 'key=notification',
-            'icon'  => 'system/modules/notification_center/notification.png',
-        );
-    }
-
-    /**
      * Send the notification
      */
     public function sendNotification()
@@ -490,7 +474,7 @@ class tl_lead extends Backend
      */
     public function addNotificationCenterSupport()
     {
-        if (\Terminal42\LeadsBundle\LeadsNotification::available(true)) {
+        if (!\Terminal42\LeadsBundle\LeadsNotification::available(true)) {
             return;
         }
 
