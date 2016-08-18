@@ -33,9 +33,9 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
         (
             'keys' => array
             (
-                'id'    => 'primary'
-            )
-        )
+                'id'    => 'primary',
+            ),
+        ),
     ),
 
     // List
@@ -63,7 +63,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'icon'            => 'settings.gif',
                 'class'           => 'leads-export',
                 'attributes'      => 'onclick="Backend.getScrollOffset();"',
-                'button_callback' => array('tl_lead', 'exportConfigIcon')
+                'button_callback' => array('tl_lead', 'exportConfigIcon'),
             ),
             'export' => array
             (
@@ -76,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'label'         => &$GLOBALS['TL_LANG']['MSC']['all'],
                 'href'          => 'act=select',
                 'class'         => 'header_edit_all',
-                'attributes'    => 'onclick="Backend.getScrollOffset();" accesskey="e"'
+                'attributes'    => 'onclick="Backend.getScrollOffset();" accesskey="e"',
             ),
         ),
         'operations' => array
@@ -86,21 +86,21 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'label'         => &$GLOBALS['TL_LANG']['tl_lead']['delete'],
                 'href'          => 'act=delete',
                 'icon'          => 'delete.gif',
-                'attributes'    => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"'
+                'attributes'    => 'onclick="if (!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\')) return false; Backend.getScrollOffset();"',
             ),
             'show' => array
             (
                 'label'         => &$GLOBALS['TL_LANG']['tl_lead']['show'],
                 'href'          => 'key=show',
-                'icon'          => 'show.gif'
+                'icon'          => 'show.gif',
             ),
             'data' => array
             (
                 'label'         => &$GLOBALS['TL_LANG']['tl_lead']['data'],
                 'href'          => 'table=tl_lead_data',
-                'icon'          => 'bundles/terminal42leads/field.png'
+                'icon'          => 'bundles/terminal42leads/field.png',
             ),
-        )
+        ),
     ),
 
     // Select
@@ -108,8 +108,8 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
     (
         'buttons_callback' => array
         (
-            array('tl_lead', 'addButtons')
-        )
+            array('tl_lead', 'addButtons'),
+        ),
     ),
 
     // Fields
@@ -117,15 +117,15 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
     (
         'id' => array
         (
-            'sql'               => "int(10) unsigned NOT NULL auto_increment"
+            'sql'               => "int(10) unsigned NOT NULL auto_increment",
         ),
         'tstamp' => array
         (
-            'sql'                  => "int(10) unsigned NOT NULL default '0'"
+            'sql'                  => "int(10) unsigned NOT NULL default '0'",
         ),
         'master_id' => array
         (
-            'sql'                  => "int(10) unsigned NOT NULL default '0'"
+            'sql'                  => "int(10) unsigned NOT NULL default '0'",
         ),
         'form_id' => array
         (
@@ -133,7 +133,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'filter'            => true,
             'sorting'           => true,
             'foreignKey'        => 'tl_form.title',
-            'sql'               => "int(10) unsigned NOT NULL default '0'"
+            'sql'               => "int(10) unsigned NOT NULL default '0'",
         ),
         'language' => array
         (
@@ -141,7 +141,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'filter'            => true,
             'sorting'           => true,
             'options'           => \System::getLanguages(),
-            'sql'               => "varchar(2) NOT NULL default ''"
+            'sql'               => "varchar(2) NOT NULL default ''",
         ),
         'created' => array
         (
@@ -149,7 +149,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'sorting'           => true,
             'flag'              => 8,
             'eval'              => array('rgxp'=>'datim'),
-            'sql'               => "int(10) unsigned NOT NULL default '0'"
+            'sql'               => "int(10) unsigned NOT NULL default '0'",
         ),
         'member_id' => array
         (
@@ -158,13 +158,13 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'sorting'           => true,
             'flag'              => 12,
             'foreignKey'        => "tl_member.CONCAT(lastname, ' ', firstname)",
-            'sql'               => "int(10) unsigned NOT NULL default '0'"
+            'sql'               => "int(10) unsigned NOT NULL default '0'",
         ),
         'post_data' => array
         (
-            'sql'               => "mediumblob NULL"
+            'sql'               => "mediumblob NULL",
         ),
-    )
+    ),
 );
 
 class tl_lead extends Backend
@@ -228,43 +228,38 @@ class tl_lead extends Backend
     public function sendNotification()
     {
         if (!\Input::get('master')
-            || !\Terminal42\LeadsBundle\LeadsNotification::available()
+            || !Terminal42\LeadsBundle\LeadsNotification::available(true)
         ) {
             \Controller::redirect('contao/main.php?act=error');
         }
 
+        // No need to check for null as NotificationCenterIntegration::available(true) already does
         $notificationsCollection = \NotificationCenter\Model\Notification::findBy('type', 'core_form');
-
-        if ($notificationsCollection === null) {
-            \Controller::redirect('contao/main.php?act=error');
-        }
-
-        $notifications = array();
+        $notifications = [];
 
         // Generate the notifications
-        while ($notificationsCollection->next()) {
-            $notifications[$notificationsCollection->id] = $notificationsCollection->title;
+        foreach ($notificationsCollection as $notification) {
+            $notifications[$notification->id] = $notification->title;
         }
 
         // Process the form
-        if (\Input::post('FORM_SUBMIT') == 'tl_leads_notification') {
-
+        if ('tl_leads_notification' === \Input::post('FORM_SUBMIT')) {
             /**
-             * @var \FormModel $form
+             * @var \FormModel                             $form
              * @var \NotificationCenter\Model\Notification $notification
              */
             if (!isset($notifications[\Input::post('notification')])
                 || !is_array(\Input::post('IDS'))
                 || ($form = \FormModel::findByPk(\Input::get('master'))) === null
-                || ($notification = \NotificationCenter\Model\Notification::findByPk(\Input::post('notification'))) === null
+                || null === ($notification = \NotificationCenter\Model\Notification::findByPk(\Input::post('notification')))
             ) {
                 \Controller::reload();
             }
 
             if (\Input::get('id')) {
-                $ids = array((int) \Input::get('id'));
+                $ids = [(int) \Input::get('id')];
             } else {
-                $session = $this->Session->getData();
+                $session = \Session::getInstance()->getData();
                 $ids = array_map('intval', $session['CURRENT']['IDS']);
             }
 
@@ -279,7 +274,7 @@ class tl_lead extends Backend
             \Controller::redirect(\System::getReferer());
         }
 
-        return \Terminal42\LeadsBundle\LeadsNotification::generateForm($notifications, array(\Input::get('id')));
+        return Terminal42\LeadsBundle\LeadsNotification::generateForm($notifications, [\Input::get('id')]);
     }
 
 
@@ -301,7 +296,7 @@ class tl_lead extends Backend
         }
 
         $arrTokens = array(
-            'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['created'])
+            'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']),
         );
 
         $objData = \Database::getInstance()->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
@@ -393,7 +388,7 @@ class tl_lead extends Backend
             $rows[] = array(
                 'label' => $objData->name,
                 'value' => \Terminal42\LeadsBundle\Leads::formatValue($objData),
-                'class' => ($i % 2 ? 'tl_bg' : '')
+                'class' => ($i % 2 ? 'tl_bg' : ''),
             );
 
             ++$i;
@@ -483,61 +478,6 @@ class tl_lead extends Backend
             'href'  => 'key=notification',
             'icon'  => 'system/modules/notification_center/assets/notification.png',
         );
-    }
-
-    /**
-     * Send the notification
-     */
-    public function sendNotification()
-    {
-        if (!\Input::get('master')
-            || !Terminal42\LeadsBundle\LeadsNotification::available(true)
-        ) {
-            \Controller::redirect('contao/main.php?act=error');
-        }
-
-        // No need to check for null as NotificationCenterIntegration::available(true) already does
-        $notificationsCollection = \NotificationCenter\Model\Notification::findBy('type', 'core_form');
-        $notifications = [];
-
-        // Generate the notifications
-        foreach ($notificationsCollection as $notification) {
-            $notifications[$notification->id] = $notification->title;
-        }
-
-        // Process the form
-        if ('tl_leads_notification' === \Input::post('FORM_SUBMIT')) {
-            /**
-             * @var \FormModel                             $form
-             * @var \NotificationCenter\Model\Notification $notification
-             */
-            if (!isset($notifications[\Input::post('notification')])
-                || !is_array(\Input::post('IDS'))
-                || ($form = \FormModel::findByPk(\Input::get('master'))) === null
-                || null === ($notification = \NotificationCenter\Model\Notification::findByPk(\Input::post('notification')))
-            ) {
-                \Controller::reload();
-            }
-
-            if (\Input::get('id')) {
-                $ids = [(int) \Input::get('id')];
-            } else {
-                $session = \Session::getInstance()->getData();
-                $ids = array_map('intval', $session['CURRENT']['IDS']);
-            }
-
-            foreach ($ids as $id) {
-                if (\Terminal42\LeadsBundle\LeadsNotification::send($id, $form, $notification)) {
-                    \Message::addConfirmation(
-                        sprintf($GLOBALS['TL_LANG']['tl_lead']['notification_confirm'], $id)
-                    );
-                }
-            }
-
-            \Controller::redirect($this->getReferer());
-        }
-
-        return Terminal42\LeadsBundle\LeadsNotification::generateForm($notifications, [\Input::get('id')]);
     }
 
     /**
