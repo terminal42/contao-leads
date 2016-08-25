@@ -110,7 +110,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     (
         'export_fields'                 => 'fields',
         'export_tokens'                 => 'tokenFields',
-        'useTemplate'                   => 'startIndex,template',
+        'useTemplate'                   => 'template,startIndex,sheetIndex',
     ),
 
     // Fields
@@ -190,17 +190,8 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'checkbox',
-            'eval'                    => array('tl_class'=>'w50 m12', 'submitOnChange'=>true),
+            'eval'                    => array('tl_class'=>'clr', 'submitOnChange'=>true),
             'sql'                     => "char(1) NOT NULL default ''"
-        ),
-        'startIndex' => array
-        (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['startIndex'],
-            'exclude'                 => true,
-            'filter'                  => true,
-            'inputType'               => 'text',
-            'eval'                    => array('tl_class'=>'w50', 'rgxp'=>'digit'),
-            'sql'                     => "int(10) NOT NULL default '0'"
         ),
         'template' => array
         (
@@ -210,6 +201,24 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'inputType'               => 'fileTree',
             'eval'                    => array('filesOnly'=>true, 'fieldType'=>'radio', 'mandatory'=>true, 'tl_class'=>'clr'),
             'sql'                     => "binary(16) NULL",
+        ),
+        'startIndex' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['startIndex'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'text',
+            'eval'                    => array('mandatory'=>true, 'tl_class'=>'w50', 'rgxp'=>'digit'),
+            'sql'                     => "int(10) NOT NULL default '0'"
+        ),
+        'sheetIndex' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['sheetIndex'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'text',
+            'eval'                    => array('mandatory'=>true, 'tl_class'=>'w50', 'rgxp'=>'digit'),
+            'sql'                     => "int(10) NOT NULL default '0'"
         ),
         'headerFields' => array
         (

@@ -121,7 +121,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $excelReader = PHPExcel_IOFactory::createReader($format);
         $excel = $excelReader->load(TL_ROOT . '/' . $tmpPath);
 
-        $excel->setActiveSheetIndex(0);
+        $excel->setActiveSheetIndex((int) $config->sheetIndex);
         $sheet = $excel->getActiveSheet();
 
         $currentRow = (int) $config->startIndex ?: 1;
