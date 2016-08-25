@@ -122,29 +122,29 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $excel = $excelReader->load(TL_ROOT . '/' . $tmpPath);
 
         $excel->setActiveSheetIndex(0);
+        $sheet = $excel->getActiveSheet();
 
-        $currentRow = (int) $config->startIndex;
+        $currentRow = (int) $config->startIndex ?: 1;
         $currentColumn = 0;
 
         foreach ($reader as $readerRow) {
             $compiledRow = $row->compile($readerRow);
 
             foreach ($compiledRow as $k => $value) {
-                $specificColumn = null;
-
                 // Support explicit target column
-                if ($config->export == 'tokens'
-                    && isset($config->tokenFields[$k]['targetColumn'])
-                ) {
-                    $specificColumn = $config->tokenFields[$k]['targetColumn'];
+                if ('tokens' === $config->export && isset($config->tokenFields[$k]['targetColumn'])) {
+                    $column = $config->tokenFields[$k]['targetColumn'];
 
-                    if (!is_numeric($specificColumn)) {
-                        $specificColumn = PHPExcel_Cell::columnIndexFromString($specificColumn) - 1;
+                    if (!is_numeric($column)) {
+                        $column = PHPExcel_Cell::columnIndexFromString($column) - 1;
                     }
+                } else {
+                    // Use next column, ignoring explicit target columns in the counter
+                    $column = $currentColumn++;
                 }
 
-                $excel->getActiveSheet()->setCellValueExplicitByColumnAndRow(
-                    $specificColumn ?: $currentColumn++,
+                $sheet->setCellValueExplicitByColumnAndRow(
+                    $column,
                     $currentRow,
                     (string) $value,
                     \PHPExcel_Cell_DataType::TYPE_STRING2
