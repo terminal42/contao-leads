@@ -11,6 +11,7 @@
 namespace Terminal42\LeadsBundle\Exporter;
 
 
+use Contao\File;
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Leads;
 
@@ -34,6 +35,8 @@ abstract class AbstractExporter implements ExporterInterface
      *
      * @param \Database\Result $config
      * @param array|null       $ids
+     *
+     * @return File
      */
     abstract public function export($config, $ids = null);
 

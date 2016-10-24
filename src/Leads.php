@@ -14,6 +14,7 @@ namespace Terminal42\LeadsBundle;
 use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 use Terminal42\LeadsBundle\Exporter\Utils\Row;
 use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
+use Terminal42\LeadsBundle\Target\TargetInterface;
 
 class Leads extends \Controller
 {
@@ -246,6 +247,8 @@ class Leads extends \Controller
      *
      * @param integer $intConfig
      * @param array   $arrIds
+     *
+     * @return bool
      */
     public static function export($intConfig, $arrIds=null)
     {
@@ -262,7 +265,7 @@ class Leads extends \Controller
         ;
 
         if (!$objConfig->numRows || !isset($GLOBALS['LEADS_EXPORT'][$objConfig->type])) {
-            return;
+            return false;
         }
 
         $objConfig->master = $objConfig->master ?: $objConfig->pid;
@@ -282,6 +285,13 @@ class Leads extends \Controller
             $objExport = $exporterDefinition[0]();
             $objExport->$exporterDefinition[1]($objConfig, $arrIds);
         } else {
+            $class = $GLOBALS['LEADS_TARGETS'][$objConfig->target];
+
+            if (!class_exists($class)) {
+                throw new \RuntimeException(sprintf('The class "%s" for target type "%s" does not exist', $class, $objConfig->target));
+            }
+
+            $target = new $class();
 
             // Note the difference here: Fields are not touched and thus every field can be exported multiple times
             $exporter = new $exporterDefinition();
@@ -289,10 +299,12 @@ class Leads extends \Controller
             $objConfig->fields      = deserialize($objConfig->fields, true);
             $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
 
-            if ($exporter instanceof ExporterInterface) {
-                $exporter->export($objConfig, $arrIds);
+            if ($exporter instanceof ExporterInterface && $target instanceof TargetInterface) {
+                return $target->send($exporter->export($objConfig, $arrIds), $objConfig->row());
             }
         }
+
+        return false;
     }
 
     /**

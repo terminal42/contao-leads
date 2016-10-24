@@ -18,9 +18,11 @@ class Xlsx extends AbstractExcelExporter
      *
      * @param \Database\Result $config
      * @param array|null       $ids
+     *
+     * @return \Contao\File
      */
     public function export($config, $ids = null)
     {
-        $this->exportWithFormat($config, $ids, 'Excel2007');
+        return $this->exportWithFormat($config, $ids, 'Excel2007');
     }
 }

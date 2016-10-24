@@ -493,10 +493,18 @@ class tl_lead extends Backend
     public function exportAndCatchExceptions($intConfig, $arrIds)
     {
         try {
-            \Terminal42\LeadsBundle\Leads::export($intConfig, $arrIds);
+            $result = \Terminal42\LeadsBundle\Leads::export($intConfig, $arrIds);
         } catch (\Terminal42\LeadsBundle\Exporter\ExportFailedException $e) {
             \Message::addError($e->getMessage());
             \Controller::redirect(\System::getReferer());
         }
+
+        if ($result) {
+            \Message::addConfirmation($GLOBALS['TL_LANG']['tl_lead']['target_confirm']);
+        } else {
+            \Message::addError($GLOBALS['TL_LANG']['tl_lead']['target_error']);
+        }
+
+        \Controller::redirect(\System::getReferer());
     }
 }

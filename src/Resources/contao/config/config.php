@@ -55,6 +55,15 @@ $GLOBALS['LEADS_EXPORT'] = array
 );
 
 /**
+ * Leads export targets
+ */
+$GLOBALS['LEADS_TARGETS'] = array
+(
+    'browser' => 'Terminal42\LeadsBundle\Target\BrowserTarget',
+    'local'   => 'Terminal42\LeadsBundle\Target\LocalTarget',
+);
+
+/**
  * Data transformers
  */
 $GLOBALS['LEADS_DATA_TRANSFORMERS'] = array

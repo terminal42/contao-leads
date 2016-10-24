@@ -11,6 +11,8 @@
 namespace Terminal42\LeadsBundle\Exporter;
 
 
+use Contao\File;
+
 interface ExporterInterface {
 
     /**
@@ -25,6 +27,8 @@ interface ExporterInterface {
      *
      * @param \Database\Result $config
      * @param array|null       $ids
+     *
+     * @return File
      */
     public function export($config, $ids = null);
 }
