@@ -2,15 +2,41 @@
 
 namespace Terminal42\LeadsBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Doctrine\DBAL\Connection;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Terminal42\LeadsBundle\Leads;
 
-class ExportCommand extends ContainerAwareCommand
+class ExportCommand extends Command
 {
+    /**
+     * @var Connection
+     */
+    private $db;
+
+    /**
+     * @var ContaoFrameworkInterface
+     */
+    private $framework;
+
+    /**
+     * ExportCommand constructor.
+     *
+     * @param Connection               $db
+     * @param ContaoFrameworkInterface $framework
+     */
+    public function __construct(Connection $db, ContaoFrameworkInterface $framework)
+    {
+        $this->db        = $db;
+        $this->framework = $framework;
+
+        parent::__construct();
+    }
+
     /**
      * Configure the command
      */
@@ -40,9 +66,11 @@ class ExportCommand extends ContainerAwareCommand
                 $this->getAllConfigs()
             );
 
-            $question->setValidator(function ($answer) {
-                return $answer[0];
-            });
+            $question->setValidator(
+                function ($answer) {
+                    return $answer[0];
+                }
+            );
 
             if (!($configId = $helper->ask($input, $output, $question))) {
                 return;
@@ -69,7 +97,7 @@ class ExportCommand extends ContainerAwareCommand
             return;
         }
 
-        $this->getContainer()->get('contao.framework')->initialize();
+        $this->framework->initialize();
 
         if (Leads::export($configId)) {
             $output->writeln('<info>The leads have been exported successfully.</info>');
@@ -87,10 +115,7 @@ class ExportCommand extends ContainerAwareCommand
      */
     private function validateConfigId($id)
     {
-        $target = $this->getContainer()->get('database_connection')->fetchColumn(
-            'SELECT target FROM tl_lead_export WHERE id=?',
-            [$id]
-        );
+        $target = $this->db->fetchColumn('SELECT target FROM tl_lead_export WHERE id=?', [$id]);
 
         // Return false if the row has been not found or the target is browser
         if (!$target || $target === 'browser') {
@@ -108,7 +133,7 @@ class ExportCommand extends ContainerAwareCommand
     private function getAllConfigs()
     {
         $configs = [];
-        $rows    = $this->getContainer()->get('database_connection')->fetchAll(
+        $rows    = $this->db->fetchAll(
             'SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form FROM tl_lead_export ORDER BY name'
         );
 
