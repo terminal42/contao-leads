@@ -11,6 +11,7 @@
 
 namespace Terminal42\LeadsBundle;
 
+use Terminal42\LeadsBundle\Exception\InvalidTargetTypeException;
 use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 use Terminal42\LeadsBundle\Exporter\Utils\Row;
 use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
@@ -249,6 +250,8 @@ class Leads extends \Controller
      * @param array   $arrIds
      *
      * @return bool
+     *
+     * @throws InvalidTargetTypeException
      */
     public static function export($intConfig, $arrIds=null)
     {
@@ -288,7 +291,7 @@ class Leads extends \Controller
             $class = $GLOBALS['LEADS_TARGETS'][$objConfig->target];
 
             if (!class_exists($class)) {
-                throw new \RuntimeException(sprintf('The class "%s" for target type "%s" does not exist', $class, $objConfig->target));
+                throw new InvalidTargetTypeException(sprintf('The class "%s" for target type "%s" does not exist', $class, $objConfig->target));
             }
 
             $target = new $class();
