@@ -11,11 +11,12 @@
 
 namespace Terminal42\LeadsBundle;
 
-use Terminal42\LeadsBundle\Exception\InvalidTargetTypeException;
+use Contao\System;
+use Terminal42\LeadsBundle\Exception\InvalidExportTargetException;
 use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 use Terminal42\LeadsBundle\Exporter\Utils\Row;
 use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
-use Terminal42\LeadsBundle\Target\TargetInterface;
+use Terminal42\LeadsBundle\ExportTarget\TargetInterface;
 
 class Leads extends \Controller
 {
@@ -251,7 +252,7 @@ class Leads extends \Controller
      *
      * @return bool
      *
-     * @throws InvalidTargetTypeException
+     * @throws InvalidExportTargetException
      */
     public static function export($intConfig, $arrIds=null)
     {
@@ -288,13 +289,9 @@ class Leads extends \Controller
             $objExport = $exporterDefinition[0]();
             $objExport->$exporterDefinition[1]($objConfig, $arrIds);
         } else {
-            $class = $GLOBALS['LEADS_TARGETS'][$objConfig->target];
-
-            if (!class_exists($class)) {
-                throw new InvalidTargetTypeException(sprintf('The class "%s" for target type "%s" does not exist', $class, $objConfig->target));
-            }
-
-            $target = new $class();
+            $target = System::getContainer()->get('terminal42_leads.export_target_manager')->getTarget(
+                $objConfig->target
+            );
 
             // Note the difference here: Fields are not touched and thus every field can be exported multiple times
             $exporter = new $exporterDefinition();

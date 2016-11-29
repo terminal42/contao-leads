@@ -1,6 +1,6 @@
 <?php
 
-namespace Terminal42\LeadsBundle\Target;
+namespace Terminal42\LeadsBundle\ExportTarget;
 
 use Contao\File;
 use Contao\System;

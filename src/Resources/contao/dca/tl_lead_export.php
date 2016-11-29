@@ -245,11 +245,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'target' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['target'],
-            'default'                 => $GLOBALS['LEADS_TARGETS'][0],
+            'default'                 => \System::getContainer()->get('terminal42_leads.export_target_manager')->getAliases()[0],
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'radio',
-            'options'                 => array_keys($GLOBALS['LEADS_TARGETS']),
+            'options'                 => \System::getContainer()->get('terminal42_leads.export_target_manager')->getAliases(),
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['target'],
             'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
             'sql'                     => "varchar(8) NOT NULL default ''"
