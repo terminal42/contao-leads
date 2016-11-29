@@ -22,12 +22,12 @@ class ExportCommand extends ContainerAwareCommand
     }
 
     /**
-     * Execute the command
+     * Get the config ID
      *
      * @param InputInterface  $input
      * @param OutputInterface $output
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output)
     {
         $configId = $input->getArgument('config_id');
 
@@ -41,7 +41,7 @@ class ExportCommand extends ContainerAwareCommand
             );
 
             $question->setValidator(function ($answer) {
-               return $answer[0];
+                return $answer[0];
             });
 
             if (!($configId = $helper->ask($input, $output, $question))) {
@@ -49,7 +49,18 @@ class ExportCommand extends ContainerAwareCommand
             }
         }
 
-        $configId = (int)$configId;
+        $input->setArgument('config_id', $configId);
+    }
+
+    /**
+     * Execute the command
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $configId = (int)$input->getArgument('config_id');
 
         // Validate the entered config ID
         if (!$this->validateConfigId($configId)) {
