@@ -9,8 +9,10 @@ same Lead.
 All configuration can be done in the form generator from Contao. Additionally you can set a label 
 for the backend module of your Lead and define the listing of the form data using simple tags.
 
-The leads extension offers additionally an export function (CSV and  - you need to install the
-"excel" extension) for each Lead in the backend. You can configure it as you wish!
+The leads extension additionally offers an export function for each Lead in the backend. You can 
+configure it as you wish! Export options for CSV and Excel are available. _However_ you need to 
+install either the [[php_exel](https://contao.org/en/extension-list/view/php_excel.en.html)] extension or the `phpoffice/phpexcel` package for Excel support, otherwise the Excel export option will not be 
+available. 
 
 Simple Tokens
 ---
