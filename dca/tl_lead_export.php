@@ -379,7 +379,9 @@ class tl_lead_export extends Backend
      */
     public function checkPermission()
     {
-        if (!\BackendUser::getInstance()->isAdmin) {
+        $user = \BackendUser::getInstance();
+
+        if (!$user->isAdmin && !$user->canEditFieldsOf('tl_lead_export')) {
             \System::log('Not enough permissions to access leads export ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
             \Controller::redirect('contao/main.php?act=error');
         }
