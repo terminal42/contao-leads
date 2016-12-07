@@ -265,7 +265,10 @@ class tl_lead extends Backend
      */
     public function exportConfigIcon($href, $label, $title, $class, $attributes)
     {
-        if (!\BackendUser::getInstance()->isAdmin) {
+        $user = \BackendUser::getInstance();
+
+        if (!$user->isAdmin && !$user->canEditFieldsOf('tl_lead_export')) {
+
             return '';
         }
 
