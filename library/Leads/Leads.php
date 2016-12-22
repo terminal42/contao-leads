@@ -168,39 +168,50 @@ class Leads extends \Controller
             $arrIds = $objUser->forms;
         }
 
-        $objForms = \Database::getInstance()->execute("
-                SELECT f.id, f.title, IF(f.leadMenuLabel='', f.title, f.leadMenuLabel) AS leadMenuLabel
-                FROM tl_form f
-                LEFT JOIN tl_lead l ON l.master_id=f.id
-                WHERE leadEnabled='1' AND leadMaster=0" . (!empty($arrIds) ? (" AND f.id IN (" . implode(',', array_map('intval', $arrIds)) . ")") : "") . "
-            UNION
-                SELECT l.master_id AS id, IFNULL(f.title, CONCAT('ID ', l.master_id)) AS title, IFNULL(IF(f.leadMenuLabel='', f.title, f.leadMenuLabel), CONCAT('ID ', l.master_id)) AS leadMenuLabel
-                FROM tl_lead l
-                LEFT JOIN tl_form f ON l.master_id=f.id
-                WHERE ISNULL(f.id)
-                ORDER BY leadMenuLabel
-        ");
+        // Master forms
+        $forms = \Database::getInstance()->execute("SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0" . (!empty($arrIds) ? ' AND id IN (' . implode(',', array_map('intval', $arrIds)) . ')' : ''))
+            ->fetchAllAssoc();
 
-        if (!$objForms->numRows) {
+        $ids = array();
+        foreach ($forms as $k => $form) {
+            // Fallback label
+            $forms[$k]['leadMenuLabel'] =  $form['leadMenuLabel'] ?: $form['title'];
+            $ids[] = $form['id'];
+        }
+
+        // Check for orphan data sets that have no associated form anymore
+        $orphans = \Database::getInstance()->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . (!empty($ids) ? ' WHERE master_id NOT IN (' . implode(',', array_map('intval', $ids)) . ')' : ''))
+            ->fetchAllAssoc();
+
+        foreach ($orphans as $orphan) {
+            $forms[] = $orphan;
+        }
+
+        if (empty($forms)) {
             unset($arrModules['leads']);
 
             return $arrModules;
         }
 
-        $arrSession = $this->Session->get('backend_modules');
+        $arrSession = \Session::getInstance()->get('backend_modules');
         $blnOpen = $arrSession['leads'] || $blnShowAll;
         $arrModules['leads']['modules'] = array();
 
         if ($blnOpen) {
-            while ($objForms->next()) {
 
-                $arrModules['leads']['modules']['lead_'.$objForms->id] = array(
+            // Order by leadMenuLabel
+            usort($forms, function($a, $b) {
+                return $a['leadMenuLabel'] > $b['leadMenuLabel'];
+            });
+
+            foreach ($forms as $form) {
+                $arrModules['leads']['modules']['lead_' . $form['id']] = array(
                     'tables'    => array('tl_lead'),
-                    'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $objForms->title)),
-                    'label'     => $objForms->leadMenuLabel,
+                    'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
+                    'label'     => $form['leadMenuLabel'],
                     'icon'      => ' style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
                     'class'     => 'navigation leads',
-                    'href'      => 'contao/main.php?do=lead&master='.$objForms->id,
+                    'href'      => 'contao/main.php?do=lead&master=' . $form['id'],
                 );
             }
         } else {
