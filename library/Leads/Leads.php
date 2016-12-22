@@ -187,7 +187,7 @@ class Leads extends \Controller
             return $arrModules;
         }
 
-        $arrSession = $this->Session->get('backend_modules');
+        $arrSession = \Session::getInstance()->get('backend_modules');
         $blnOpen = $arrSession['leads'] || $blnShowAll;
         $arrModules['leads']['modules'] = array();
 
