@@ -102,20 +102,33 @@ class UserNavigationListener
 
         $permission = true === $allowedIds ? '' : sprintf(' AND f.id IN (%s)', implode(',', $allowedIds));
 
-        $result = $this->db->execute("
-                SELECT f.id, f.title, IF(f.leadMenuLabel='', f.title, f.leadMenuLabel) AS leadMenuLabel
-                FROM tl_form f
-                LEFT JOIN tl_lead l ON l.master_id=f.id
-                WHERE leadEnabled='1' AND leadMaster=0" . $permission . "
-            UNION
-                SELECT l.master_id AS id, IFNULL(f.title, CONCAT('ID ', l.master_id)) AS title, IFNULL(IF(f.leadMenuLabel='', f.title, f.leadMenuLabel), CONCAT('ID ', l.master_id)) AS leadMenuLabel
-                FROM tl_lead l
-                LEFT JOIN tl_form f ON l.master_id=f.id
-                WHERE ISNULL(f.id)
-                ORDER BY leadMenuLabel
-        ");
+        // Master forms
+        $forms = $this->db->execute("SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0" . $permission)
+            ->fetchAllAssoc();
 
-        return $result->fetchAllAssoc();
+        $ids = array();
+        foreach ($forms as $k => $form) {
+            // Fallback label
+            $forms[$k]['leadMenuLabel'] =  $form['leadMenuLabel'] ?: $form['title'];
+            $ids[] = $form['id'];
+        }
+
+        // Check for orphan data sets that have no associated form anymore
+        $filter = 0 === count($ids) ? '' : sprintf(' HERE master_id NOT IN (%s)', implode(',', $ids));
+
+        $orphans = $this->db->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . $filter)
+            ->fetchAllAssoc();
+
+        foreach ($orphans as $orphan) {
+            $forms[] = $orphan;
+        }
+
+        // Order by leadMenuLabel
+        usort($forms, function($a, $b) {
+            return $a['leadMenuLabel'] > $b['leadMenuLabel'];
+        });
+
+        return $forms;
     }
 
     /**

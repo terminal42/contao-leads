@@ -34,8 +34,9 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = array
         (
             'keys' => array
             (
-                'id'    => 'primary',
-                'pid'   => 'index'
+                'id'         => 'primary',
+                'pid'        => 'index',
+                'master_id'  => 'index',
             )
         )
     ),

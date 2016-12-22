@@ -15,6 +15,9 @@
  */
 $GLOBALS['TL_DCA']['tl_form']['config']['ctable'][] = 'tl_lead_export';
 $GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = array('tl_form_lead', 'modifyPalette');
+$GLOBALS['TL_DCA']['tl_form']['config']['sql']['keys']['leadEnabled'] = 'index';
+$GLOBALS['TL_DCA']['tl_form']['config']['sql']['keys']['leadMaster'] = 'index';
+$GLOBALS['TL_DCA']['tl_form']['config']['sql']['keys']['leadEnabled,leadMaster'] = 'index';
 
 /**
  * Palettes
