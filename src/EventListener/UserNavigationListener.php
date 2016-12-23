@@ -114,7 +114,7 @@ class UserNavigationListener
         }
 
         // Check for orphan data sets that have no associated form anymore
-        $filter = 0 === count($ids) ? '' : sprintf(' HERE master_id NOT IN (%s)', implode(',', $ids));
+        $filter = 0 === count($ids) ? '' : sprintf(' WHERE master_id NOT IN (%s)', implode(',', $ids));
 
         $orphans = $this->db->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . $filter)
             ->fetchAllAssoc();
