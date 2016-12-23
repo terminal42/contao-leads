@@ -100,7 +100,7 @@ class UserNavigationListener
             return array();
         }
 
-        $permission = true === $allowedIds ? '' : sprintf(' AND f.id IN (%s)', implode(',', $allowedIds));
+        $permission = true === $allowedIds ? '' : sprintf(' AND id IN (%s)', implode(',', $allowedIds));
 
         // Master forms
         $forms = $this->db->execute("SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0" . $permission)
