@@ -26,7 +26,7 @@ class Tokens
     public static function recursiveReplaceTokensAndTags($text, $tokens)
     {
         // Must decode, tokens could be encoded
-        $text = \String::decodeEntities($text);
+        $text = \StringUtil::decodeEntities($text);
 
         // Replace all opening and closing tags with a hash so they don't get stripped
         // by parseSimpleTokens()
@@ -39,7 +39,7 @@ class Tokens
 
 
         // first parse the tokens as they might have if-else clauses
-        $buffer = \String::parseSimpleTokens($text, $tokens);
+        $buffer = \StringUtil::parseSimpleTokens($text, $tokens);
 
         // Restore tags
         $buffer = str_replace($replacement, $original, $buffer);
@@ -57,7 +57,7 @@ class Tokens
             $buffer = static::recursiveReplaceTokensAndTags($buffer, $tokens);
         }
 
-        $buffer = \String::restoreBasicEntities($buffer);
+        $buffer = \StringUtil::restoreBasicEntities($buffer);
 
         return $buffer;
     }
