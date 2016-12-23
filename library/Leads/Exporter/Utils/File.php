@@ -23,7 +23,7 @@ class File
     public static function getName($config)
     {
         if ($config->filename == '') {
-            $filename = 'export_' . md5(uniqid());
+            $filename = 'export_' . md5(uniqid('', false));
 
             if ($config->type) {
                 $filename .= '.' . $config->type;
@@ -49,6 +49,6 @@ class File
             }
         }
 
-        return \String::parseSimpleTokens($config->filename, $tokens);
+        return \StringUtil::parseSimpleTokens($config->filename, $tokens);
     }
 }
