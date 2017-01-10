@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Terminal42\LeadsBundle\ExportTarget\LocalTarget;
@@ -52,7 +53,29 @@ class ExportCommand extends Command
     {
         $this->setName('leads:export')
             ->setDescription('Exports the leads with the chosen configuration.')
-            ->addArgument('config_id', InputArgument::OPTIONAL, 'The export configuration ID.');
+            ->addArgument(
+                'config_id',
+                InputArgument::OPTIONAL,
+                'The export configuration ID.'
+            )
+            ->addOption(
+                'all',
+                null,
+                InputOption::VALUE_NONE,
+                'Export all configurations of all forms.'
+            )
+            ->addOption(
+                'start',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Records before this date will not be exported. You can use PHP strtotime() function.'
+            )
+            ->addOption(
+                'stop',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Records after this date will not be exported. You can use PHP strtotime() function.'
+            );
     }
 
     /**
@@ -63,6 +86,10 @@ class ExportCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        if ($input->getOption('all')) {
+            return;
+        }
+
         $configId = $input->getArgument('config_id');
 
         // Ask for the config ID if it has been not provided by default
@@ -76,7 +103,7 @@ class ExportCommand extends Command
 
             $question->setValidator(
                 function ($answer) {
-                    return $answer[0];
+                    return $answer;
                 }
             );
 
@@ -96,22 +123,82 @@ class ExportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $configId = (int)$input->getArgument('config_id');
+        try {
+            $this->framework->initialize();
 
-        // Validate the entered config ID
-        if (!$this->validateConfigId($configId)) {
-            $output->writeln(sprintf('<error>Invalid lead export configuration ID: %s</error>', $configId));
+            if ($input->getOption('all')) {
+                $this->executeBatchExport($this->getOptions($input));
+            } else {
+                $this->executeSingleExport((int)$input->getArgument('config_id'), $this->getOptions($input));
+            }
+        } catch (\Exception $e) {
+            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
 
             return;
         }
 
-        $this->framework->initialize();
+        $output->writeln('<info>The leads have been exported successfully.</info>');
+    }
 
-        if (Leads::export($configId, null, $this->localTarget)) {
-            $output->writeln('<info>The leads have been exported successfully.</info>');
-        } else {
-            $output->writeln('<error>There was an error exporting leads. Please check the system logs.</error>');
+    /**
+     * Execute the single export
+     *
+     * @param int   $configId
+     * @param array $options
+     *
+     * @throws \Exception
+     */
+    private function executeSingleExport($configId, array $options)
+    {
+        if (!$this->validateConfigId($configId)) {
+            throw new \Exception(sprintf('Invalid lead export configuration ID: %s', $configId));
         }
+
+        if (!Leads::export($configId, null, $this->localTarget)) {
+            throw new \Exception('There was an error exporting leads. Please check the system logs.');
+        }
+    }
+
+    /**
+     * Execute the batch export
+     *
+     * @param array $options
+     *
+     * @throws \Exception
+     */
+    private function executeBatchExport(array $options)
+    {
+        foreach ($this->db->fetchAll('SELECT id FROM tl_lead_export WHERE cliExport=1') as $id) {
+            if (!Leads::export((int)$id, null, $this->localTarget)) {
+                throw new \Exception('There was an error exporting leads. Please check the system logs.');
+            }
+        }
+    }
+
+    /**
+     * Get the options
+     *
+     * @param InputInterface $input
+     *
+     * @return array
+     * @throws \Exception
+     */
+    private function getOptions(InputInterface $input)
+    {
+        $start = ($input->getOption('start') !== null) ? strtotime($input->getOption('start')) : null;
+        $stop  = ($input->getOption('stop') !== null) ? strtotime($input->getOption('stop')) : null;
+
+        // Validate the start option
+        if ($start === false) {
+            throw new \Exception(sprintf('The "start" option is invalid: %s', $input->getOption('start')));
+        }
+
+        // Validate the stop option
+        if ($stop === false) {
+            throw new \Exception(sprintf('The "stop" option is invalid: %s', $input->getOption('stop')));
+        }
+
+        return ['start' => $start, 'stop' => $stop];
     }
 
     /**
