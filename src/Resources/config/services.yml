@@ -4,18 +4,12 @@ services:
         arguments:
             - "@database_connection"
             - "@contao.framework"
+            - "@terminal42_leads.target.local"
         tags:
             - { name: console.command }
 
-    terminal42_leads.export_target_manager:
-        class: Terminal42\LeadsBundle\ExportTargetManager
-
-    terminal42_leads.export_target.browser:
+    terminal42_leads.target.browser:
         class: Terminal42\LeadsBundle\ExportTarget\BrowserTarget
-        tags:
-            - { name: terminal42_leads.export_target, alias: browser }
 
-    terminal42_leads.export_target.local:
+    terminal42_leads.target.local:
         class: Terminal42\LeadsBundle\ExportTarget\LocalTarget
-        tags:
-            - { name: terminal42_leads.export_target, alias: local }

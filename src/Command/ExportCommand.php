@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Terminal42\LeadsBundle\ExportTarget\LocalTarget;
 use Terminal42\LeadsBundle\Leads;
 
 class ExportCommand extends Command
@@ -24,15 +25,22 @@ class ExportCommand extends Command
     private $framework;
 
     /**
+     * @var LocalTarget
+     */
+    private $localTarget;
+
+    /**
      * ExportCommand constructor.
      *
      * @param Connection               $db
      * @param ContaoFrameworkInterface $framework
+     * @param LocalTarget              $localTarget
      */
-    public function __construct(Connection $db, ContaoFrameworkInterface $framework)
+    public function __construct(Connection $db, ContaoFrameworkInterface $framework, LocalTarget $localTarget)
     {
-        $this->db        = $db;
-        $this->framework = $framework;
+        $this->db          = $db;
+        $this->framework   = $framework;
+        $this->localTarget = $localTarget;
 
         parent::__construct();
     }
@@ -99,7 +107,7 @@ class ExportCommand extends Command
 
         $this->framework->initialize();
 
-        if (Leads::export($configId)) {
+        if (Leads::export($configId, null, $this->localTarget)) {
             $output->writeln('<info>The leads have been exported successfully.</info>');
         } else {
             $output->writeln('<error>There was an error exporting leads. Please check the system logs.</error>');
@@ -115,10 +123,10 @@ class ExportCommand extends Command
      */
     private function validateConfigId($id)
     {
-        $target = $this->db->fetchColumn('SELECT target FROM tl_lead_export WHERE id=?', [$id]);
+        $exists = $this->db->fetchColumn('SELECT cliExport FROM tl_lead_export WHERE id=?', [$id]);
 
-        // Return false if the row has been not found or the target is browser
-        if (!$target || $target === 'browser') {
+        // Return false if the row has been not found or the CLI export is not enabled
+        if (!$exists) {
             return false;
         }
 
@@ -134,7 +142,7 @@ class ExportCommand extends Command
     {
         $configs = [];
         $rows    = $this->db->fetchAll(
-            'SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form FROM tl_lead_export ORDER BY name'
+            'SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form FROM tl_lead_export WHERE cliExport=1 ORDER BY name'
         );
 
         foreach ($rows as $row) {

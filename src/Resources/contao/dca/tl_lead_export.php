@@ -98,11 +98,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__'                => array('type', 'useTemplate', 'export', 'target'),
-        'default'                     => '{name_legend},name,type,filename;{config_legend},export,target;{date_legend:hide},lastRun,skipLastRun',
-        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export,target;{date_legend:hide},lastRun,skipLastRun',
-        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,target;{date_legend:hide},lastRun,skipLastRun',
-        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,target;{date_legend:hide},lastRun,skipLastRun',
+        '__selector__'                => array('type', 'useTemplate', 'export', 'cliExport'),
+        'default'                     => '{name_legend},name,type,filename;{config_legend},export,cliExport;{date_legend:hide},lastRun,skipLastRun',
+        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export,cliExport;{date_legend:hide},lastRun,skipLastRun',
+        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,cliExport;{date_legend:hide},lastRun,skipLastRun',
+        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,cliExport;{date_legend:hide},lastRun,skipLastRun',
     ),
 
     // Subpalettes
@@ -110,7 +110,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     (
         'export_fields'                 => 'fields',
         'export_tokens'                 => 'tokenFields',
-        'target_local'                  => 'targetPath',
+        'cliExport'                     => 'targetPath',
         'useTemplate'                   => 'template,startIndex,sheetIndex',
     ),
 
@@ -242,17 +242,14 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
             'sql'                     => "varchar(8) NOT NULL default ''"
         ),
-        'target' => array
+        'cliExport' => array
         (
-            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['target'],
-            'default'                 => \System::getContainer()->get('terminal42_leads.export_target_manager')->getAliases()[0],
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['cliExport'],
             'exclude'                 => true,
             'filter'                  => true,
-            'inputType'               => 'radio',
-            'options'                 => \System::getContainer()->get('terminal42_leads.export_target_manager')->getAliases(),
-            'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['target'],
-            'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
-            'sql'                     => "varchar(8) NOT NULL default ''"
+            'inputType'               => 'checkbox',
+            'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
+            'sql'                     => "char(1) NOT NULL default ''"
         ),
         'targetPath' => array
         (

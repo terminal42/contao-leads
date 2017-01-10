@@ -29,7 +29,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['sheetIndex']               = array('Sheet
 $GLOBALS['TL_LANG']['tl_lead_export']['template']                 = array('Template', 'Choose your template here.');
 $GLOBALS['TL_LANG']['tl_lead_export']['headerFields']             = array('Header fields', 'Include the header fields in the file.');
 $GLOBALS['TL_LANG']['tl_lead_export']['export']                   = array('Export type', 'Please choose what data should be exported.');
-$GLOBALS['TL_LANG']['tl_lead_export']['target']                   = array('Target type', 'Please choose where the data should be exported.');
+$GLOBALS['TL_LANG']['tl_lead_export']['cliExport']                = array('Enable CLI export', 'Export the data to the file via command line interface.');
 $GLOBALS['TL_LANG']['tl_lead_export']['targetPath']               = array('Target path', 'Please enter the target path.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields']                   = array('Fields', 'Please choose the fields you want to export.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_field']             = array('Field');
@@ -78,12 +78,6 @@ $GLOBALS['TL_LANG']['tl_lead_export']['field_skip']                         = 'S
 $GLOBALS['TL_LANG']['tl_lead_export']['type']['csv']  = 'CSV (.csv)';
 $GLOBALS['TL_LANG']['tl_lead_export']['type']['xls']  = 'Excel 97/2000/2003 (.xls)';
 $GLOBALS['TL_LANG']['tl_lead_export']['type']['xlsx'] = 'Excel 2007/2010 (.xlsx)';
-
-/**
- * Target types
- */
-$GLOBALS['TL_LANG']['tl_lead_export']['target']['browser'] = 'Browser (download)';
-$GLOBALS['TL_LANG']['tl_lead_export']['target']['local']   = 'Local file system';
 
 
 /**

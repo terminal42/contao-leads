@@ -247,14 +247,15 @@ class Leads extends \Controller
     /**
      * Export the data.
      *
-     * @param integer $intConfig
-     * @param array   $arrIds
+     * @param integer         $intConfig
+     * @param array           $arrIds
+     * @param TargetInterface $target
      *
      * @return bool
      *
      * @throws InvalidExportTargetException
      */
-    public static function export($intConfig, $arrIds=null)
+    public static function export($intConfig, $arrIds=null, TargetInterface $target = null)
     {
         /** @var \Database\Result|object $objConfig */
         $objConfig = \Database::getInstance()
@@ -289,9 +290,10 @@ class Leads extends \Controller
             $objExport = $exporterDefinition[0]();
             $objExport->$exporterDefinition[1]($objConfig, $arrIds);
         } else {
-            $target = System::getContainer()->get('terminal42_leads.export_target_manager')->getTarget(
-                $objConfig->target
-            );
+            // Fallback to the browser target if none provided
+            if ($target === null) {
+                $target = System::getContainer()->get('terminal42_leads.target.browser');
+            }
 
             // Note the difference here: Fields are not touched and thus every field can be exported multiple times
             $exporter = new $exporterDefinition();
