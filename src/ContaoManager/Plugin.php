@@ -11,6 +11,7 @@
 
 namespace Terminal42\LeadsBundle\ContaoManager;
 
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Config\ModuleConfig;
@@ -27,7 +28,7 @@ class Plugin implements BundlePluginInterface
         return [
             (new BundleConfig(Terminal42LeadsBundle::class))
                 ->setReplace(['leads'])
-                ->setLoadAfter(['haste', 'multicolumnwizard']),
+                ->setLoadAfter([ContaoCoreBundle::class, 'haste', 'multicolumnwizard']),
             new ModuleConfig('haste'),
             new ModuleConfig('multicolumnwizard')
         ];
