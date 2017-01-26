@@ -94,5 +94,6 @@ $GLOBALS['TL_LANG']['tl_lead_export']['delete'] = array('Delete config', 'Delete
 /**
  * Errors
  */
+$GLOBALS['TL_LANG']['tl_lead_export']['invalidTargetPath'] = 'Please enter a valid folder name.';
 $GLOBALS['TL_LANG']['tl_lead_export']['exportError']['general'] = 'A general error occured. Please notify your system administrator.';
 $GLOBALS['TL_LANG']['tl_lead_export']['exportError']['noRows']  = 'There is no data to export for this configuration.';

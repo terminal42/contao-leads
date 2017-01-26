@@ -258,7 +258,8 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'inputType'               => 'text',
             'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'clr long'),
-            'sql'                     => "varchar(255) NOT NULL default ''"
+            'sql'                     => "varchar(255) NOT NULL default ''",
+            'save_callback'           => [['terminal42_leads.listener.lead_export', 'onSaveTargetPath']],
         ),
         'fields' => array
         (
