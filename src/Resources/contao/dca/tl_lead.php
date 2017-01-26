@@ -416,7 +416,8 @@ class tl_lead extends Backend
 
         $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
 
-        $this->exportAndCatchExceptions($intConfig, $arrIds);
+        $file = \Terminal42\LeadsBundle\Leads::export($intConfig, $arrIds);
+        $file->sendToBrowser();
     }
 
     /**
@@ -448,7 +449,8 @@ class tl_lead extends Backend
 
             foreach ($arrConfigs as $config) {
                 if (\Input::post('export_' . $config['id'])) {
-                    $this->exportAndCatchExceptions($config['id'], $arrIds);
+                    $file = \Terminal42\LeadsBundle\Leads::export($config['id'], $arrIds);
+                    $file->sendToBrowser();
                 }
             }
         }
@@ -482,21 +484,5 @@ class tl_lead extends Backend
             'href'  => 'key=notification',
             'icon'  => 'system/modules/notification_center/assets/notification.png',
         );
-    }
-
-    /**
-     * Try to export and catch ExportFailedException.
-     *
-     * @param $intConfig
-     * @param $arrIds
-     */
-    public function exportAndCatchExceptions($intConfig, $arrIds)
-    {
-        try {
-            \Terminal42\LeadsBundle\Leads::export($intConfig, $arrIds);
-        } catch (\Terminal42\LeadsBundle\Exporter\ExportFailedException $e) {
-            \Message::addError($e->getMessage());
-            \Controller::redirect(\System::getReferer());
-        }
     }
 }

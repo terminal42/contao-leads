@@ -17,9 +17,11 @@ class Xls extends AbstractExcelExporter
      *
      * @param \Database\Result $config
      * @param array|null       $ids
+     *
+     * @return \Contao\File
      */
     public function export($config, $ids = null)
     {
-        $this->exportWithFormat($config, $ids, 'Excel5');
+        return $this->exportWithFormat($config, $ids, 'Excel5');
     }
 }

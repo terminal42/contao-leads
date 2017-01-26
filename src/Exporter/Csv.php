@@ -34,6 +34,8 @@ class Csv extends AbstractExporter
      * @param \Database\Result $config
      * @param array|null       $ids
      *
+     * @return \Contao\File
+     *
      * @throws ExportFailedException
      */
     public function export($config, $ids = null)
@@ -59,7 +61,6 @@ class Csv extends AbstractExporter
 
         $this->updateLastRun($config);
 
-        $objFile = new \File($writer->getFilename());
-        $objFile->sendToBrowser();
+        return new \Contao\File($writer->getFilename());
     }
 }

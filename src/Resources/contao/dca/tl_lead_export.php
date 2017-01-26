@@ -31,8 +31,9 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         (
             'keys' => array
             (
-                'id' => 'primary',
-                'pid' => 'index'
+                'id'        => 'primary',
+                'pid'       => 'index',
+                'cliExport' => 'index',
             )
         )
     ),
@@ -98,11 +99,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Palettes
     'palettes' => array
     (
-        '__selector__'                => array('type', 'useTemplate', 'export'),
-        'default'                     => '{name_legend},name,type,filename;{config_legend},export;{date_legend:hide},lastRun,skipLastRun',
-        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export;{date_legend:hide},lastRun,skipLastRun',
-        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export;{date_legend:hide},lastRun,skipLastRun',
-        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export;{date_legend:hide},lastRun,skipLastRun',
+        '__selector__'                => array('type', 'useTemplate', 'export', 'cliExport'),
+        'default'                     => '{name_legend},name,type,filename;{config_legend},export,cliExport;{date_legend:hide},lastRun,skipLastRun',
+        'csv'                         => '{name_legend},name,type,filename;{config_legend},headerFields,export,cliExport;{date_legend:hide},lastRun,skipLastRun',
+        'xls'                         => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,cliExport;{date_legend:hide},lastRun,skipLastRun',
+        'xlsx'                        => '{name_legend},name,type,filename;{config_legend},useTemplate,headerFields,export,cliExport;{date_legend:hide},lastRun,skipLastRun',
     ),
 
     // Subpalettes
@@ -110,6 +111,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     (
         'export_fields'                 => 'fields',
         'export_tokens'                 => 'tokenFields',
+        'cliExport'                     => 'targetPath',
         'useTemplate'                   => 'template,startIndex,sheetIndex',
     ),
 
@@ -240,6 +242,24 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
             'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
             'sql'                     => "varchar(8) NOT NULL default ''"
+        ),
+        'cliExport' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['cliExport'],
+            'exclude'                 => true,
+            'filter'                  => true,
+            'inputType'               => 'checkbox',
+            'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
+            'sql'                     => "char(1) NOT NULL default ''"
+        ),
+        'targetPath' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['targetPath'],
+            'exclude'                 => true,
+            'inputType'               => 'text',
+            'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'clr long'),
+            'sql'                     => "varchar(255) NOT NULL default ''",
+            'save_callback'           => [['terminal42_leads.listener.lead_export', 'onSaveTargetPath']],
         ),
         'fields' => array
         (
@@ -439,7 +459,7 @@ class tl_lead_export extends Backend
         $arrFields = deserialize($varValue, true);
 
         // Load the form fields
-        if (empty($arrFields) && $dc->id) { 
+        if (empty($arrFields) && $dc->id) {
             $arrFields = array_values(\Terminal42\LeadsBundle\Leads::getSystemColumns());
 
             $objFields = Database::getInstance()->prepare(

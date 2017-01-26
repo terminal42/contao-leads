@@ -11,6 +11,7 @@
 
 namespace Terminal42\LeadsBundle;
 
+use Contao\File;
 use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 use Terminal42\LeadsBundle\Exporter\Utils\Row;
 use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
@@ -244,8 +245,13 @@ class Leads extends \Controller
     /**
      * Export the data.
      *
-     * @param integer $intConfig
-     * @param array   $arrIds
+     * @param integer         $intConfig
+     * @param array           $arrIds
+     *
+     * @return File
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public static function export($intConfig, $arrIds=null)
     {
@@ -261,38 +267,22 @@ class Leads extends \Controller
             ->execute($intConfig)
         ;
 
-        if (!$objConfig->numRows || !isset($GLOBALS['LEADS_EXPORT'][$objConfig->type])) {
-            return;
+        if (!$objConfig->numRows) {
+            throw new \InvalidArgumentException(sprintf('Export config ID %s not found', $intConfig));
         }
 
-        $objConfig->master = $objConfig->master ?: $objConfig->pid;
-        $arrFields = array();
+        /** @var ExporterInterface $exporter */
+        $exporterClass = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
 
-        $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
-
-        // Backwards compatibility
-        if (is_array($exporterDefinition)) {
-            // Prepare the fields
-            foreach (deserialize($objConfig->fields, true) as $arrField) {
-                $arrFields[$arrField['field']] = $arrField;
-            }
-
-            $objConfig->fields = $arrFields;
-
-            $objExport = $exporterDefinition[0]();
-            $objExport->$exporterDefinition[1]($objConfig, $arrIds);
-        } else {
-
-            // Note the difference here: Fields are not touched and thus every field can be exported multiple times
-            $exporter = new $exporterDefinition();
-
-            $objConfig->fields      = deserialize($objConfig->fields, true);
-            $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
-
-            if ($exporter instanceof ExporterInterface) {
-                $exporter->export($objConfig, $arrIds);
-            }
+        if (!class_exists($exporterClass) || !($exporter = new $exporterClass()) instanceof ExporterInterface) {
+            throw new \RuntimeException(sprintf('Invalid export type: %s (%s)', $objConfig->type, $exporterClass));
         }
+
+        $objConfig->master      = $objConfig->master ?: $objConfig->pid;
+        $objConfig->fields      = deserialize($objConfig->fields, true);
+        $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
+
+        return $exporter->export($objConfig, $arrIds);
     }
 
     /**

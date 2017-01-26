@@ -29,6 +29,8 @@ $GLOBALS['TL_LANG']['tl_lead_export']['sheetIndex']               = array('Sheet
 $GLOBALS['TL_LANG']['tl_lead_export']['template']                 = array('Template', 'Choose your template here.');
 $GLOBALS['TL_LANG']['tl_lead_export']['headerFields']             = array('Header fields', 'Include the header fields in the file.');
 $GLOBALS['TL_LANG']['tl_lead_export']['export']                   = array('Export type', 'Please choose what data should be exported.');
+$GLOBALS['TL_LANG']['tl_lead_export']['cliExport']                = array('Enable CLI export', 'Export the data to the file via command line interface.');
+$GLOBALS['TL_LANG']['tl_lead_export']['targetPath']               = array('Target path', 'Please enter the target path.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields']                   = array('Fields', 'Please choose the fields you want to export.');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_field']             = array('Field');
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_name']              = array('Header name');
@@ -92,5 +94,6 @@ $GLOBALS['TL_LANG']['tl_lead_export']['delete'] = array('Delete config', 'Delete
 /**
  * Errors
  */
+$GLOBALS['TL_LANG']['tl_lead_export']['invalidTargetPath'] = 'Please enter a valid folder name.';
 $GLOBALS['TL_LANG']['tl_lead_export']['exportError']['general'] = 'A general error occured. Please notify your system administrator.';
 $GLOBALS['TL_LANG']['tl_lead_export']['exportError']['noRows']  = 'There is no data to export for this configuration.';

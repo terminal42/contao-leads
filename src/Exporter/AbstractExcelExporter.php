@@ -37,6 +37,8 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param \Database\Result|object $config
      * @param array|null              $ids
      * @param string                  $format
+     *
+     * @return \Contao\File
      */
     protected function exportWithFormat($config, $ids, $format)
     {
@@ -51,9 +53,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
 
         if ($config->useTemplate) {
-            $this->exportWithTemplate($config, $reader, $row, $format);
+            return $this->exportWithTemplate($config, $reader, $row, $format);
         } else {
-            $this->exportWithoutTemplate($config, $reader, $row, $format);
+            return $this->exportWithoutTemplate($config, $reader, $row, $format);
         }
     }
 
@@ -64,6 +66,8 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param ArrayReader   $reader
      * @param Row           $row
      * @param               $format
+     *
+     * @return \Contao\File
      *
      * @throws ExportFailedException
      */
@@ -89,8 +93,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $this->updateLastRun($config);
 
-        $objFile = new \File($writer->getFilename());
-        $objFile->sendToBrowser();
+        return new \Contao\File($writer->getFilename());
     }
 
     /**
@@ -100,6 +103,8 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param ArrayReader   $reader
      * @param Row           $row
      * @param               $format
+     *
+     * @return \Contao\File
      */
     protected function exportWithTemplate(
         $config,
@@ -160,7 +165,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $this->updateLastRun($config);
 
-        $tmpFile = new \File($tmpPath);
-        $tmpFile->sendToBrowser();
+        return new \Contao\File($tmpPath);
     }
 }
