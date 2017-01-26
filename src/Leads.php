@@ -11,12 +11,10 @@
 
 namespace Terminal42\LeadsBundle;
 
-use Contao\System;
-use Terminal42\LeadsBundle\Exception\InvalidExportTargetException;
+use Contao\File;
 use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 use Terminal42\LeadsBundle\Exporter\Utils\Row;
 use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
-use Terminal42\LeadsBundle\ExportTarget\TargetInterface;
 
 class Leads extends \Controller
 {
@@ -249,13 +247,13 @@ class Leads extends \Controller
      *
      * @param integer         $intConfig
      * @param array           $arrIds
-     * @param TargetInterface $target
      *
-     * @return bool
+     * @return File
      *
-     * @throws InvalidExportTargetException
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
-    public static function export($intConfig, $arrIds=null, TargetInterface $target = null)
+    public static function export($intConfig, $arrIds=null)
     {
         /** @var \Database\Result|object $objConfig */
         $objConfig = \Database::getInstance()
@@ -269,44 +267,25 @@ class Leads extends \Controller
             ->execute($intConfig)
         ;
 
-        if (!$objConfig->numRows || !isset($GLOBALS['LEADS_EXPORT'][$objConfig->type])) {
-            return false;
+        if (!$objConfig->numRows) {
+            throw new \InvalidArgumentException(sprintf('Export config ID %s not found', $intConfig));
         }
-
-        $objConfig->master = $objConfig->master ?: $objConfig->pid;
-        $arrFields = array();
 
         $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
 
-        // Backwards compatibility
-        if (is_array($exporterDefinition)) {
-            // Prepare the fields
-            foreach (deserialize($objConfig->fields, true) as $arrField) {
-                $arrFields[$arrField['field']] = $arrField;
-            }
-
-            $objConfig->fields = $arrFields;
-
-            $objExport = $exporterDefinition[0]();
-            $objExport->$exporterDefinition[1]($objConfig, $arrIds);
-        } else {
-            // Fallback to the browser target if none provided
-            if ($target === null) {
-                $target = System::getContainer()->get('terminal42_leads.target.browser');
-            }
-
-            // Note the difference here: Fields are not touched and thus every field can be exported multiple times
-            $exporter = new $exporterDefinition();
-
-            $objConfig->fields      = deserialize($objConfig->fields, true);
-            $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
-
-            if ($exporter instanceof ExporterInterface && $target instanceof TargetInterface) {
-                return $target->send($exporter->export($objConfig, $arrIds), $objConfig->row());
-            }
+        if (!$exporterDefinition instanceof ExporterInterface) {
+            throw new \RuntimeException(sprintf('Invalid export type: %s (%s)', $objConfig->type, $exporterDefinition));
         }
 
-        return false;
+        $objConfig->master = $objConfig->master ?: $objConfig->pid;
+
+        /** @var ExporterInterface $exporter */
+        $exporter = new $exporterDefinition();
+
+        $objConfig->fields      = deserialize($objConfig->fields, true);
+        $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
+
+        return $exporter->export($objConfig, $arrIds);
     }
 
     /**

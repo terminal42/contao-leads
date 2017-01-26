@@ -5,53 +5,59 @@ namespace Terminal42\LeadsBundle\Command;
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Terminal42\LeadsBundle\ExportTarget\LocalTarget;
+use Symfony\Component\Filesystem\Filesystem;
 use Terminal42\LeadsBundle\Leads;
 
 class ExportCommand extends Command
 {
-    /**
-     * @var Connection
-     */
-    private $db;
-
     /**
      * @var ContaoFrameworkInterface
      */
     private $framework;
 
     /**
-     * @var LocalTarget
+     * @var Connection
      */
-    private $localTarget;
+    private $db;
 
     /**
-     * ExportCommand constructor.
-     *
-     * @param Connection               $db
-     * @param ContaoFrameworkInterface $framework
-     * @param LocalTarget              $localTarget
+     * @var Filesystem
      */
-    public function __construct(Connection $db, ContaoFrameworkInterface $framework, LocalTarget $localTarget)
+    private $fs;
+
+    /**
+     * Constructor.
+     *
+     * @param ContaoFrameworkInterface $framework
+     * @param Connection               $db
+     * @param Filesystem               $fs
+     */
+    public function __construct(ContaoFrameworkInterface $framework, Connection $db, Filesystem $fs = null)
     {
-        $this->db          = $db;
-        $this->framework   = $framework;
-        $this->localTarget = $localTarget;
+        if (null === $fs) {
+            $fs = new Filesystem();
+        }
+
+        $this->framework = $framework;
+        $this->db = $db;
+        $this->fs = $fs;
 
         parent::__construct();
     }
 
     /**
-     * Configure the command
+     * {@inheritdoc}
      */
     protected function configure()
     {
-        $this->setName('leads:export')
+        $this
+            ->setName('leads:export')
             ->setDescription('Exports the leads with the chosen configuration.')
             ->addArgument(
                 'config_id',
@@ -75,7 +81,8 @@ class ExportCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Records after this date will not be exported. You can use PHP strtotime() function.'
-            );
+            )
+        ;
     }
 
     /**
@@ -86,14 +93,12 @@ class ExportCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('all')) {
+        if ($input->hasOption('all')) {
             return;
         }
 
-        $configId = $input->getArgument('config_id');
-
         // Ask for the config ID if it has been not provided by default
-        if (!$configId) {
+        if (!$input->hasArgument('config_id')) {
             $helper = $this->getHelper('question');
 
             $question = new ChoiceQuestion(
@@ -110,114 +115,144 @@ class ExportCommand extends Command
             if (!($configId = $helper->ask($input, $output, $question))) {
                 return;
             }
-        }
 
-        $input->setArgument('config_id', $configId);
+            $input->setArgument('config_id', $configId);
+        }
     }
 
     /**
-     * Execute the command
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try {
-            $this->framework->initialize();
+        if ((!$input->hasOption('all') && !$input->hasArgument('config_id'))
+            || ($input->hasOption('all') && $input->hasArgument('config_id'))
+        ) {
+            throw new InvalidArgumentException('Must either have an export config ID or the --all flag to export.');
+        }
 
-            if ($input->getOption('all')) {
-                $this->executeBatchExport($this->getOptions($input));
-            } else {
-                $this->executeSingleExport((int)$input->getArgument('config_id'), $this->getOptions($input));
+        $this->framework->initialize();
+
+        list($start, $stop) = $this->getStartStop($input);
+
+        if ($input->getOption('all')) {
+            $this->executeBatchExport($start, $stop);
+        } else {
+            $config = $this->db->fetchAssoc(
+                'SELECT id, targetPath, cliExport FROM tl_lead_export WHERE id=?',
+                [(int) $input->getArgument('config_id')]
+            );
+
+            if (!empty($config) || !$config['cliExport']) {
+                throw new InvalidArgumentException(
+                    sprintf('Leads export ID %s is invalid or not enabled for CLI output.', $config['id'])
+                );
             }
-        } catch (\Exception $e) {
-            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
 
-            return;
+            $this->export($config['id'], $config['targetPath'], $start, $stop);
         }
 
         $output->writeln('<info>The leads have been exported successfully.</info>');
     }
 
     /**
-     * Execute the single export
-     *
-     * @param int   $configId
-     * @param array $options
-     *
-     * @throws \Exception
-     */
-    private function executeSingleExport($configId, array $options)
-    {
-        if (!$this->validateConfigId($configId)) {
-            throw new \Exception(sprintf('Invalid lead export configuration ID: %s', $configId));
-        }
-
-        if (!Leads::export($configId, null, $this->localTarget)) {
-            throw new \Exception('There was an error exporting leads. Please check the system logs.');
-        }
-    }
-
-    /**
      * Execute the batch export
      *
-     * @param array $options
-     *
-     * @throws \Exception
+     * @param int|null $start
+     * @param int|null $stop
      */
-    private function executeBatchExport(array $options)
+    private function executeBatchExport($start, $stop)
     {
-        foreach ($this->db->fetchAll('SELECT id FROM tl_lead_export WHERE cliExport=1') as $id) {
-            if (!Leads::export((int)$id, null, $this->localTarget)) {
-                throw new \Exception('There was an error exporting leads. Please check the system logs.');
-            }
+        $configs = $this->db->fetchAll("SELECT id, targetPath FROM tl_lead_export WHERE cliExport='1'");
+
+        foreach ($configs as $config) {
+            $this->export($config['id'], $config['targetPath'], $start, $stop);
         }
     }
 
     /**
-     * Get the options
+     * Export a leads configuration with start and stop date if not empty.
+     *
+     * @param int      $configId
+     * @param string   $targetPath
+     * @param int|null $start
+     * @param int|null $stop
+     */
+    private function export($configId, $targetPath, $start, $stop)
+    {
+        $ids = null;
+
+        if ($start || $stop) {
+            $query = $this->db->createQueryBuilder();
+            $query
+                ->select('l.id')
+                ->from('tl_lead', 'l')
+                ->join(
+                    'l',
+                    'tl_lead_export',
+                    'e1',
+                    $query->expr()->orX(
+                        $query->expr()->eq('l.master_id', 'e1.pid'),
+                        $query->expr()->eq('l.form_id', 'e1.pid')
+                    )
+                )
+                ->where('e.id = :export_id')
+                ->setParameter('export_id', $configId)
+                ->groupBy('l.id')
+            ;
+
+            if (null !== $start) {
+                $query
+                    ->andWhere('l.created >= :start')
+                    ->setParameter('start', $start)
+                ;
+            }
+
+            if (null !== $stop) {
+                $query
+                    ->andWhere('l.created <= :stop')
+                    ->setParameter('start', $stop)
+                ;
+            }
+
+            $ids = $query->execute()->fetchAll(\PDO::FETCH_COLUMN);
+        }
+
+        $file = Leads::export($configId, $ids);
+
+        $this->fs->mkdir($targetPath);
+        $this->fs->copy(TL_ROOT.'/'.$file->path, $targetPath.'/'.$file->name, true);
+    }
+
+    /**
+     * Get the start and stop options.
      *
      * @param InputInterface $input
      *
      * @return array
-     * @throws \Exception
+     *
+     * @throws InvalidArgumentException
      */
-    private function getOptions(InputInterface $input)
+    private function getStartStop(InputInterface $input)
     {
-        $start = ($input->getOption('start') !== null) ? strtotime($input->getOption('start')) : null;
-        $stop  = ($input->getOption('stop') !== null) ? strtotime($input->getOption('stop')) : null;
+        $start = $input->hasOption('start') ? strtotime($input->getOption('start')) : null;
+        $stop  = $input->hasOption('stop') ? strtotime($input->getOption('stop')) : null;
 
         // Validate the start option
         if ($start === false) {
-            throw new \Exception(sprintf('The "start" option is invalid: %s', $input->getOption('start')));
+            throw new InvalidArgumentException(
+                sprintf('The "start" option is invalid: %s', $input->getOption('start'))
+            );
         }
 
         // Validate the stop option
         if ($stop === false) {
-            throw new \Exception(sprintf('The "stop" option is invalid: %s', $input->getOption('stop')));
+            throw new InvalidArgumentException(
+                sprintf('The "stop" option is invalid: %s', $input->getOption('stop'))
+            );
         }
 
-        return ['start' => $start, 'stop' => $stop];
-    }
-
-    /**
-     * Validate the lead export config ID
-     *
-     * @param int $id
-     *
-     * @return bool
-     */
-    private function validateConfigId($id)
-    {
-        $exists = $this->db->fetchColumn('SELECT cliExport FROM tl_lead_export WHERE id=?', [$id]);
-
-        // Return false if the row has been not found or the CLI export is not enabled
-        if (!$exists) {
-            return false;
-        }
-
-        return true;
+        return [$start, $stop];
     }
 
     /**
@@ -228,9 +263,12 @@ class ExportCommand extends Command
     private function getAllConfigs()
     {
         $configs = [];
-        $rows    = $this->db->fetchAll(
-            'SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form FROM tl_lead_export WHERE cliExport=1 ORDER BY name'
-        );
+        $rows    = $this->db->fetchAll("
+            SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form 
+            FROM tl_lead_export 
+            WHERE cliExport='1' 
+            ORDER BY name
+        ");
 
         foreach ($rows as $row) {
             $configs[$row['id']] = sprintf('%s: %s', $row['form'], $row['name']);
