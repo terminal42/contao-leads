@@ -271,17 +271,14 @@ class Leads extends \Controller
             throw new \InvalidArgumentException(sprintf('Export config ID %s not found', $intConfig));
         }
 
-        $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
+        /** @var ExporterInterface $exporter */
+        $exporterClass = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
 
-        if (!$exporterDefinition instanceof ExporterInterface) {
-            throw new \RuntimeException(sprintf('Invalid export type: %s (%s)', $objConfig->type, $exporterDefinition));
+        if (!class_exists($exporterClass) || !($exporter = new $exporterClass()) instanceof ExporterInterface) {
+            throw new \RuntimeException(sprintf('Invalid export type: %s (%s)', $objConfig->type, $exporterClass));
         }
 
-        $objConfig->master = $objConfig->master ?: $objConfig->pid;
-
-        /** @var ExporterInterface $exporter */
-        $exporter = new $exporterDefinition();
-
+        $objConfig->master      = $objConfig->master ?: $objConfig->pid;
         $objConfig->fields      = deserialize($objConfig->fields, true);
         $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
 

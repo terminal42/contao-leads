@@ -93,31 +93,34 @@ class ExportCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        if ($input->hasOption('all')) {
+        if ($input->getOption('all') || null !== $input->getArgument('config_id')) {
             return;
         }
 
-        // Ask for the config ID if it has been not provided by default
-        if (!$input->hasArgument('config_id')) {
-            $helper = $this->getHelper('question');
+        $configs = $this->getAllConfigs();
 
-            $question = new ChoiceQuestion(
-                'Please enter the ID of the configuration you would like to export',
-                $this->getAllConfigs()
-            );
-
-            $question->setValidator(
-                function ($answer) {
-                    return $answer;
-                }
-            );
-
-            if (!($configId = $helper->ask($input, $output, $question))) {
-                return;
-            }
-
-            $input->setArgument('config_id', $configId);
+        if (0 === count($configs)) {
+            throw new \RuntimeException('No export configurations available.');
         }
+
+        $helper = $this->getHelper('question');
+
+        $question = new ChoiceQuestion(
+            'Please enter the ID of the configuration you would like to export',
+            $configs
+        );
+
+        $question->setValidator(
+            function ($answer) {
+                return $answer;
+            }
+        );
+
+        if (!($configId = $helper->ask($input, $output, $question))) {
+            return;
+        }
+
+        $input->setArgument('config_id', $configId);
     }
 
     /**
@@ -125,8 +128,8 @@ class ExportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ((!$input->hasOption('all') && !$input->hasArgument('config_id'))
-            || ($input->hasOption('all') && $input->hasArgument('config_id'))
+        if ((!$input->getOption('all') && !$input->getArgument('config_id'))
+            || ($input->getOption('all') && $input->getArgument('config_id'))
         ) {
             throw new InvalidArgumentException('Must either have an export config ID or the --all flag to export.');
         }
@@ -143,7 +146,7 @@ class ExportCommand extends Command
                 [(int) $input->getArgument('config_id')]
             );
 
-            if (!empty($config) || !$config['cliExport']) {
+            if (empty($config) || !$config['cliExport']) {
                 throw new InvalidArgumentException(
                     sprintf('Leads export ID %s is invalid or not enabled for CLI output.', $config['id'])
                 );
@@ -220,6 +223,10 @@ class ExportCommand extends Command
 
         $file = Leads::export($configId, $ids);
 
+        if ('/' !== substr($targetPath, 0, 1)) {
+            $targetPath = TL_ROOT.'/'.$targetPath;
+        }
+
         $this->fs->mkdir($targetPath);
         $this->fs->copy(TL_ROOT.'/'.$file->path, $targetPath.'/'.$file->name, true);
     }
@@ -235,8 +242,8 @@ class ExportCommand extends Command
      */
     private function getStartStop(InputInterface $input)
     {
-        $start = $input->hasOption('start') ? strtotime($input->getOption('start')) : null;
-        $stop  = $input->hasOption('stop') ? strtotime($input->getOption('stop')) : null;
+        $start = $input->getOption('start') ? strtotime($input->getOption('start')) : null;
+        $stop  = $input->getOption('stop') ? strtotime($input->getOption('stop')) : null;
 
         // Validate the start option
         if ($start === false) {
