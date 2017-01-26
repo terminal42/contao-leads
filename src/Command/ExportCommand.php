@@ -139,7 +139,7 @@ class ExportCommand extends Command
         list($start, $stop) = $this->getStartStop($input);
 
         if ($input->getOption('all')) {
-            $this->executeBatchExport($start, $stop);
+            $success = $this->executeBatchExport($start, $stop);
         } else {
             $config = $this->db->fetchAssoc(
                 'SELECT id, targetPath, cliExport FROM tl_lead_export WHERE id=?',
@@ -152,10 +152,14 @@ class ExportCommand extends Command
                 );
             }
 
-            $this->export($config['id'], $config['targetPath'], $start, $stop);
+            $success = $this->export($config['id'], $config['targetPath'], $start, $stop);
         }
 
-        $output->writeln('<info>The leads have been exported successfully.</info>');
+        if ($success) {
+            $output->writeln('<info>The leads have been exported successfully.</info>');
+        } else {
+            $output->writeln('<error>Nothing to export.</error>');
+        }
     }
 
     /**
@@ -166,11 +170,16 @@ class ExportCommand extends Command
      */
     private function executeBatchExport($start, $stop)
     {
+        $success = false;
         $configs = $this->db->fetchAll("SELECT id, targetPath FROM tl_lead_export WHERE cliExport='1'");
 
         foreach ($configs as $config) {
-            $this->export($config['id'], $config['targetPath'], $start, $stop);
+            if ($this->export($config['id'], $config['targetPath'], $start, $stop)) {
+                $success = true;
+            }
         }
+
+        return $success;
     }
 
     /**
@@ -180,6 +189,8 @@ class ExportCommand extends Command
      * @param string   $targetPath
      * @param int|null $start
      * @param int|null $stop
+     *
+     * @return true
      */
     private function export($configId, $targetPath, $start, $stop)
     {
@@ -193,10 +204,10 @@ class ExportCommand extends Command
                 ->join(
                     'l',
                     'tl_lead_export',
-                    'e1',
+                    'e',
                     $query->expr()->orX(
-                        $query->expr()->eq('l.master_id', 'e1.pid'),
-                        $query->expr()->eq('l.form_id', 'e1.pid')
+                        $query->expr()->eq('l.master_id', 'e.pid'),
+                        $query->expr()->eq('l.form_id', 'e.pid')
                     )
                 )
                 ->where('e.id = :export_id')
@@ -214,11 +225,15 @@ class ExportCommand extends Command
             if (null !== $stop) {
                 $query
                     ->andWhere('l.created <= :stop')
-                    ->setParameter('start', $stop)
+                    ->setParameter('stop', $stop)
                 ;
             }
 
             $ids = $query->execute()->fetchAll(\PDO::FETCH_COLUMN);
+
+            if (0 === count($ids)) {
+                return false;
+            }
         }
 
         $file = Leads::export($configId, $ids);
@@ -229,6 +244,8 @@ class ExportCommand extends Command
 
         $this->fs->mkdir($targetPath);
         $this->fs->copy(TL_ROOT.'/'.$file->path, $targetPath.'/'.$file->name, true);
+
+        return true;
     }
 
     /**
