@@ -46,7 +46,7 @@ class Leads extends \Controller
         if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
             $key      = $objField->rgxp . 'Format';
             $format   = isset($GLOBALS['objPage']) ? $GLOBALS['objPage']->{$key} : $GLOBALS['TL_CONFIG'][$key];
-            $objDate  = new \Date($varValue, $GLOBALS['TL_CONFIG'][$format]);
+            $objDate  = new \Date($varValue, $format);
             $varValue = $objDate->tstamp;
         }
 
