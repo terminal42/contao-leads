@@ -138,6 +138,22 @@ class tl_lead_data extends Backend
      */
     public function listRows($row)
     {
-        return $row['name'] . ': ' . \Terminal42\LeadsBundle\Leads::formatValue((object) $row);
+        $label = implode(', ', deserialize($row['label'], true));
+        $value = implode(', ', deserialize($row['value'], true));
+
+        if ($label == $value) {
+            $value = '';
+        }
+
+        return sprintf(
+            '
+<div style="float:left;width:20%%;margin-right:10px;font-weight:500">%s</div>
+<div style="float:left;width:50%%;margin-right:10px">%s</div>
+<div style="float:left;width:20%%;color:#b3b3b3;">%s</div>',
+            $row['name'],
+            $label,
+            $value
+        );
+
     }
 }

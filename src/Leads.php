@@ -112,12 +112,16 @@ class Leads extends \Controller
     {
         $strValue = implode(', ', deserialize($objData->value, true));
 
-        if ($objData->label != '') {
+        if ($objData->label != '' && $objData->label != $objData->value)  {
             $strLabel = $objData->label;
             $arrLabel = deserialize($objData->label, true);
 
             if (!empty($arrLabel)) {
                 $strLabel = implode(', ', $arrLabel);
+            }
+
+            if ($strValue == '') {
+                return $strLabel;
             }
 
             $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
