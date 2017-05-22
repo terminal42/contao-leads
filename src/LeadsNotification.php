@@ -66,9 +66,7 @@ class LeadsNotification
             $labels[$leadDataCollection->name] = $leadDataCollection->fieldLabel ?: $leadDataCollection->name;
         }
 
-        $formHelper = new \NotificationCenter\tl_form();
-
-        return $formHelper->generateTokens($data, $form->row(), array(), $labels);
+        return static::generateNotificationCenterTokens($data, $form->row(), $labels);
     }
 
     /**
@@ -136,5 +134,35 @@ class LeadsNotification
 </form>';
 
         return $return;
+    }
+
+    /**
+     * Generates the NC tokens.
+     *
+     * @param array $arrData
+     * @param array $arrForm
+     * @param array $arrLabels
+     *
+     * @return array
+     */
+    private static function generateNotificationCenterTokens(array $arrData, array $arrForm, array $arrLabels)
+    {
+        $arrTokens = array();
+        $arrTokens['raw_data'] = '';
+
+        foreach ($arrData as $k => $v) {
+            \Haste\Util\StringUtil::flatten($v, 'form_'.$k, $arrTokens);
+            $arrTokens['formlabel_'.$k] = isset($arrLabels[$k]) ? $arrLabels[$k] : ucfirst($k);
+            $arrTokens['raw_data'] .= (isset($arrLabels[$k]) ? $arrLabels[$k] : ucfirst($k)) . ': ' . (is_array($v) ? implode(', ', $v) : $v) . "\n";
+        }
+
+        foreach ($arrForm as $k => $v) {
+            \Haste\Util\StringUtil::flatten($v, 'formconfig_'.$k, $arrTokens);
+        }
+
+        // Administrator e-mail
+        $arrTokens['admin_email'] = $GLOBALS['TL_ADMIN_EMAIL'];
+
+        return $arrTokens;
     }
 }
