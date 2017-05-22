@@ -71,7 +71,7 @@ class NotificationCenterIntegration
         }
 
         // Send the notification
-        $result = $notification->send(static::generateTokens($data, $form->row(), $labels));
+        $result = $notification->send(static::generateNotificationCenterTokens($data, $form->row(), $labels));
 
         return !in_array(false, $result);
     }
@@ -135,7 +135,7 @@ class NotificationCenterIntegration
      *
      * @return array
      */
-    private static function generateTokens(array $arrData, array $arrForm, array $arrLabels)
+    private static function generateNotificationCenterTokens(array $arrData, array $arrForm, array $arrLabels)
     {
         $arrTokens = array();
         $arrTokens['raw_data'] = '';
