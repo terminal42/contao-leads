@@ -22,8 +22,8 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
     'lead' => array
     (
         'tables'        => array('tl_lead', 'tl_lead_data'),
-        'javascript'    => 'bundles/terminal42leads/leads.min.js',
-        'stylesheet'    => 'bundles/terminal42leads/leads.min.css',
+        'javascript'    => 'bundles/terminal42leads/leads.js',
+        'stylesheet'    => 'bundles/terminal42leads/leads.css',
         'show'          => array('tl_lead', 'show'),
         'export'        => array('tl_lead', 'export'),
         'notification'  => array('tl_lead', 'sendNotification'),
@@ -32,7 +32,7 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 
 // Load icon in Contao 4.2 backend
 if ('BE' === TL_MODE) {
-    $GLOBALS['TL_CSS'][] = 'bundles/terminal42leads/leads.min.css';
+    $GLOBALS['TL_CSS'][] = 'bundles/terminal42leads/leads.css';
 }
 
 /**
