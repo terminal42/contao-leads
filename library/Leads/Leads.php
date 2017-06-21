@@ -39,13 +39,7 @@ class Leads extends \Controller
             return $varValue;
         }
 
-        // Convert date formats into timestamps
-        if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
-            $key      = $objField->rgxp . 'Format';
-            $format   = isset($GLOBALS['objPage']) ? $GLOBALS['objPage']->{$key} : $GLOBALS['TL_CONFIG'][$key];
-            $objDate  = new \Date($varValue, $format);
-            $varValue = $objDate->tstamp;
-        }
+        $varValue = static::convertRgxp($varValue, $objField->rgxp);
 
         return $varValue;
     }
@@ -79,10 +73,7 @@ class Leads extends \Controller
             }
         }
 
-        // Convert timestamps into date format
-        if ($varValue != '' && in_array($objField->rgxp, array('date', 'time', 'datim'))) {
-            $varValue = \Date::parse($GLOBALS['TL_CONFIG'][$objField->rgxp . 'Format'], $varValue);
-        }
+        $varValue = static::convertRgxp($varValue, $objField->rgxp);
 
         if ($objField->options != '') {
             $arrOptions = deserialize($objField->options, true);
@@ -447,6 +438,28 @@ class Leads extends \Controller
         }
 
         return Tokens::recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens);
+    }
+
+    /**
+     * @param string $value
+     * @param string $rgxp
+     *
+     * @return string
+     */
+    private static function convertRgxp($value, $rgxp)
+    {
+        // Convert date formats into timestamps
+        if (!empty($value)
+            && in_array($rgxp, array('date', 'time', 'datim'))
+            && \Validator::{'is'.ucfirst($rgxp)}($value)
+        ) {
+            $format = \Date::{'getNumeric'.ucfirst($rgxp).'Format'}();
+            $date = new \Date($value, $format);
+
+            return (string) $date->tstamp;
+        }
+
+        return $value;
     }
 
     /**
