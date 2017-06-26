@@ -12,6 +12,7 @@ namespace Terminal42\LeadsBundle\EventListener;
 
 use Contao\BackendUser;
 use Contao\Database;
+use Contao\Input;
 use Contao\Session;
 
 class UserNavigationListener
@@ -72,6 +73,7 @@ class UserNavigationListener
                     'icon'      => ' style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
                     'class'     => 'navigation leads',
                     'href'      => 'contao/main.php?do=lead&master='.$form['id'],
+                    'isActive'  => 'lead' === Input::get('do') && $form['id'] === Input::get('master'),
                 );
             }
         } else {
@@ -155,6 +157,10 @@ class UserNavigationListener
      */
     private function isOpen()
     {
+        if (version_compare(VERSION, '4.4', '>=')) {
+            return true;
+        }
+
         $backendModules = $this->session->get('backend_modules');
 
         return (bool) $backendModules['leads'];
