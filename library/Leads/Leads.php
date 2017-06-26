@@ -185,7 +185,7 @@ class Leads extends \Controller
         }
 
         $arrSession = \Session::getInstance()->get('backend_modules');
-        $blnOpen = $arrSession['leads'] || $blnShowAll;
+        $blnOpen = $arrSession['leads'] || $blnShowAll || version_compare(VERSION, '4.4', '>=');
         $arrModules['leads']['modules'] = array();
 
         if ($blnOpen) {
@@ -203,6 +203,7 @@ class Leads extends \Controller
                     'icon'      => ' style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
                     'class'     => 'navigation leads',
                     'href'      => 'contao/main.php?do=lead&master=' . $form['id'],
+                    'isActive'  => ('lead' === \Input::get('do') && $form['id'] === \Input::get('master')),
                 );
             }
         } else {
