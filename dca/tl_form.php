@@ -14,6 +14,7 @@
  * Config
  */
 $GLOBALS['TL_DCA']['tl_form']['config']['ctable'][] = 'tl_lead_export';
+$GLOBALS['TL_DCA']['tl_form']['config']['oncopy_callback'][] = array('tl_form_lead', 'onCopyCallback');
 $GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = array('tl_form_lead', 'modifyPalette');
 $GLOBALS['TL_DCA']['tl_form']['config']['sql']['keys']['leadEnabled'] = 'index';
 $GLOBALS['TL_DCA']['tl_form']['config']['sql']['keys']['leadMaster'] = 'index';
@@ -73,6 +74,40 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = array
 
 class tl_form_lead extends Backend
 {
+    /**
+     * On copy callback
+     *
+     * @param int            $id
+     * @param \DataContainer $dc
+     */
+    public function onCopyCallback($id, \DataContainer $dc)
+    {
+        $db = \Database::getInstance();
+        $exports = $db->prepare("SELECT id, fields FROM tl_lead_export WHERE pid=?")->execute($id);
+
+        if (!$exports->numRows) {
+            return;
+        }
+
+        $oldFormFields = $db->prepare("SELECT id FROM tl_form_field WHERE pid=? ORDER BY sorting")->execute($dc->id);
+        $newFormFields = $db->prepare("SELECT id FROM tl_form_field WHERE pid=? ORDER BY sorting")->execute($id);
+
+        // Create the fields mapper
+        $fieldsMapper = array_combine($oldFormFields->fetchEach('id'), $newFormFields->fetchEach('id'));
+
+        while ($exports->next()) {
+            $fields = deserialize($exports->fields, true);
+
+            // Map the fields
+            foreach ($fields as $k => $v) {
+                if (isset($fieldsMapper[$v['field']])) {
+                    $fields[$k]['field'] = $fieldsMapper[$v['field']];
+                }
+            }
+
+            $db->prepare('UPDATE tl_lead_export SET fields=? WHERE id=?')->execute(serialize($fields), $exports->id);
+        }
+    }
 
     /**
      * Modify the palette based on configuration. We can't use simple subpalettes
