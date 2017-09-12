@@ -140,8 +140,20 @@ class tl_form_lead extends Backend
      */
     public function getMasterForms($dc)
     {
+        $user = \Contao\BackendUser::getInstance();
+        $filter = null;
+        
+        // Check user permissions
+        if (!$user->isAdmin) {
+            if (!is_array($user->forms) || empty($user->forms)) {
+                return [];
+            }
+
+            $filter = $user->forms;
+        }
+
         $arrForms = array();
-        $objForms = \Database::getInstance()->execute("SELECT id, title FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 AND id!=" . (int) $dc->id);
+        $objForms = \Database::getInstance()->execute("SELECT id, title FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 AND id!=" . (int) $dc->id . (($filter !== null) ? " AND id IN(" . implode(',', $filter) . ")" : ""));
 
         while ($objForms->next()) {
             $arrForms[$objForms->id] = $objForms->title;
