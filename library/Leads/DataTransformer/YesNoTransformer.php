@@ -25,10 +25,14 @@ class YesNoTransformer implements DataTransformerInterface
      */
     public function transform($value)
     {
-        if ($value == '1') {
+        if (is_numeric($value) && $value == '1') {
 
             return $GLOBALS['TL_LANG']['MSC']['yes'];
         }
+	else if(!is_numeric($value) && $value != ''){
+
+            return $GLOBALS['TL_LANG']['MSC']['yes'];
+	}
 
         return $GLOBALS['TL_LANG']['MSC']['no'];
     }
