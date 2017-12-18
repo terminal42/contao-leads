@@ -12,6 +12,7 @@
 namespace Terminal42\LeadsBundle;
 
 use Contao\File;
+use Haste\Util\Format;
 use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 use Terminal42\LeadsBundle\Exporter\Utils\Row;
 use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
