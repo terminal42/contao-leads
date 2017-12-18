@@ -98,6 +98,17 @@ class Leads extends \Controller
      */
     public static function formatValue($objData)
     {
+        $fieldModel = \FormFieldModel::findByPk($objData->field_id);
+
+        if (null !== $fieldModel) {
+            $data = $fieldModel->row();
+            $data['eval'] = $fieldModel->row();
+            $strValue = Format::dcaValueFromArray($data, $objData->value);
+            $strLabel = Format::dcaLabelFromArray($data);
+
+            return $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+        }
+
         $strValue = implode(', ', deserialize($objData->value, true));
 
         if ($objData->label != '') {
