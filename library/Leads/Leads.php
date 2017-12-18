@@ -98,6 +98,17 @@ class Leads extends \Controller
      */
     public static function formatValue($objData)
     {
+        $fieldModel = \FormFieldModel::findByPk($objData->field_id);
+
+        if (null !== $fieldModel) {
+            $data = $fieldModel->row();
+            $data['eval'] = $fieldModel->row();
+            $strValue = Format::dcaValueFromArray($data, $objData->value);
+            $strLabel = Format::dcaLabelFromArray($data);
+
+            return $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+        }
+
         $strValue = implode(', ', deserialize($objData->value, true));
 
         if ($objData->label != '') {
@@ -174,8 +185,11 @@ class Leads extends \Controller
         $orphans = \Database::getInstance()->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . (!empty($ids) ? ' WHERE master_id NOT IN (' . implode(',', array_map('intval', $ids)) . ')' : ''))
             ->fetchAllAssoc();
 
-        foreach ($orphans as $orphan) {
-            $forms[] = $orphan;
+        // Only show orphans to admins
+        if ($objUser->isAdmin) {
+            foreach ($orphans as $orphan) {
+                $forms[] = $orphan;
+            }
         }
 
         if (empty($forms)) {
