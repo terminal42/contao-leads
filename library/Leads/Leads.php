@@ -185,8 +185,11 @@ class Leads extends \Controller
         $orphans = \Database::getInstance()->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . (!empty($ids) ? ' WHERE master_id NOT IN (' . implode(',', array_map('intval', $ids)) . ')' : ''))
             ->fetchAllAssoc();
 
-        foreach ($orphans as $orphan) {
-            $forms[] = $orphan;
+        // Only show orphans to admins
+        if ($objUser->isAdmin) {
+            foreach ($orphans as $orphan) {
+                $forms[] = $orphan;
+            }
         }
 
         if (empty($forms)) {
