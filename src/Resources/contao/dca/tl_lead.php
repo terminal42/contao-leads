@@ -142,7 +142,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'filter'            => true,
             'sorting'           => true,
             'options'           => \System::getLanguages(),
-            'sql'               => "varchar(2) NOT NULL default ''",
+            'sql'               => "varchar(5) NOT NULL default ''"
         ),
         'created' => array
         (

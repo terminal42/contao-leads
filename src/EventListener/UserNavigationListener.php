@@ -121,8 +121,11 @@ class UserNavigationListener
         $orphans = $this->db->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . $filter)
             ->fetchAllAssoc();
 
-        foreach ($orphans as $orphan) {
-            $forms[] = $orphan;
+        // Only show orphans to admins
+        if ($this->user->isAdmin) {
+            foreach ($orphans as $orphan) {
+                $forms[] = $orphan;
+            }
         }
 
         // Order by leadMenuLabel
