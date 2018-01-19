@@ -246,7 +246,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields'],
             'exclude'                 => true,
             'inputType'               => 'multiColumnWizard',
-            'eval'                    => array('mandatory'=>true, 'columnFields'=>array
+            'eval'                    => array('mandatory'=>true, 'dragAndDrop' => true, 'columnFields'=>array
             (
                 'column_display' => array
                 (
