@@ -47,7 +47,7 @@ abstract class AbstractExporter implements ExporterInterface
      */
     protected function prepareDefaultDataCollector($config, $ids = null)
     {
-        $dataCollector = new DataCollector($config->master);
+        $dataCollector = new \DataCollector($config->master);
 
         // Limit the fields
         if ('fields' === $config->export) {
