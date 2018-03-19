@@ -94,11 +94,16 @@ class LeadsNotification
      */
     public static function generateForm(array $notifications, array $ids)
     {
+        if (version_compare(VERSION, '4.4', '>=')) {
+            $GLOBALS['TL_CSS'][] = 'system/modules/leads/assets/notification-center.css';
+        }
+
         $return = '
 <div id="tl_buttons">
 <a href="'.\System::getReferer(true).'" class="header_back" title="'.specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']).'" accesskey="b">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
 </div>
 
+<div class="leads-notification-center">
 <h2 class="sub_headline">'.$GLOBALS['TL_LANG']['tl_lead']['notification'][0].'</h2>
 '.\Message::generate().'
 <form action="'.ampersand(\Environment::get('request'), true).'" id="tl_leads_notification" class="tl_form" method="post">
@@ -122,6 +127,7 @@ class LeadsNotification
   <p class="tl_help tl_tip">'.$GLOBALS['TL_LANG']['tl_lead']['notification_list'][1].'</p>
 </div>
 
+</div>
 </div>
 
 <div class="tl_formbody_submit">
