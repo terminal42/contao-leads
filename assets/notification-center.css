@@ -1,0 +1,12 @@
+.leads-notification-center {
+    border-top: 1px solid #e6e6e8;
+}
+
+.leads-notification-center h2.sub_headline {
+    margin: 18px 15px 3px;
+}
+
+.leads-notification-center .tl_tbox {
+    margin-top: -12px;
+    padding: 6px 15px 14px;
+}
