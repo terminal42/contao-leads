@@ -71,3 +71,12 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = array
     'eval'                  => array('mandatory'=>true, 'decodeEntities'=>true, 'style'=>'height:60px', 'allowHtml'=>true, 'tl_class'=>'clr'),
     'sql'                   => 'text NULL'
 );
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['leadPeriod'] = array
+(
+    'label'                 => &$GLOBALS['TL_LANG']['tl_form']['leadPeriod'],
+    'exclude'               => true,
+    'inputType'             => 'text',
+    'eval'                  => array('mandatory'=>false, 'rgxp'=>'natural', 'nospace'=>true, 'tl_class'=>'w50'),
+    'sql'                   => "int(10) unsigned NOT NULL default '0'"
+);

@@ -36,3 +36,7 @@ if ('BE' === TL_MODE) {
 $GLOBALS['TL_MODELS']['tl_lead'] = \Terminal42\LeadsBundle\Model\Lead::class;
 $GLOBALS['TL_MODELS']['tl_lead_data'] = \Terminal42\LeadsBundle\Model\LeadData::class;
 $GLOBALS['TL_MODELS']['tl_lead_export'] = \Terminal42\LeadsBundle\Model\LeadExport::class;
+
+// Cron jobs
+$GLOBALS['TL_CRON']['daily']['purgeLeads'] = array('Terminal42\LeadsBundle\EventListener\CronjobListener', 'onDaily');
+

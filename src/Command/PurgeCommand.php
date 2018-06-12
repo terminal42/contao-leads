@@ -1,0 +1,145 @@
+<?php
+
+namespace Terminal42\LeadsBundle\Command;
+
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Monolog\ContaoContext;
+use Contao\System;
+use Doctrine\DBAL\Connection;
+use Psr\Log\LogLevel;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Filesystem\Filesystem;
+use Terminal42\LeadsBundle\Leads;
+
+class PurgeCommand extends Command
+{
+    /**
+     * @var ContaoFrameworkInterface
+     */
+    private $framework;
+
+    /**
+     * @var Connection
+     */
+    private $db;
+
+    /**
+     * @var Filesystem
+     */
+    private $fs;
+
+    /**
+     * Constructor.
+     *
+     * @param ContaoFrameworkInterface $framework
+     * @param Connection $db
+     * @param Filesystem $fs
+     */
+    public function __construct(ContaoFrameworkInterface $framework, Connection $db, Filesystem $fs = null)
+    {
+        if (null === $fs) {
+            $fs = new Filesystem();
+        }
+
+        $this->framework = $framework;
+        $this->db = $db;
+        $this->fs = $fs;
+
+        parent::__construct();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('leads:purge')
+            ->setDescription('Purge the leads outsite the configured storage period.');
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->framework->initialize();
+
+        $purged = $this->executeBatchPurge();
+
+        if ($purged) {
+            $logMessage = 'The leads have been purged successfully.';
+        } else {
+            $logMessage = 'No leads to purge.';
+        }
+
+        $logLevel = LogLevel::INFO;
+        $logger = System::getContainer()->get('monolog.logger.contao');
+        $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        $output->writeln('<info>'.$logMessage.'</info>');
+    }
+
+    /**
+     * @return bool
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function executeBatchPurge()
+    {
+        $purged = false;
+        $forms = $this->db->fetchAll("SELECT id, title, leadPeriod FROM tl_form WHERE leadPeriod > 0");
+
+        foreach ($forms as $form) {
+
+            if (!empty($leads = $this->getAllLeads($form))) {
+                $ids = implode(',', $leads);
+
+                $deletedData = $this->db->executeUpdate(
+                    "DELETE FROM tl_lead_data WHERE pid IN(".$ids.") AND tstamp<?",
+                    [(time() - (int)$form['leadPeriod'])]
+                );
+
+                $deletedLeads = $this->db->executeUpdate(
+                    "DELETE FROM tl_lead WHERE id IN(".$ids.") AND created<?",
+                    [(time() - (int)$form['leadPeriod'])]
+                );
+
+                $logLevel = LogLevel::INFO;
+                $logMessage = 'Purged leads for master form "'.$form['title'].'": '.(int)$deletedLeads.' leads | '.(int)$deletedData.' data';
+                $logger = System::getContainer()->get('monolog.logger.contao');
+                $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+
+                $purged = true;
+            }
+        }
+
+        return $purged;
+    }
+
+    /**
+     * @return array
+     */
+    private function getAllLeads($form)
+    {
+        $leads = [];
+
+        $rows = $this->db->fetchAll(
+            "SELECT id FROM tl_lead WHERE master_id=? AND created<?",
+            [$form['id'], (time() - (int)$form['leadPeriod'])]
+        );
+
+        foreach ($rows as $row) {
+            $leads[] = $row['id'];
+        }
+
+        return $leads;
+    }
+}

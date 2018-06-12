@@ -50,3 +50,11 @@ services:
 
     Terminal42\LeadsBundle\Util\NotificationCenter:
         arguments: ['%kernel.bundles%']
+
+    terminal42_leads.command.purge:
+        class: Terminal42\LeadsBundle\Command\PurgeCommand
+        arguments:
+            - "@contao.framework"
+            - "@database_connection"
+        tags:
+            - { name: console.command }

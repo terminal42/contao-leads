@@ -16,6 +16,7 @@ $GLOBALS['TL_LANG']['tl_form']['leadEnabled']   = array('Store leads', 'Store su
 $GLOBALS['TL_LANG']['tl_form']['leadMaster']    = array('Master configuration', 'Select if this form is a master or slave configuration.');
 $GLOBALS['TL_LANG']['tl_form']['leadMenuLabel'] = array('Navigation label', 'Enter a custom label for the backend navigation. If you leave this field blank, the form name will be used.');
 $GLOBALS['TL_LANG']['tl_form']['leadLabel']     = array('Record label', 'Enter the names of the fields to be displayed in the back end list, surrounded by double hashes (##fieldname##). You can also use plain text. Use ##created## to output the date and time of creation.');
+$GLOBALS['TL_LANG']['tl_form']['leadPeriod']    = array('Storage time for leads', 'Here you can enter the storage time for lead records in seconds (14 days = 1209600 seconds). 0 deactivates the automatic deletion.');
 
 /**
  * Other
