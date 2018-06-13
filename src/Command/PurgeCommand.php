@@ -118,6 +118,17 @@ class PurgeCommand extends Command
                 $logger = System::getContainer()->get('monolog.logger.contao');
                 $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
 
+                // Add custom logic
+                if (isset($GLOBALS['TL_HOOKS']['postLeadsPurge']) && is_array($GLOBALS['TL_HOOKS']['postLeadsPurge'])) {
+                    foreach ($GLOBALS['TL_HOOKS']['postLeadsPurge'] as $callback) {
+                        if (is_array($callback)) {
+                            System::importStatic($callback[0])->{$callback[1]}($masterForm, $leads, $leadsData);
+                        } elseif (is_callable($callback)) {
+                            $callback($masterForm, $leads, $leadsData);
+                        }
+                    }
+                }
+
                 $purged = true;
             }
         }
