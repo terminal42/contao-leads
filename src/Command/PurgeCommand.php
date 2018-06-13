@@ -97,23 +97,24 @@ class PurgeCommand extends Command
         $purged = false;
         $forms = $this->db->fetchAll("SELECT id, title, leadPeriod FROM tl_form WHERE leadPeriod > 0");
 
-        foreach ($forms as $form) {
+        foreach ($forms as $masterForm) {
 
-            if (!empty($leads = $this->getAllLeads($form))) {
-                $ids = implode(',', $leads);
+            if (!empty($leads = $this->getAllLeads($masterForm))) {
+                $leadsIds = implode(',', array_keys($leads));
 
-                $deletedData = $this->db->executeUpdate(
-                    "DELETE FROM tl_lead_data WHERE pid IN(".$ids.") AND tstamp<?",
-                    [(time() - (int)$form['leadPeriod'])]
-                );
+                if (!empty($leadsData = $this->getAllLeadsData($masterForm, $leadsIds))) {
+                    $leadsDataIds = implode(',', array_keys($leadsData));
+                    $deletedData = $this->db->executeUpdate(
+                        "DELETE FROM tl_lead_data WHERE id IN(".$leadsDataIds.")"
+                    );
+                }
 
                 $deletedLeads = $this->db->executeUpdate(
-                    "DELETE FROM tl_lead WHERE id IN(".$ids.") AND created<?",
-                    [(time() - (int)$form['leadPeriod'])]
+                    "DELETE FROM tl_lead WHERE id IN(".$leadsIds.")"
                 );
 
                 $logLevel = LogLevel::INFO;
-                $logMessage = 'Purged leads for master form "'.$form['title'].'": '.(int)$deletedLeads.' leads | '.(int)$deletedData.' data';
+                $logMessage = 'Purged leads for master form "'.$masterForm['title'].'": '.(int)$deletedLeads.' leads | '.(int)$deletedData.' data';
                 $logger = System::getContainer()->get('monolog.logger.contao');
                 $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
 
@@ -125,21 +126,45 @@ class PurgeCommand extends Command
     }
 
     /**
+     * @param $masterForm
      * @return array
      */
-    private function getAllLeads($form)
+    private function getAllLeads($masterForm)
     {
         $leads = [];
 
         $rows = $this->db->fetchAll(
-            "SELECT id FROM tl_lead WHERE master_id=? AND created<?",
-            [$form['id'], (time() - (int)$form['leadPeriod'])]
+            "SELECT * FROM tl_lead WHERE master_id=? AND created<?",
+            [$masterForm['id'], (time() - (int)$masterForm['leadPeriod'])]
         );
 
         foreach ($rows as $row) {
-            $leads[] = $row['id'];
+            $leads[$row['id']] = $row;
         }
 
         return $leads;
+    }
+
+    /**
+     * @param $masterForm
+     * @param $leadsIds
+     * @return array
+     */
+    private function getAllLeadsData($masterForm, $leadsIds)
+    {
+        $leadsData = [];
+
+        if (!empty($leadsIds)) {
+            $rows = $this->db->fetchAll(
+                "SELECT * FROM tl_lead_data WHERE pid IN(".$leadsIds.") AND tstamp<?",
+                [(time() - (int)$masterForm['leadPeriod'])]
+            );
+
+            foreach ($rows as $row) {
+                $leadsData[$row['id']] = $row;
+            }
+        }
+
+        return $leadsData;
     }
 }
