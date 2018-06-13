@@ -80,3 +80,12 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadPeriod'] = array
     'eval'                  => array('mandatory'=>false, 'rgxp'=>'natural', 'nospace'=>true, 'tl_class'=>'w50'),
     'sql'                   => "int(10) unsigned NOT NULL default '0'"
 );
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['leadPurgeUploads'] = array
+(
+    'label'                 => &$GLOBALS['TL_LANG']['tl_form']['leadPurgeUploads'],
+    'exclude'               => true,
+    'inputType'             => 'checkbox',
+    'eval'                  => array('tl_class'=>'w50 m12'),
+    'sql'                   => "char(1) NOT NULL default ''"
+);
