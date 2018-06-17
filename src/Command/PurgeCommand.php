@@ -106,7 +106,9 @@ class PurgeCommand extends Command
     private function executeBatchPurge()
     {
         $purged = false;
-        $forms = $this->db->fetchAll("SELECT id, title, leadPeriod FROM tl_form WHERE leadPeriod != ''");
+        $forms = $this->db->fetchAll(
+            "SELECT id, title, leadPeriod, leadPurgeUploads FROM tl_form WHERE leadPeriod != ''"
+        );
 
         foreach ($forms as $masterForm) {
 
@@ -192,6 +194,7 @@ class PurgeCommand extends Command
      */
     private function purgeLeads(array $leads, array $masterForm)
     {
+        $deleted = 0;
         $ids = implode(',', array_keys($leads));
 
         if (!empty($ids)) {
@@ -242,6 +245,7 @@ class PurgeCommand extends Command
      */
     private function purgeLeadsData(array $leadsData, array $masterForm)
     {
+        $deleted = 0;
         $ids = implode(',', array_keys($leadsData));
 
         if (!empty($ids)) {
@@ -285,21 +289,26 @@ class PurgeCommand extends Command
             return null;
         }
 
+        $logLevel = LogLevel::INFO;
+        $logMessage = 'Purge leads upload "'.$value.'": ';
+
         $filesModel = FilesModel::findByUUid($value);
 
         if (null !== $filesModel) {
             try {
-                $file = new File($filesModel->path);
-                if ($file->exists()) {
-                    if ($file->delete()) {
-                        $logLevel = LogLevel::INFO;
-                        $logMessage = 'Upload "'.$filesModel->path.'"" deleted';
-                    }
+                if ($this->fs->exists(TL_ROOT.'/'.$filesModel->path)) {
+                    $this->fs->remove(TL_ROOT.'/'.$filesModel->path);
+                    $logMessage .= 'File deleted';
+                } else {
+                    $logMessage .= 'File not found for deletion';
                 }
+                $filesModel->delete();
             } catch (Exception $exception) {
                 $logLevel = LogLevel::ERROR;
-                $logMessage = 'Upload "'.$filesModel->path.'"" could not be deleted';
+                $logMessage .= $exception->getMessage();
             }
+        } else {
+            $logMessage .= 'Model not found for deletion';
         }
 
         $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
