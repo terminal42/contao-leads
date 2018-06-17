@@ -112,23 +112,16 @@ class PurgeCommand extends Command
 
             $leadPeriodTime = $this->convertTimePeriodToTime($masterForm['leadPeriod']);
             if (!empty($leads = $this->getAllLeads($masterForm['id'], $leadPeriodTime))) {
-                $leadsIds = implode(',', array_keys($leads));
-
                 $deletedUploads = null;
-                if (!empty($leadsData = $this->getAllLeadsData($leadsIds))) {
-                    $leadsDataIds = implode(',', array_keys($leadsData));
-                    $deletedData = $this->purgeLeadsData($leadsDataIds);
+                if (!empty($leadsData = $this->getAllLeadsData($leads))) {
+                    $this->purgeLeadsData($leadsData, $masterForm);
 
                     if ($masterForm['leadPurgeUploads']) {
                         $deletedUploads = $this->purgeUploads($leadsData);
                     }
                 }
 
-                $deletedLeads = $this->purgeLeads($leadsIds);
-
-                $logLevel = LogLevel::INFO;
-                $logMessage = 'Purged leads for master form "'.$masterForm['title'].'": '.(int)$deletedLeads.' leads | '.(int)$deletedData.' data';
-                $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+                $this->purgeLeads($leads, $masterForm);
 
                 // Add custom logic
                 if (isset($GLOBALS['TL_HOOKS']['postLeadsPurge']) && is_array($GLOBALS['TL_HOOKS']['postLeadsPurge'])) {
@@ -192,31 +185,44 @@ class PurgeCommand extends Command
     }
 
     /**
-     * @param $ids
+     * @param array $leads
+     * @param array $masterForm
      * @return int
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function purgeLeads($ids)
+    private function purgeLeads(array $leads, array $masterForm)
     {
-        return $this->db->executeUpdate(
-            "DELETE FROM tl_lead WHERE id IN(".$ids.")"
-        );
+        $ids = implode(',', array_keys($leads));
+
+        if (!empty($ids)) {
+            $deleted = $this->db->executeUpdate(
+                "DELETE FROM tl_lead WHERE id IN(".$ids.")"
+            );
+
+            $logLevel = LogLevel::INFO;
+            $logMessage = 'Purged '.(int)$deleted.' leads for master form "'.$masterForm['title'].'"';
+            $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        }
+
+        return $deleted;
     }
 
     /**
-     * @param $leadsIds
+     * @param array $leads
      * @return array
      */
-    private function getAllLeadsData($leadsIds)
+    private function getAllLeadsData(array $leads)
     {
         $leadsData = [];
 
-        if (!empty($leadsIds)) {
+        $ids = implode(',', array_keys($leads));
+
+        if (!empty($ids)) {
 
             $rows = $this->db->fetchAll(
                 "SELECT d.*, f.type AS field_type FROM tl_lead_data d
                       LEFT JOIN tl_form_field f ON d.field_id = f.id
-                      WHERE d.pid IN(".$leadsIds.")"
+                      WHERE d.pid IN(".$ids.")"
             );
 
             foreach ($rows as $row) {
@@ -229,22 +235,33 @@ class PurgeCommand extends Command
     }
 
     /**
-     * @param $ids
+     * @param array $leadsData
+     * @param array $masterForm
      * @return int
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function purgeLeadsData($ids)
+    private function purgeLeadsData(array $leadsData, array $masterForm)
     {
-        return $this->db->executeUpdate(
-            "DELETE FROM tl_lead_data WHERE id IN(".$ids.")"
-        );
+        $ids = implode(',', array_keys($leadsData));
+
+        if (!empty($ids)) {
+            $deleted = $this->db->executeUpdate(
+                "DELETE FROM tl_lead_data WHERE id IN(".$ids.")"
+            );
+
+            $logLevel = LogLevel::INFO;
+            $logMessage = 'Purged '.(int)$deleted.' leads data for master form "'.$masterForm['title'].'"';
+            $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        }
+
+        return $deleted;
     }
 
     /**
-     * @param $leadsData
+     * @param array $leadsData
      * @return array
      */
-    private function purgeUploads($leadsData)
+    private function purgeUploads(array $leadsData)
     {
         $files = [];
         if (!empty($leadsData)) {
@@ -259,10 +276,10 @@ class PurgeCommand extends Command
     }
 
     /**
-     * @param $value
+     * @param string $value
      * @return FilesModel|null
      */
-    private function purgeUpload($value)
+    private function purgeUpload(string $value)
     {
         if (!Validator::isUuid($value)) {
             return null;
