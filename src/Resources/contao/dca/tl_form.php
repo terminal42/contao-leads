@@ -76,9 +76,11 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadPeriod'] = array
 (
     'label'                 => &$GLOBALS['TL_LANG']['tl_form']['leadPeriod'],
     'exclude'               => true,
-    'inputType'             => 'text',
+    'inputType'             => 'timePeriod',
+    'options'               => array('days', 'weeks', 'months', 'years'),
+    'reference'             => &$GLOBALS['TL_LANG']['tl_form']['leadPeriod']['options'],
     'eval'                  => array('mandatory'=>false, 'rgxp'=>'natural', 'nospace'=>true, 'tl_class'=>'w50'),
-    'sql'                   => "int(10) unsigned NOT NULL default '0'"
+    'sql'                   => "varchar(64) NOT NULL default ''"
 );
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadPurgeUploads'] = array

@@ -6,6 +6,7 @@ use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\File;
 use Contao\FilesModel;
+use Contao\StringUtil;
 use Contao\System;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
@@ -99,15 +100,16 @@ class PurgeCommand extends Command
     private function executeBatchPurge()
     {
         $purged = false;
-        $forms = $this->db->fetchAll("SELECT id, title, leadPeriod FROM tl_form WHERE leadPeriod > 0");
+        $forms = $this->db->fetchAll("SELECT id, title, leadPeriod FROM tl_form WHERE leadPeriod != ''");
 
         foreach ($forms as $masterForm) {
 
-            if (!empty($leads = $this->getAllLeads($masterForm))) {
+            $leadPeriodTime = $this->convertTimePeriodToTime($masterForm['leadPeriod']);
+            if (!empty($leads = $this->getAllLeads($masterForm['id'], $leadPeriodTime))) {
                 $leadsIds = implode(',', array_keys($leads));
 
                 $deletedUploads = null;
-                if (!empty($leadsData = $this->getAllLeadsData($masterForm, $leadsIds))) {
+                if (!empty($leadsData = $this->getAllLeadsData($leadsIds))) {
                     $leadsDataIds = implode(',', array_keys($leadsData));
                     $deletedData = $this->db->executeUpdate(
                         "DELETE FROM tl_lead_data WHERE id IN(".$leadsDataIds.")"
@@ -151,16 +153,34 @@ class PurgeCommand extends Command
     }
 
     /**
-     * @param $masterForm
+     * @param $timePeriod
+     * @return int
+     */
+    private function convertTimePeriodToTime($timePeriod)
+    {
+        $range = StringUtil::deserialize($timePeriod);
+
+        if (is_array($range) && isset($range['unit']) && isset($range['value'])) {
+            if (false !== ($timestamp = strtotime('- '.$range['value'].' '.$range['unit']))) {
+                return $timestamp;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param $masterFormId
+     * @param $timestamp
      * @return array
      */
-    private function getAllLeads($masterForm)
+    private function getAllLeads($masterFormId, $timestamp)
     {
         $leads = [];
 
         $rows = $this->db->fetchAll(
             "SELECT * FROM tl_lead WHERE master_id=? AND created<?",
-            [$masterForm['id'], (time() - (int)$masterForm['leadPeriod'])]
+            [$masterFormId, $timestamp]
         );
 
         foreach ($rows as $row) {
@@ -171,26 +191,26 @@ class PurgeCommand extends Command
     }
 
     /**
-     * @param $masterForm
      * @param $leadsIds
      * @return array
      */
-    private function getAllLeadsData($masterForm, $leadsIds)
+    private function getAllLeadsData($leadsIds)
     {
         $leadsData = [];
 
         if (!empty($leadsIds)) {
+
             $rows = $this->db->fetchAll(
                 "SELECT d.*, f.type AS field_type FROM tl_lead_data d
                       LEFT JOIN tl_form_field f ON d.field_id = f.id
-                      WHERE d.pid IN(".$leadsIds.") AND d.tstamp<?",
-                [(time() - (int)$masterForm['leadPeriod'])]
+                      WHERE d.pid IN(".$leadsIds.")"
             );
 
             foreach ($rows as $row) {
                 $leadsData[$row['id']] = $row;
             }
         }
+
 
         return $leadsData;
     }
