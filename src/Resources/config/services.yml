@@ -56,5 +56,8 @@ services:
         arguments:
             - "@contao.framework"
             - "@database_connection"
+            - "@logger"
+            - "@filesystem"
         tags:
             - { name: console.command }
+            - { name: 'monolog.logger', channel: 'terminal42_leads' }

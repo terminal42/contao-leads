@@ -10,6 +10,7 @@ use Contao\StringUtil;
 use Contao\System;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -35,26 +36,28 @@ class PurgeCommand extends Command
     private $db;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var Filesystem
      */
     private $fs;
 
     /**
-     * Constructor.
-     *
+     * PurgeCommand constructor.
      * @param ContaoFrameworkInterface $framework
      * @param Connection $db
-     * @param Filesystem $fs
+     * @param LoggerInterface $logger
+     * @param Filesystem|null $fs
      */
-    public function __construct(ContaoFrameworkInterface $framework, Connection $db, Filesystem $fs = null)
+    public function __construct(ContaoFrameworkInterface $framework, Connection $db, LoggerInterface $logger, Filesystem $fs = null)
     {
-        if (null === $fs) {
-            $fs = new Filesystem();
-        }
-
         $this->framework = $framework;
         $this->db = $db;
-        $this->fs = $fs;
+        $this->logger = $logger;
+        $this->fs = $fs ? $fs : new Filesystem();
 
         parent::__construct();
     }
@@ -88,8 +91,7 @@ class PurgeCommand extends Command
         }
 
         $logLevel = LogLevel::INFO;
-        $logger = System::getContainer()->get('monolog.logger.contao');
-        $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
         $output->writeln('<info>'.$logMessage.'</info>');
     }
 
@@ -126,8 +128,7 @@ class PurgeCommand extends Command
 
                 $logLevel = LogLevel::INFO;
                 $logMessage = 'Purged leads for master form "'.$masterForm['title'].'": '.(int)$deletedLeads.' leads | '.(int)$deletedData.' data';
-                $logger = System::getContainer()->get('monolog.logger.contao');
-                $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+                $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
 
                 // Add custom logic
                 if (isset($GLOBALS['TL_HOOKS']['postLeadsPurge']) && is_array($GLOBALS['TL_HOOKS']['postLeadsPurge'])) {
@@ -261,8 +262,7 @@ class PurgeCommand extends Command
             }
         }
 
-        $logger = System::getContainer()->get('monolog.logger.contao');
-        $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
 
         return $filesModel;
     }
