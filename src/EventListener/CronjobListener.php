@@ -13,7 +13,22 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class CronjobListener
 {
-    function onDaily(LoggerInterface $logger)
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * CronjobListener constructor.
+     * @param LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    function onDaily()
     {
 
         try {
@@ -32,7 +47,7 @@ class CronjobListener
         } catch (\Exception $exception) {
             $logLevel = LogLevel::ERROR;
             $logMessage = $exception->getMessage();
-            $logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+            $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
         }
 
     }
