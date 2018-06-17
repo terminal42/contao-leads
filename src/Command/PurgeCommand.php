@@ -52,8 +52,12 @@ class PurgeCommand extends Command
      * @param LoggerInterface $logger
      * @param Filesystem|null $fs
      */
-    public function __construct(ContaoFrameworkInterface $framework, Connection $db, LoggerInterface $logger, Filesystem $fs = null)
-    {
+    public function __construct(
+        ContaoFrameworkInterface $framework,
+        Connection $db,
+        LoggerInterface $logger,
+        Filesystem $fs = null
+    ) {
         $this->framework = $framework;
         $this->db = $db;
         $this->logger = $logger;
@@ -113,18 +117,14 @@ class PurgeCommand extends Command
                 $deletedUploads = null;
                 if (!empty($leadsData = $this->getAllLeadsData($leadsIds))) {
                     $leadsDataIds = implode(',', array_keys($leadsData));
-                    $deletedData = $this->db->executeUpdate(
-                        "DELETE FROM tl_lead_data WHERE id IN(".$leadsDataIds.")"
-                    );
+                    $deletedData = $this->purgeLeadsData($leadsDataIds);
 
                     if ($masterForm['leadPurgeUploads']) {
                         $deletedUploads = $this->purgeUploads($leadsData);
                     }
                 }
 
-                $deletedLeads = $this->db->executeUpdate(
-                    "DELETE FROM tl_lead WHERE id IN(".$leadsIds.")"
-                );
+                $deletedLeads = $this->purgeLeads($leadsIds);
 
                 $logLevel = LogLevel::INFO;
                 $logMessage = 'Purged leads for master form "'.$masterForm['title'].'": '.(int)$deletedLeads.' leads | '.(int)$deletedData.' data';
@@ -192,6 +192,18 @@ class PurgeCommand extends Command
     }
 
     /**
+     * @param $ids
+     * @return int
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function purgeLeads($ids)
+    {
+        return $this->db->executeUpdate(
+            "DELETE FROM tl_lead WHERE id IN(".$ids.")"
+        );
+    }
+
+    /**
      * @param $leadsIds
      * @return array
      */
@@ -216,6 +228,17 @@ class PurgeCommand extends Command
         return $leadsData;
     }
 
+    /**
+     * @param $ids
+     * @return int
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    private function purgeLeadsData($ids)
+    {
+        return $this->db->executeUpdate(
+            "DELETE FROM tl_lead_data WHERE id IN(".$ids.")"
+        );
+    }
 
     /**
      * @param $leadsData
