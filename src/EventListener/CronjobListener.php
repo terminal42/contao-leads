@@ -3,16 +3,20 @@
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Contao\CoreBundle\Monolog\ContaoContext;
-use Contao\System;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class CronjobListener
 {
+
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
 
     /**
      * @var LoggerInterface
@@ -21,10 +25,12 @@ class CronjobListener
 
     /**
      * CronjobListener constructor.
+     * @param KernelInterface $kernel
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(KernelInterface $kernel, LoggerInterface $logger)
     {
+        $this->kernel = $kernel;
         $this->logger = $logger;
     }
 
@@ -32,10 +38,7 @@ class CronjobListener
     {
 
         try {
-            /** @var Kernel $kernel */
-            $kernel = System::getContainer()->get('kernel');
-
-            $application = new Application($kernel);
+            $application = new Application($this->kernel);
             $input = new ArrayInput(
                 [
                     'command' => 'leads:purge',

@@ -38,6 +38,7 @@ services:
     terminal42_leads.listener.cronjob:
         class: Terminal42\LeadsBundle\EventListener\CronjobListener
         arguments:
+            - "@kernel"
             - "@logger"
         tags:
             - { name: 'monolog.logger', channel: 'terminal42_leads' }
