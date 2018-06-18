@@ -134,9 +134,9 @@ class PurgeCommand extends Command
                 $purgeEvent = new LeadsPurgeEvent($masterForm, $leads, $leadsData, $uploads);
                 $this->eventDispatcher->dispatch(LeadsPurgeEvent::EVENT_NAME, $purgeEvent);
 
-                $this->purgeLeadsData($leadsData, $masterForm);
-                $this->purgeUploads($uploads, $masterForm);
-                $this->purgeLeads($leads, $masterForm);
+                $this->purgeLeadsData($purgeEvent->getLeadsData(), $purgeEvent->getMasterForm());
+                $this->purgeUploads($purgeEvent->getUploads(), $purgeEvent->getMasterForm());
+                $this->purgeLeads($purgeEvent->getLeads(), $purgeEvent->getMasterForm());
 
                 $purged = true;
             }
@@ -329,10 +329,10 @@ class PurgeCommand extends Command
     {
         $count = 0;
         $logLevel = LogLevel::ERROR;
-        $logMessage = 'Purge leads upload ';
+        $logMessage = 'Purge leads upload data id "'.$dataId.'": ';
 
         if (null !== $filesModel) {
-            $logMessage .= '"'.$filesModel->uuid.'": ';
+            $logMessage .= ' Model "'.$filesModel->id.'" ';
             try {
                 if ($this->fs->exists($this->rootDir.'/'.$filesModel->path)) {
                     $this->fs->remove($this->rootDir.'/'.$filesModel->path);
@@ -347,7 +347,6 @@ class PurgeCommand extends Command
                 $logMessage .= $exception->getMessage();
             }
         } else {
-            $logMessage .= '"'.$dataId.'": ';
             $logMessage .= 'Model not found for deletion';
         }
 

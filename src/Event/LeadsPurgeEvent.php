@@ -44,7 +44,7 @@ class LeadsPurgeEvent extends Event
      */
     public function __construct(array $masterForm, array $leads, array $leadsData, array $uploads)
     {
-        $this->form = $masterForm;
+        $this->masterForm = $masterForm;
         $this->leads = $leads;
         $this->leadsData = $leadsData;
         $this->uploads = $uploads;
