@@ -6,7 +6,6 @@ use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\FilesModel;
 use Contao\StringUtil;
-use Contao\System;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
 use Exception;
@@ -15,7 +14,9 @@ use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Terminal42\LeadsBundle\Event\LeadsPurgeEvent;
 
 class PurgeCommand extends Command
 {
@@ -45,11 +46,18 @@ class PurgeCommand extends Command
     private $fs;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+
+    /**
      * PurgeCommand constructor.
      * @param ContaoFrameworkInterface $framework
      * @param Connection $db
      * @param string $rootDir
      * @param LoggerInterface $logger
+     * @param EventDispatcherInterface $eventDispatcher
      * @param Filesystem|null $fs
      */
     public function __construct(
@@ -57,12 +65,14 @@ class PurgeCommand extends Command
         Connection $db,
         string $rootDir,
         LoggerInterface $logger,
+        EventDispatcherInterface $eventDispatcher,
         Filesystem $fs = null
     ) {
         $this->framework = $framework;
         $this->db = $db;
         $this->rootDir = $rootDir;
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
         $this->fs = $fs ? $fs : new Filesystem();
 
         parent::__construct();
@@ -116,32 +126,17 @@ class PurgeCommand extends Command
 
             $leadPeriodTime = $this->convertTimePeriodToTime($masterForm['leadPeriod']);
             if (!empty($leads = $this->getAllLeads($masterForm['id'], $leadPeriodTime))) {
-                $deletedUploads = null;
-                if (!empty($leadsData = $this->getAllLeadsData($leads))) {
-                    $this->purgeLeadsData($leadsData, $masterForm);
 
-                    if ($masterForm['leadPurgeUploads']) {
-                        $deletedUploads = $this->purgeUploads($leadsData);
-                    }
-                }
+                $leadsData = $this->getAllLeadsData($leads);
+                $uploads = $this->getUploads($leadsData, $masterForm['leadPurgeUploads']);
 
+                // Add custom logic or modify data before purge
+                $purgeEvent = new LeadsPurgeEvent($masterForm, $leads, $leadsData, $uploads);
+                $this->eventDispatcher->dispatch(LeadsPurgeEvent::EVENT_NAME, $purgeEvent);
+
+                $this->purgeLeadsData($leadsData, $masterForm);
+                $this->purgeUploads($uploads, $masterForm);
                 $this->purgeLeads($leads, $masterForm);
-
-                // Add custom logic
-                if (isset($GLOBALS['TL_HOOKS']['postLeadsPurge']) && is_array($GLOBALS['TL_HOOKS']['postLeadsPurge'])) {
-                    foreach ($GLOBALS['TL_HOOKS']['postLeadsPurge'] as $callback) {
-                        if (is_array($callback)) {
-                            System::importStatic($callback[0])->{$callback[1]}(
-                                $masterForm,
-                                $leads,
-                                $leadsData,
-                                $deletedUploads
-                            );
-                        } elseif (is_callable($callback)) {
-                            $callback($masterForm, $leads, $leadsData, $deletedUploads);
-                        }
-                    }
-                }
 
                 $purged = true;
             }
@@ -220,9 +215,9 @@ class PurgeCommand extends Command
     {
         $leadsData = [];
 
-        $ids = implode(',', array_keys($leads));
+        if (!empty($leads)) {
 
-        if (!empty($ids)) {
+            $ids = implode(',', array_keys($leads));
 
             $rows = $this->db->fetchAll(
                 "SELECT d.*, f.type AS field_type FROM tl_lead_data d
@@ -248,9 +243,11 @@ class PurgeCommand extends Command
     private function purgeLeadsData(array $leadsData, array $masterForm)
     {
         $deleted = 0;
-        $ids = implode(',', array_keys($leadsData));
 
-        if (!empty($ids)) {
+        if (!empty($leadsData)) {
+
+            $ids = implode(',', array_keys($leadsData));
+
             $deleted = $this->db->executeUpdate(
                 "DELETE FROM tl_lead_data WHERE id IN(".$ids.")"
             );
@@ -265,56 +262,99 @@ class PurgeCommand extends Command
 
     /**
      * @param array $leadsData
+     * @param string $leadPurgeUploads
      * @return array
      */
-    private function purgeUploads(array $leadsData)
+    private function getUploads(array $leadsData, string $leadPurgeUploads)
     {
-        $files = [];
-        if (!empty($leadsData)) {
+        $uploads = [];
+        if (!empty($leadsData) && !empty($leadPurgeUploads)) {
             foreach ($leadsData as $data) {
                 if ('upload' === $data['field_type']) {
-                    $files[$data['id']] = $this->purgeUpload($data['value']);
+                    $uploads[$data['id']] = $this->getUploadFileModel($data['value']);
                 }
             }
         }
 
-        return $files;
+        return $uploads;
     }
 
     /**
      * @param string $value
      * @return FilesModel|null
      */
-    private function purgeUpload(string $value)
+    private function getUploadFileModel(string $value)
     {
         if (!Validator::isUuid($value)) {
             return null;
         }
 
-        $logLevel = LogLevel::INFO;
-        $logMessage = 'Purge leads upload "'.$value.'": ';
-
         $filesModel = FilesModel::findByUUid($value);
 
+        return $filesModel;
+    }
+
+
+    /**
+     * @param array $uploads
+     * @param array $masterForm
+     * @return int
+     */
+    private function purgeUploads(array $uploads, array $masterForm)
+    {
+        if (empty($uploads)) {
+            return 0;
+        }
+
+        $count = 0;
+        $deleted = 0;
+        foreach ($uploads as $dataId => $filesModel) {
+            $deleted += $this->purgeUpload($dataId, $filesModel);
+            $count++;
+        }
+
+        $logLevel = LogLevel::INFO;
+        $logMessage = 'Purged '.$deleted.' of '.$count.' leads uploads for master form "'.$masterForm['title'].'"';
+        $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+
+        return $deleted;
+    }
+
+    /**
+     * @param int $dataId
+     * @param FilesModel|null $filesModel
+     * @return int
+     */
+    private function purgeUpload(int $dataId, ?FilesModel $filesModel)
+    {
+        $count = 0;
+        $logLevel = LogLevel::ERROR;
+        $logMessage = 'Purge leads upload ';
+
         if (null !== $filesModel) {
+            $logMessage .= '"'.$filesModel->uuid.'": ';
             try {
                 if ($this->fs->exists($this->rootDir.'/'.$filesModel->path)) {
                     $this->fs->remove($this->rootDir.'/'.$filesModel->path);
+                    $logLevel = LogLevel::INFO;
                     $logMessage .= 'File deleted';
+                    $count++;
                 } else {
                     $logMessage .= 'File not found for deletion';
                 }
                 $filesModel->delete();
             } catch (Exception $exception) {
-                $logLevel = LogLevel::ERROR;
                 $logMessage .= $exception->getMessage();
             }
         } else {
+            $logMessage .= '"'.$dataId.'": ';
             $logMessage .= 'Model not found for deletion';
         }
 
         $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
 
-        return $filesModel;
+        return $count;
     }
+
+
 }

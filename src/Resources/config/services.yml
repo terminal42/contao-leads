@@ -58,6 +58,7 @@ services:
             - "@database_connection"
             - "%kernel.project_dir%"
             - "@logger"
+            - "@event_dispatcher"
             - "@filesystem"
         tags:
             - { name: console.command }
