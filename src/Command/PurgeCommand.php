@@ -4,24 +4,18 @@ namespace Terminal42\LeadsBundle\Command;
 
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use Contao\CoreBundle\Monolog\ContaoContext;
-use Contao\File;
 use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\InvalidArgumentException;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Filesystem\Filesystem;
-use Terminal42\LeadsBundle\Leads;
-use \Exception;
 
 class PurgeCommand extends Command
 {
@@ -34,6 +28,11 @@ class PurgeCommand extends Command
      * @var Connection
      */
     private $db;
+
+    /**
+     * @var string
+     */
+    private $rootDir;
 
     /**
      * @var LoggerInterface
@@ -49,17 +48,20 @@ class PurgeCommand extends Command
      * PurgeCommand constructor.
      * @param ContaoFrameworkInterface $framework
      * @param Connection $db
+     * @param string $rootDir
      * @param LoggerInterface $logger
      * @param Filesystem|null $fs
      */
     public function __construct(
         ContaoFrameworkInterface $framework,
         Connection $db,
+        string $rootDir,
         LoggerInterface $logger,
         Filesystem $fs = null
     ) {
         $this->framework = $framework;
         $this->db = $db;
+        $this->rootDir = $rootDir;
         $this->logger = $logger;
         $this->fs = $fs ? $fs : new Filesystem();
 
@@ -296,8 +298,8 @@ class PurgeCommand extends Command
 
         if (null !== $filesModel) {
             try {
-                if ($this->fs->exists(TL_ROOT.'/'.$filesModel->path)) {
-                    $this->fs->remove(TL_ROOT.'/'.$filesModel->path);
+                if ($this->fs->exists($this->rootDir.'/'.$filesModel->path)) {
+                    $this->fs->remove($this->rootDir.'/'.$filesModel->path);
                     $logMessage .= 'File deleted';
                 } else {
                     $logMessage .= 'File not found for deletion';
