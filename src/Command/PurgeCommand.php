@@ -85,7 +85,7 @@ class PurgeCommand extends Command
     {
         $this
             ->setName('leads:purge')
-            ->setDescription('Purge the leads outsite the configured storage period.');
+            ->setDescription('Purge the leads that are older than the configured storage period.');
     }
 
     /**
