@@ -5,7 +5,7 @@ namespace Terminal42\LeadsBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * The terminal42.leads_purge event is triggered while 'leads:purge' before the purge is executed
+ * The terminal42.leads_purge event is triggered while 'leads:purge' after the purge is executed
  *
  * Class LeadsPurgeEvent
  * @package Terminal42\LeadsBundle\Event
@@ -21,33 +21,33 @@ class LeadsPurgeEvent extends Event
     private $masterForm;
 
     /**
-     * @var array
+     * @var int
      */
-    private $leads;
+    private $deletedLeads;
 
     /**
-     * @var array
+     * @var int
      */
-    private $leadsData;
+    private $deletedLeadsData;
 
     /**
-     * @var array
+     * @var int
      */
-    private $uploads;
+    private $deletedUploads;
 
     /**
      * LeadsPurgeEvent constructor.
      * @param array $masterForm
-     * @param array $leads
-     * @param array $leadsData
-     * @param array $uploads
+     * @param int $deletedLeads
+     * @param int $deletedLeadsData
+     * @param int $deletedUploads
      */
-    public function __construct(array $masterForm, array $leads, array $leadsData, array $uploads)
+    public function __construct(array $masterForm, int $deletedLeads, int $deletedLeadsData, int $deletedUploads)
     {
         $this->masterForm = $masterForm;
-        $this->leads = $leads;
-        $this->leadsData = $leadsData;
-        $this->uploads = $uploads;
+        $this->deletedLeads = $deletedLeads;
+        $this->deletedLeadsData = $deletedLeadsData;
+        $this->deletedUploads = $deletedUploads;
     }
 
     /**
@@ -59,71 +59,27 @@ class LeadsPurgeEvent extends Event
     }
 
     /**
-     * @param array $masterForm
-     * @return LeadsPurgeEvent
+     * @return int
      */
-    public function setMasterForm(array $masterForm): LeadsPurgeEvent
+    public function getDeletedLeads(): int
     {
-        $this->masterForm = $masterForm;
-
-        return $this;
+        return $this->deletedLeads;
     }
 
     /**
-     * @return array
+     * @return int
      */
-    public function getLeads(): array
+    public function getDeletedLeadsData(): int
     {
-        return $this->leads;
+        return $this->deletedLeadsData;
     }
 
     /**
-     * @param array $leads
-     * @return LeadsPurgeEvent
+     * @return int
      */
-    public function setLeads(array $leads): LeadsPurgeEvent
+    public function getDeletedUploads(): int
     {
-        $this->leads = $leads;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getLeadsData(): array
-    {
-        return $this->leadsData;
-    }
-
-    /**
-     * @param array $leadsData
-     * @return LeadsPurgeEvent
-     */
-    public function setLeadsData(array $leadsData): LeadsPurgeEvent
-    {
-        $this->leadsData = $leadsData;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getUploads(): array
-    {
-        return $this->uploads;
-    }
-
-    /**
-     * @param array $uploads
-     * @return LeadsPurgeEvent
-     */
-    public function setUploads(array $uploads): LeadsPurgeEvent
-    {
-        $this->uploads = $uploads;
-
-        return $this;
+        return $this->deletedUploads;
     }
 
 }

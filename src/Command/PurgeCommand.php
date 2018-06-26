@@ -130,13 +130,13 @@ class PurgeCommand extends Command
                 $leadsData = $this->getAllLeadsData($leads);
                 $uploads = $this->getUploads($leadsData, $masterForm['leadPurgeUploads']);
 
-                // Add custom logic or modify data before purge
-                $purgeEvent = new LeadsPurgeEvent($masterForm, $leads, $leadsData, $uploads);
-                $this->eventDispatcher->dispatch(LeadsPurgeEvent::EVENT_NAME, $purgeEvent);
+                $deletedLeadsData = $this->purgeLeadsData($leadsData, $masterForm);
+                $deletedUploads = $this->purgeUploads($uploads, $masterForm);
+                $deletedLeads = $this->purgeLeads($leads, $masterForm);
 
-                $this->purgeLeadsData($purgeEvent->getLeadsData(), $purgeEvent->getMasterForm());
-                $this->purgeUploads($purgeEvent->getUploads(), $purgeEvent->getMasterForm());
-                $this->purgeLeads($purgeEvent->getLeads(), $purgeEvent->getMasterForm());
+                // Add custom logging
+                $purgeEvent = new LeadsPurgeEvent($masterForm, $deletedLeads, $deletedLeadsData, $deletedUploads);
+                $this->eventDispatcher->dispatch(LeadsPurgeEvent::EVENT_NAME, $purgeEvent);
 
                 $purged = true;
             }
