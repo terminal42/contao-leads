@@ -51,8 +51,8 @@ services:
     Terminal42\LeadsBundle\Util\NotificationCenter:
         arguments: ['%kernel.bundles%']
 
-    terminal42_leads.command.purge:
-        class: Terminal42\LeadsBundle\Command\PurgeCommand
+    terminal42_leads.purger:
+        class: Terminal42\LeadsBundle\Service\LeadsPurger
         arguments:
             - "@contao.framework"
             - "@database_connection"
@@ -61,5 +61,11 @@ services:
             - "@event_dispatcher"
             - "@filesystem"
         tags:
-            - { name: console.command }
             - { name: 'monolog.logger', channel: 'terminal42_leads' }
+
+    terminal42_leads.command.purge:
+        class: Terminal42\LeadsBundle\Command\PurgeCommand
+        arguments:
+            - "@terminal42_leads.purger"
+        tags:
+            - { name: console.command }
