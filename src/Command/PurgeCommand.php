@@ -106,8 +106,11 @@ class PurgeCommand extends Command
             $logMessage = 'No leads to purge.';
         }
 
-        $logLevel = LogLevel::INFO;
-        $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        $this->logger->info(
+            $logMessage,
+            ['contao' => new ContaoContext(_METHOD_, ContaoContext::GENERAL)]
+        );
+
         $output->writeln('<info>'.$logMessage.'</info>');
     }
 
@@ -194,13 +197,14 @@ class PurgeCommand extends Command
         $ids = implode(',', array_keys($leads));
 
         if (!empty($ids)) {
-            $deleted = $this->db->executeUpdate(
+            $deleted = (int)$this->db->executeUpdate(
                 "DELETE FROM tl_lead WHERE id IN(".$ids.")"
             );
 
-            $logLevel = LogLevel::INFO;
-            $logMessage = 'Purged '.(int)$deleted.' leads for master form "'.$masterForm['title'].'"';
-            $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+            $this->logger->info(
+                sprintf('Purged %d leads for master form "%s"', $deleted, $masterForm['title']),
+                ['contao' => new ContaoContext(_METHOD_, ContaoContext::GENERAL)]
+            );
         }
 
         return $deleted;
@@ -247,13 +251,14 @@ class PurgeCommand extends Command
 
             $ids = implode(',', array_keys($leadsData));
 
-            $deleted = $this->db->executeUpdate(
+            $deleted = (int)$this->db->executeUpdate(
                 "DELETE FROM tl_lead_data WHERE id IN(".$ids.")"
             );
 
-            $logLevel = LogLevel::INFO;
-            $logMessage = 'Purged '.(int)$deleted.' leads data for master form "'.$masterForm['title'].'"';
-            $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+            $this->logger->info(
+                sprintf('Purged %d leads data for master form "%s"', $deleted, $masterForm['title']),
+                ['contao' => new ContaoContext(_METHOD_, ContaoContext::GENERAL)]
+            );
         }
 
         return $deleted;
@@ -312,9 +317,10 @@ class PurgeCommand extends Command
             $count++;
         }
 
-        $logLevel = LogLevel::INFO;
-        $logMessage = 'Purged '.$deleted.' of '.$count.' leads uploads for master form "'.$masterForm['title'].'"';
-        $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        $this->logger->info(
+            sprintf('Purged %d of %d leads uploads for master form "%s"', $deleted, $count, $masterForm['title']),
+            ['contao' => new ContaoContext(_METHOD_, ContaoContext::GENERAL)]
+        );
 
         return $deleted;
     }
@@ -326,32 +332,43 @@ class PurgeCommand extends Command
      */
     private function purgeUpload(int $dataId, ?FilesModel $filesModel)
     {
-        $count = 0;
-        $logLevel = LogLevel::ERROR;
-        $logMessage = 'Purge leads upload data id "'.$dataId.'": ';
+        if (null === $filesModel) {
+            $this->logger->error(
+                sprintf('Purge leads upload (data ID %d): Model not found for deletion', $dataId),
+                ['contao' => new ContaoContext(_METHOD_, ContaoContext::ERROR)]
+            );
 
-        if (null !== $filesModel) {
-            $logMessage .= ' Model "'.$filesModel->id.'" ';
-            try {
-                if ($this->fs->exists($this->rootDir.'/'.$filesModel->path)) {
-                    $this->fs->remove($this->rootDir.'/'.$filesModel->path);
-                    $logLevel = LogLevel::INFO;
-                    $logMessage .= 'File deleted';
-                    $count++;
-                } else {
-                    $logMessage .= 'File not found for deletion';
-                }
-                $filesModel->delete();
-            } catch (Exception $exception) {
-                $logMessage .= $exception->getMessage();
-            }
-        } else {
-            $logMessage .= 'Model not found for deletion';
+            return 0;
         }
 
-        $this->logger->log($logLevel, $logMessage, array('contao' => new ContaoContext(__METHOD__, $logLevel)));
+        try {
+            if (!$this->fs->exists($this->rootDir.'/'.$filesModel->path)) {
+                $this->logger->error(
+                    sprintf('Purge leads upload (filesModel ID %d): File not found for deletion', $filesModel->id),
+                    ['contao' => new ContaoContext(_METHOD_, ContaoContext::ERROR)]
+                );
 
-        return $count;
+                return 0;
+            }
+
+            $this->fs->remove($this->rootDir.'/'.$filesModel->path);
+            $filesModel->delete();
+
+            $this->logger->info(
+                sprintf('Purge leads upload (filesModel ID %d): File deleted', $filesModel->id),
+                ['contao' => new ContaoContext(_METHOD_, ContaoContext::GENERAL)]
+            );
+
+            return 1;
+
+        } catch (Exception $exception) {
+            $this->logger->error(
+                sprintf('Purge leads upload (filesModel ID %d): %s', $filesModel->id, $exception->getMessage()),
+                ['contao' => new ContaoContext(_METHOD_, ContaoContext::ERROR)]
+            );
+        }
+
+        return 0;
     }
 
 
