@@ -153,10 +153,9 @@ class PurgeCommand extends Command
     {
         $range = StringUtil::deserialize($timePeriod);
 
-        if (is_array($range) && isset($range['unit']) && isset($range['value'])) {
-            if (false !== ($timestamp = strtotime('- '.$range['value'].' '.$range['unit']))) {
-                return $timestamp;
-            }
+        if (is_array($range) && isset($range['unit']) && isset($range['value'])
+            && false !== ($timestamp = strtotime('- '.$range['value'].' '.$range['unit']))) {
+            return $timestamp;
         }
 
         return 0;
@@ -289,7 +288,7 @@ class PurgeCommand extends Command
             return null;
         }
 
-        $filesModel = FilesModel::findByUUid($value);
+        $filesModel = $this->framework->getAdapter(FilesModel::class)->findByUuid($value);
 
         return $filesModel;
     }
