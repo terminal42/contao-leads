@@ -110,7 +110,7 @@ class LeadsPurger
         foreach ($forms as $masterForm) {
 
             $leadPeriodTime = $this->convertTimePeriodToTime($masterForm['leadPeriod']);
-            if (!empty($leads = $this->getAllLeads($masterForm['id'], $leadPeriodTime))) {
+            if ($leadPeriodTime > 0 && !empty($leads = $this->getAllLeads($masterForm['id'], $leadPeriodTime))) {
 
                 $leadsData = $this->getAllLeadsData($leads);
                 $uploads = $this->getUploads($leadsData, $masterForm['leadPurgeUploads']);
@@ -138,7 +138,7 @@ class LeadsPurger
     {
         $range = StringUtil::deserialize($timePeriod);
 
-        if (is_array($range) && isset($range['unit']) && isset($range['value'])
+        if (is_array($range) && isset($range['unit']) && isset($range['value']) && !empty($range['value'])
             && false !== ($timestamp = strtotime('- '.$range['value'].' '.$range['unit']))) {
             return $timestamp;
         }
