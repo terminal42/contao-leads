@@ -1,3 +1,4 @@
 services:
     terminal42_leads.listener.lead_export:
         class: Terminal42\LeadsBundle\EventListener\LeadExportListener
+        public: true
