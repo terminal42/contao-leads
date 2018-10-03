@@ -6,3 +6,6 @@ services:
             - "@database_connection"
         tags:
             - { name: console.command }
+
+    Terminal42\LeadsBundle\Util\NotificationCenter:
+        arguments: ['%kernel.bundles%']

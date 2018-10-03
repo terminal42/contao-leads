@@ -5,16 +5,26 @@ namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 use Contao\Controller;
 use Contao\Input;
 use Contao\System;
+use Terminal42\LeadsBundle\Util\NotificationCenter;
 
 class LeadListener
 {
+    /**
+     * @var NotificationCenter
+     */
+    private $notificationCenter;
+
+    public function __construct(NotificationCenter $notificationCenter)
+    {
+        $this->notificationCenter = $notificationCenter;
+    }
+
     public function onLoadCallback()
     {
         $this->loadExportConfigs();
         $this->checkPermission();
         $this->addNotificationCenterSupport();
     }
-
 
     /**
      * Generate label for this record.
@@ -112,7 +122,7 @@ class LeadListener
         }
 
         // Notification Center integration
-        if (\Terminal42\LeadsBundle\LeadsNotification::available(true)) {
+        if ($this->notificationCenter->isAvailable()) {
             $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="' . specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]) . '">';
         }
 
@@ -177,7 +187,7 @@ class LeadListener
      */
     private function addNotificationCenterSupport()
     {
-        if (!\Terminal42\LeadsBundle\LeadsNotification::available(true)) {
+        if (!$this->notificationCenter->isAvailable()) {
             return;
         }
 

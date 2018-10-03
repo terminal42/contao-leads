@@ -26,7 +26,7 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
         'stylesheet'    => 'bundles/terminal42leads/leads.css',
         'show'          => array(Terminal42\LeadsBundle\Controller\Backend\LeadController::class, 'show'),
         'export'        => array(Terminal42\LeadsBundle\Controller\Backend\LeadController::class, 'export'),
-        'notification'  => array(Terminal42\LeadsBundle\Controller\Backend\LeadController::class, 'sendNotification'),
+        'notification'  => array(Terminal42\LeadsBundle\Controller\Backend\LeadNotificationController::class, '__invoke'),
     ),
 )));
 

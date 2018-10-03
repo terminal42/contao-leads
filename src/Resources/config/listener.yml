@@ -1,1 +1,5 @@
 services:
+    Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener:
+        public: true
+        arguments:
+            - '@Terminal42\LeadsBundle\Util\NotificationCenter'
