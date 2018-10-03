@@ -1,4 +1,8 @@
 services:
+    Terminal42\LeadsBundle\Controller\Backend\LeadExportController:
+        public: true
+        arguments: ['@Terminal42\LeadsBundle\Export\ExportFactory']
+
     Terminal42\LeadsBundle\Controller\Backend\LeadNotificationController:
         arguments: ['@Terminal42\LeadsBundle\Util\NotificationCenter']
         public: true

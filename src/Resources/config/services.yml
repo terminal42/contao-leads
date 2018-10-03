@@ -1,11 +1,15 @@
 services:
-    terminal42_leads.command.export:
-        class: Terminal42\LeadsBundle\Command\ExportCommand
+    Terminal42\LeadsBundle\Command\ExportCommand:
         arguments:
-            - "@contao.framework"
-            - "@database_connection"
+            - '@contao.framework'
+            - '@database_connection'
+            - '@Terminal42\LeadsBundle\Export\ExportFactory'
+            - '@filesystem'
         tags:
             - { name: console.command }
 
     Terminal42\LeadsBundle\Util\NotificationCenter:
         arguments: ['%kernel.bundles%']
+
+    Terminal42\LeadsBundle\Export\ExportFactory:
+        arguments: ['@database_connection']

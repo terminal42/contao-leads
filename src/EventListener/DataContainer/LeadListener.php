@@ -5,6 +5,7 @@ namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 use Contao\Controller;
 use Contao\Input;
 use Contao\System;
+use Terminal42\LeadsBundle\Export\ExportFactory;
 use Terminal42\LeadsBundle\Util\NotificationCenter;
 
 class LeadListener
@@ -14,9 +15,15 @@ class LeadListener
      */
     private $notificationCenter;
 
-    public function __construct(NotificationCenter $notificationCenter)
+    /**
+     * @var ExportFactory
+     */
+    private $exportFactory;
+
+    public function __construct(NotificationCenter $notificationCenter, ExportFactory $exportFactory)
     {
         $this->notificationCenter = $notificationCenter;
+        $this->exportFactory = $exportFactory;
     }
 
     public function onLoadCallback()
@@ -108,7 +115,8 @@ class LeadListener
 
             foreach ($arrConfigs as $config) {
                 if (\Input::post('export_' . $config['id'])) {
-                    $file = \Terminal42\LeadsBundle\Leads::export($config['id'], $arrIds);
+                    $config = $this->exportFactory->buildConfig((int) $config['id']);
+                    $file = $this->exportFactory->createForType($config->type)->export($config['id'], $arrIds);
                     $file->sendToBrowser();
                 }
             }

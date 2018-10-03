@@ -3,3 +3,4 @@ services:
         public: true
         arguments:
             - '@Terminal42\LeadsBundle\Util\NotificationCenter'
+            - '@Terminal42\LeadsBundle\Export\ExportFactory'

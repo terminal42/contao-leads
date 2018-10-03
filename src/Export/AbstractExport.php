@@ -31,16 +31,6 @@ abstract class AbstractExport implements ExportInterface
     abstract public function isAvailable();
 
     /**
-     * Exports a given set of data row ids using a given configuration.
-     *
-     * @param \Database\Result $config
-     * @param array|null       $ids
-     *
-     * @return File
-     */
-    abstract public function export($config, $ids = null);
-
-    /**
      * Prepares the default DataCollector instance based on the configuration.
      *
      * @param \Database\Result $config

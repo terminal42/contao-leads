@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Filesystem\Filesystem;
-use Terminal42\LeadsBundle\Leads;
+use Terminal42\LeadsBundle\Export\ExportFactory;
 
 class ExportCommand extends Command
 {
@@ -27,26 +27,21 @@ class ExportCommand extends Command
     private $db;
 
     /**
-     * @var Filesystem
+     * @var ExportFactory
      */
-    private $fs;
+    private $exportFactory;
 
     /**
-     * Constructor.
-     *
-     * @param ContaoFrameworkInterface $framework
-     * @param Connection               $db
-     * @param Filesystem               $fs
+     * @var Filesystem
      */
-    public function __construct(ContaoFrameworkInterface $framework, Connection $db, Filesystem $fs = null)
-    {
-        if (null === $fs) {
-            $fs = new Filesystem();
-        }
+    private $filesystem;
 
+    public function __construct(ContaoFrameworkInterface $framework, Connection $db, ExportFactory $exportFactory, Filesystem $filesystem = null)
+    {
         $this->framework = $framework;
         $this->db = $db;
-        $this->fs = $fs;
+        $this->exportFactory = $exportFactory;
+        $this->filesystem = $filesystem ?: new Filesystem();
 
         parent::__construct();
     }
@@ -152,7 +147,7 @@ class ExportCommand extends Command
                 );
             }
 
-            $success = $this->export($config['id'], $config['targetPath'], $start, $stop);
+            $success = $this->export((int) $config['id'], $config['targetPath'], $start, $stop);
         }
 
         if ($success) {
@@ -174,7 +169,7 @@ class ExportCommand extends Command
         $configs = $this->db->fetchAll("SELECT id, targetPath FROM tl_lead_export WHERE cliExport='1'");
 
         foreach ($configs as $config) {
-            if ($this->export($config['id'], $config['targetPath'], $start, $stop)) {
+            if ($this->export((int) $config['id'], $config['targetPath'], $start, $stop)) {
                 $success = true;
             }
         }
@@ -192,7 +187,7 @@ class ExportCommand extends Command
      *
      * @return true
      */
-    private function export($configId, $targetPath, $start, $stop)
+    private function export(int $configId, $targetPath, $start, $stop)
     {
         $ids = null;
 
@@ -236,14 +231,15 @@ class ExportCommand extends Command
             }
         }
 
-        $file = Leads::export($configId, $ids);
+        $config = $this->exportFactory->buildConfig($configId);
+        $file = $this->exportFactory->createForType($config->type)->export($config, $ids);
 
         if ('/' !== substr($targetPath, 0, 1)) {
             $targetPath = TL_ROOT.'/'.$targetPath;
         }
 
-        $this->fs->mkdir($targetPath);
-        $this->fs->copy(TL_ROOT.'/'.$file->path, $targetPath.'/'.$file->name, true);
+        $this->filesystem->mkdir($targetPath);
+        $this->filesystem->copy(TL_ROOT.'/'.$file->path, $targetPath.'/'.$file->name, true);
 
         return true;
     }

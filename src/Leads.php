@@ -248,50 +248,6 @@ class Leads extends \Controller
         }
     }
 
-
-    /**
-     * Export the data.
-     *
-     * @param integer         $intConfig
-     * @param array           $arrIds
-     *
-     * @return File
-     *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     */
-    public static function export($intConfig, $arrIds=null)
-    {
-        /** @var \Database\Result|object $objConfig */
-        $objConfig = \Database::getInstance()
-            ->prepare("
-                SELECT *,
-                (SELECT leadMaster FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS master
-                FROM tl_lead_export
-                WHERE id=?
-            ")
-            ->limit(1)
-            ->execute($intConfig)
-        ;
-
-        if (!$objConfig->numRows) {
-            throw new \InvalidArgumentException(sprintf('Export config ID %s not found', $intConfig));
-        }
-
-        /** @var ExportInterface $exporter */
-        $exporterClass = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
-
-        if (!class_exists($exporterClass) || !($exporter = new $exporterClass()) instanceof ExportInterface) {
-            throw new \RuntimeException(sprintf('Invalid export type: %s (%s)', $objConfig->type, $exporterClass));
-        }
-
-        $objConfig->master      = $objConfig->master ?: $objConfig->pid;
-        $objConfig->fields      = deserialize($objConfig->fields, true);
-        $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
-
-        return $exporter->export($objConfig, $arrIds);
-    }
-
     /**
      * Handles the system columns when exporting.
      *
