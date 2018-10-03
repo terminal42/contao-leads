@@ -13,9 +13,9 @@ namespace Terminal42\LeadsBundle;
 
 use Contao\File;
 use Haste\Util\Format;
-use Terminal42\LeadsBundle\Exporter\ExporterInterface;
-use Terminal42\LeadsBundle\Exporter\Utils\Row;
-use Terminal42\LeadsBundle\Exporter\Utils\Tokens;
+use Terminal42\LeadsBundle\Export\ExportInterface;
+use Terminal42\LeadsBundle\Export\Utils\Row;
+use Terminal42\LeadsBundle\Export\Utils\Tokens;
 
 class Leads extends \Controller
 {
@@ -278,10 +278,10 @@ class Leads extends \Controller
             throw new \InvalidArgumentException(sprintf('Export config ID %s not found', $intConfig));
         }
 
-        /** @var ExporterInterface $exporter */
+        /** @var ExportInterface $exporter */
         $exporterClass = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
 
-        if (!class_exists($exporterClass) || !($exporter = new $exporterClass()) instanceof ExporterInterface) {
+        if (!class_exists($exporterClass) || !($exporter = new $exporterClass()) instanceof ExportInterface) {
             throw new \RuntimeException(sprintf('Invalid export type: %s (%s)', $objConfig->type, $exporterClass));
         }
 

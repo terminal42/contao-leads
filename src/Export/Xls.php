@@ -8,9 +8,9 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Terminal42\LeadsBundle\Exporter;
+namespace Terminal42\LeadsBundle\Export;
 
-class Xls extends AbstractExcelExporter
+class Xls extends AbstractExcelExport
 {
     /**
      * Exports a given set of data row ids using a given configuration.

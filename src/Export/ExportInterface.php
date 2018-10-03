@@ -9,12 +9,12 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Exporter;
+namespace Terminal42\LeadsBundle\Export;
 
 use Contao\File;
 
-interface ExporterInterface {
-
+interface ExportInterface
+{
     /**
      * Returns true if available.
      *

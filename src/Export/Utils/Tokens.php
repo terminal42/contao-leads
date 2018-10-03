@@ -9,7 +9,7 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Exporter\Utils;
+namespace Terminal42\LeadsBundle\Export\Utils;
 
 use Haste\Haste;
 

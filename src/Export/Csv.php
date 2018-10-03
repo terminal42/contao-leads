@@ -9,14 +9,14 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Exporter;
+namespace Terminal42\LeadsBundle\Export;
 
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
-use Terminal42\LeadsBundle\Exporter\Utils\File;
-use Terminal42\LeadsBundle\Exporter\Utils\Row;
+use Terminal42\LeadsBundle\Export\Utils\File;
+use Terminal42\LeadsBundle\Export\Utils\Row;
 
-class Csv extends AbstractExporter
+class Csv extends AbstractExport
 {
     /**
      * Returns true if available.

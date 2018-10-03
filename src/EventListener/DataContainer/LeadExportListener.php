@@ -33,10 +33,10 @@ class LeadExportListener
 
             if (!is_array($exporterDefinition)) {
 
-                /** @var \Terminal42\LeadsBundle\Exporter\ExporterInterface $exporter */
+                /** @var \Terminal42\LeadsBundle\Export\ExportInterface $exporter */
                 $exporter = new $exporterDefinition();
 
-                if ($exporter instanceof \Terminal42\LeadsBundle\Exporter\ExporterInterface
+                if ($exporter instanceof \Terminal42\LeadsBundle\Export\ExportInterface
                     && $exporter->isAvailable()
                 ) {
                     $options[] = $exporterClassKey;

@@ -9,6 +9,6 @@
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Exporter;
+namespace Terminal42\LeadsBundle\Export;
 
 class ExportFailedException extends \RuntimeException {}

@@ -8,14 +8,14 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Terminal42\LeadsBundle\Exporter;
+namespace Terminal42\LeadsBundle\Export;
 
 
 use Contao\File;
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Leads;
 
-abstract class AbstractExporter implements ExporterInterface
+abstract class AbstractExport implements ExportInterface
 {
     /**
      * Last run that will be updated

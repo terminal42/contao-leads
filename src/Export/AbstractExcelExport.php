@@ -8,18 +8,18 @@
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Terminal42\LeadsBundle\Exporter;
+namespace Terminal42\LeadsBundle\Export;
 
 
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
-use Terminal42\LeadsBundle\Exporter\Utils\File;
-use Terminal42\LeadsBundle\Exporter\Utils\Row;
+use Terminal42\LeadsBundle\Export\Utils\File;
+use Terminal42\LeadsBundle\Export\Utils\Row;
 use PHPExcel_Cell;
 use PHPExcel_IOFactory;
 
-abstract class AbstractExcelExporter extends AbstractExporter
+abstract class AbstractExcelExport extends AbstractExport
 {
     /**
      * Returns true if available.
@@ -54,9 +54,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         if ($config->useTemplate) {
             return $this->exportWithTemplate($config, $reader, $row, $format);
-        } else {
-            return $this->exportWithoutTemplate($config, $reader, $row, $format);
         }
+
+        return $this->exportWithoutTemplate($config, $reader, $row, $format);
     }
 
     /**
