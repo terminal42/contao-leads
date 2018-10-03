@@ -5,6 +5,7 @@ namespace Terminal42\LeadsBundle\Controller\Backend;
 use Contao\BackendTemplate;
 use Contao\Database;
 use Contao\System;
+use Haste\Util\Format;
 
 class LeadDetailsController
 {
@@ -67,7 +68,7 @@ class LeadDetailsController
         while ($objData->next()) {
             $rows[] = array(
                 'label' => $objData->name,
-                'value' => \Terminal42\LeadsBundle\Leads::formatValue($objData),
+                'value' => $this->formatValue($objData),
                 'class' => ($i % 2) ? 'tl_bg' : '',
             );
 
@@ -77,5 +78,45 @@ class LeadDetailsController
         $template->data = $rows;
 
         return $template->parse();
+    }
+
+    /**
+     * Format a lead field for list view.
+     *
+     * @param object $objData
+     *
+     * @return string
+     */
+    private function formatValue($objData)
+    {
+        $fieldModel = \FormFieldModel::findByPk($objData->field_id);
+
+        if (null !== $fieldModel) {
+            $data = $fieldModel->row();
+            $data['eval'] = $fieldModel->row();
+            $strValue = Format::dcaValueFromArray($data, $objData->value);
+            $strLabel = Format::dcaLabelFromArray($data);
+
+            return $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+        }
+
+        $strValue = implode(', ', deserialize($objData->value, true));
+
+        if ($objData->label != '' && $objData->label != $objData->value)  {
+            $strLabel = $objData->label;
+            $arrLabel = deserialize($objData->label, true);
+
+            if (!empty($arrLabel)) {
+                $strLabel = implode(', ', $arrLabel);
+            }
+
+            if ($strValue == '') {
+                return $strLabel;
+            }
+
+            $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+        }
+
+        return $strValue;
     }
 }
