@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
 use Contao\BackendTemplate;
@@ -63,14 +74,14 @@ class LeadDetailsController
         $template->memberId         = $objForm->member_id;
 
         $i = 0;
-        $rows = array();
+        $rows = [];
 
         while ($objData->next()) {
-            $rows[] = array(
+            $rows[] = [
                 'label' => $objData->name,
                 'value' => $this->formatValue($objData),
                 'class' => ($i % 2) ? 'tl_bg' : '',
-            );
+            ];
 
             ++$i;
         }
@@ -97,12 +108,12 @@ class LeadDetailsController
             $strValue = Format::dcaValueFromArray($data, $objData->value);
             $strLabel = Format::dcaLabelFromArray($data);
 
-            return $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+            return $strLabel.' <span style="color:#b3b3b3; padding-left:3px;">['.$strValue.']</span>';
         }
 
         $strValue = implode(', ', deserialize($objData->value, true));
 
-        if ($objData->label != '' && $objData->label != $objData->value)  {
+        if (!empty($objData->label) && $objData->label !== $objData->value) {
             $strLabel = $objData->label;
             $arrLabel = deserialize($objData->label, true);
 
@@ -110,11 +121,11 @@ class LeadDetailsController
                 $strLabel = implode(', ', $arrLabel);
             }
 
-            if ($strValue == '') {
+            if (empty($strValue)) {
                 return $strLabel;
             }
 
-            $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+            $strValue = $strLabel.' <span style="color:#b3b3b3; padding-left:3px;">['.$strValue.']</span>';
         }
 
         return $strValue;

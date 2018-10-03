@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\Controller;
@@ -28,7 +39,7 @@ class LeadExportListener
         $this->dataTransformers = $dataTransformers;
     }
 
-    public function onLoadCallback(DataContainer $dc)
+    public function onLoadCallback(DataContainer $dc): void
     {
         $this->checkPermission();
         $this->updatePalette($dc);
@@ -37,12 +48,12 @@ class LeadExportListener
 
     public function onChildRecordCallback(array $row): string
     {
-        return '<div>' . $row['name'] . '</div>';
+        return '<div>'.$row['name'].'</div>';
     }
 
     public function onTypeOptionsCallback()
     {
-        $options = array();
+        $options = [];
 
         foreach ($this->exportFactory->getServices() as $export) {
             $options[$export->getType()] = $export->getLabel();
@@ -53,10 +64,6 @@ class LeadExportListener
 
     /**
      * Validates the given path exists.
-     *
-     * @param mixed $value
-     *
-     * @return mixed
      */
     public function onSaveTargetPath($value)
     {
@@ -78,7 +85,6 @@ class LeadExportListener
     /**
      * Load the lead fields.
      *
-     * @param mixed  $varValue
      * @param \DataContainer $dc
      *
      * @return string
@@ -96,12 +102,12 @@ class LeadExportListener
             )->execute($dc->id);
 
             while ($objFields->next()) {
-                $arrFields[] = array(
-                    'field'  => $objFields->id,
-                    'name'   => '',
-                    'value'  => 'all',
+                $arrFields[] = [
+                    'field' => $objFields->id,
+                    'name' => '',
+                    'value' => 'all',
                     'format' => 'raw',
-                );
+                ];
             }
         }
 
@@ -116,10 +122,10 @@ class LeadExportListener
     public function onExportOptionsCallback()
     {
         if (!\Input::get('id')) {
-            return array();
+            return [];
         }
 
-        $arrFields = array();
+        $arrFields = [];
 
         $systemColumns = \Terminal42\LeadsBundle\Leads::getSystemColumns();
 
@@ -136,8 +142,8 @@ class LeadExportListener
             $strLabel = $objFields->name;
 
             // Use the field label
-            if ($objFields->label != '') {
-                $strLabel = $objFields->label . ' [' . $objFields->name . ']';
+            if ('' !== $objFields->label) {
+                $strLabel = $objFields->label.' ['.$objFields->name.']';
             }
 
             $arrFields[$objFields->id] = $strLabel;
@@ -148,7 +154,7 @@ class LeadExportListener
 
     public function onFormatOptionsCallback()
     {
-        $options = array();
+        $options = [];
 
         foreach ($this->dataTransformers->getServices() as $dataTransformer) {
             $options[$dataTransformer->getType()] = $dataTransformer->getLabel();
@@ -160,7 +166,7 @@ class LeadExportListener
     /**
      * Check permissions to edit table.
      */
-    private function checkPermission()
+    private function checkPermission(): void
     {
         $user = \BackendUser::getInstance();
 
@@ -175,14 +181,14 @@ class LeadExportListener
      *
      * @param \Contao\DataContainer $dc
      */
-    private function updatePalette($dc = null)
+    private function updatePalette($dc = null): void
     {
         if (!$dc->id) {
             return;
         }
 
         $objRecord = \Database::getInstance()->prepare(
-            "SELECT * FROM tl_lead_export WHERE id=?"
+            'SELECT * FROM tl_lead_export WHERE id=?'
         )->execute($dc->id);
 
         if (!$objRecord->export || 'all' === $objRecord->export) {
@@ -192,7 +198,7 @@ class LeadExportListener
         $strPalette = $objRecord->type ?: 'default';
         $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace(
             'export',
-            'export,' . $GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'],
+            'export,'.$GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'],
             $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]
         );
     }
@@ -200,7 +206,7 @@ class LeadExportListener
     /**
      * Loads JS and CSS.
      */
-    public function loadJsAndCss()
+    private function loadJsAndCss()
     {
         $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
         $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];

@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Contao\System;
@@ -13,14 +24,14 @@ class FormDataListener
      * @param array $arrForm
      * @param array $arrFiles
      */
-    public function onProcessFormData(&$arrPost, &$arrForm, &$arrFiles)
+    public function onProcessFormData(&$arrPost, &$arrForm, &$arrFiles): void
     {
         if ($arrForm['leadEnabled']) {
             $time = time();
 
-            $intLead = \Database::getInstance()->prepare("
+            $intLead = \Database::getInstance()->prepare('
                 INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id,post_data) VALUES (?,?,?,?,?,?,?)
-            ")->execute(
+            ')->execute(
                 $time,
                 $time,
                 $GLOBALS['TL_LANGUAGE'],
@@ -44,14 +55,14 @@ class FormDataListener
             }
 
             while ($objFields->next()) {
-                $arrSet = array();
+                $arrSet = [];
 
                 // Regular data
                 if (isset($arrPost[$objFields->postName])) {
                     $varValue = $this->prepareValue($arrPost[$objFields->postName], $objFields);
                     $varLabel = $this->prepareLabel($varValue, $objFields);
 
-                    $arrSet = array(
+                    $arrSet = [
                         'pid'       => $intLead,
                         'sorting'   => $objFields->sorting,
                         'tstamp'    => $time,
@@ -60,7 +71,7 @@ class FormDataListener
                         'name'      => $objFields->name,
                         'value'     => $varValue,
                         'label'     => $varLabel,
-                    );
+                    ];
                 }
 
                 // Files
@@ -68,7 +79,7 @@ class FormDataListener
                     $varValue = $this->prepareValue($arrFiles[$objFields->postName], $objFields);
                     $varLabel = $this->prepareLabel($varValue, $objFields);
 
-                    $arrSet = array(
+                    $arrSet = [
                         'pid'       => $intLead,
                         'sorting'   => $objFields->sorting,
                         'tstamp'    => $time,
@@ -77,24 +88,24 @@ class FormDataListener
                         'name'      => $objFields->name,
                         'value'     => $varValue,
                         'label'     => $varLabel,
-                    );
+                    ];
                 }
 
                 if (!empty($arrSet)) {
                     // HOOK: add custom logic
-                    if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'])) {
+                    if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && \is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'])) {
                         foreach ($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'] as $callback) {
                             System::importStatic($callback[0]);
                             $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
                         }
                     }
 
-                    \Database::getInstance()->prepare("INSERT INTO tl_lead_data %s")->set($arrSet)->execute();
+                    \Database::getInstance()->prepare('INSERT INTO tl_lead_data %s')->set($arrSet)->execute();
                 }
             }
 
             // HOOK: add custom logic
-            if (isset($GLOBALS['TL_HOOKS']['storeLeadsData']) && is_array($GLOBALS['TL_HOOKS']['storeLeadsData'])) {
+            if (isset($GLOBALS['TL_HOOKS']['storeLeadsData']) && \is_array($GLOBALS['TL_HOOKS']['storeLeadsData'])) {
                 foreach ($GLOBALS['TL_HOOKS']['storeLeadsData'] as $callback) {
                     System::importStatic($callback[0]);
                     $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
@@ -106,7 +117,6 @@ class FormDataListener
     /**
      * Prepare a form value for storage in lead table.
      *
-     * @param mixed                   $varValue
      * @param \Database\Result|object $objField
      *
      * @return array|int
@@ -119,7 +129,7 @@ class FormDataListener
         }
 
         // Run for all values in an array
-        if (is_array($varValue)) {
+        if (\is_array($varValue)) {
             foreach ($varValue as $k => $v) {
                 $varValue[$k] = $this->prepareValue($v, $objField);
             }
@@ -127,23 +137,18 @@ class FormDataListener
             return $varValue;
         }
 
-        $varValue = $this->convertRgxp($varValue, $objField->rgxp);
-
-        return $varValue;
+        return $this->convertRgxp($varValue, $objField->rgxp);
     }
 
     /**
      * Get the label for a form value to store in lead table.
      *
-     * @param mixed                   $varValue
      * @param \Database\Result|object $objField
-     *
-     * @return mixed
      */
     private function prepareLabel($varValue, $objField)
     {
         // Run for all values in an array
-        if (is_array($varValue)) {
+        if (\is_array($varValue)) {
             foreach ($varValue as $k => $v) {
                 $varValue[$k] = $this->prepareLabel($v, $objField);
             }
@@ -155,18 +160,18 @@ class FormDataListener
         if ('upload' === $objField->type) {
             $objFile = \FilesModel::findByUuid($varValue);
 
-            if ($objFile !== null) {
+            if (null !== $objFile) {
                 return $objFile->path;
             }
         }
 
         $varValue = $this->convertRgxp($varValue, $objField->rgxp);
 
-        if ($objField->options != '') {
+        if (!empty($objField->options)) {
             $arrOptions = deserialize($objField->options, true);
 
             foreach ($arrOptions as $arrOption) {
-                if ($arrOption['value'] == $varValue && $arrOption['label'] != '') {
+                if ($arrOption['value'] === $varValue && '' !== $arrOption['label']) {
                     $varValue = $arrOption['label'];
                 }
             }
@@ -185,7 +190,7 @@ class FormDataListener
     {
         // Convert date formats into timestamps
         if (!empty($value)
-            && in_array($rgxp, array('date', 'time', 'datim'))
+            && \in_array($rgxp, ['date', 'time', 'datim'], true)
             && \Validator::{'is'.ucfirst($rgxp)}($value)
         ) {
             $format = \Date::{'getNumeric'.ucfirst($rgxp).'Format'}();

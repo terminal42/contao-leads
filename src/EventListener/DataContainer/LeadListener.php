@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\Controller;
@@ -27,7 +38,7 @@ class LeadListener
         $this->exportFactory = $exportFactory;
     }
 
-    public function onLoadCallback()
+    public function onLoadCallback(): void
     {
         $this->loadExportConfigs();
         $this->checkPermission();
@@ -44,18 +55,18 @@ class LeadListener
      */
     public function onLabelCallback($row, $label)
     {
-        $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute($row['master_id']);
+        $objForm = \Database::getInstance()->prepare('SELECT * FROM tl_form WHERE id=?')->execute($row['master_id']);
 
         // No form found, we can't format the label
         if (!$objForm->numRows) {
             return $label;
         }
 
-        $arrTokens = array(
+        $arrTokens = [
             'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']),
-        );
+        ];
 
-        $objData = \Database::getInstance()->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
+        $objData = \Database::getInstance()->prepare('SELECT * FROM tl_lead_data WHERE pid=?')->execute($row['id']);
 
         while ($objData->next()) {
             StringUtil::flatten(deserialize($objData->value), $objData->name, $arrTokens);
@@ -80,24 +91,21 @@ class LeadListener
         $user = \BackendUser::getInstance();
 
         if (!$user->isAdmin && !$user->canEditFieldsOf('tl_lead_export')) {
-
             return '';
         }
 
-        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id=' . Input::get('master') . '" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
+        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id='.Input::get('master').'" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
     }
 
     /**
      * Adds the buttons to the buttons bar and exports the data if it is an export button.
      *
      * @param array $arrButtons
-     *
-     * @return mixed
      */
     public function onSelectButtonsCallback($arrButtons)
     {
         $arrConfigs = \Database::getInstance()
-                               ->prepare("SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name")
+                               ->prepare('SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name')
                                ->execute(\Input::get('master'))
                                ->fetchAllAssoc()
         ;
@@ -115,7 +123,7 @@ class LeadListener
             }
 
             foreach ($arrConfigs as $config) {
-                if (\Input::post('export_' . $config['id'])) {
+                if (\Input::post('export_'.$config['id'])) {
                     $config = $this->exportFactory->buildConfig((int) $config['id']);
                     $file = $this->exportFactory->createForType($config->type)->export($config['id'], $arrIds);
                     $file->sendToBrowser();
@@ -127,25 +135,24 @@ class LeadListener
 
         // Generate buttons
         foreach ($arrConfigs as $config) {
-            $arrButtons['export_' . $config['id']] = '<input type="submit" name="export_' . $config['id'] . '" id="export_' . $config['id'] . '" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0] . ' "' . $config['name'] . '"').'">';
+            $arrButtons['export_'.$config['id']] = '<input type="submit" name="export_'.$config['id'].'" id="export_'.$config['id'].'" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0].' "'.$config['name'].'"').'">';
         }
 
         // Notification Center integration
         if ($this->notificationCenter->isAvailable()) {
-            $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="' . specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]) . '">';
+            $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]).'">';
         }
 
         return $arrButtons;
     }
 
-
     /**
      * Load the export configs.
      */
-    private function loadExportConfigs()
+    private function loadExportConfigs(): void
     {
         $objConfigs = \Database::getInstance()
-                               ->prepare("SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name")
+                               ->prepare('SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name')
                                ->execute(Input::get('master'))
         ;
 
@@ -153,29 +160,28 @@ class LeadListener
             return;
         }
 
-        $arrOperations = array();
+        $arrOperations = [];
 
         while ($objConfigs->next()) {
-            $arrOperations['export_' . $objConfigs->id] = array(
-                'label'         => $objConfigs->name,
-                'href'          => 'key=export&amp;config=' . $objConfigs->id,
-                'class'         => 'leads-export header_export_excel',
-                'attributes'    => 'onclick="Backend.getScrollOffset();"',
-            );
+            $arrOperations['export_'.$objConfigs->id] = [
+                'label' => $objConfigs->name,
+                'href' => 'key=export&amp;config='.$objConfigs->id,
+                'class' => 'leads-export header_export_excel',
+                'attributes' => 'onclick="Backend.getScrollOffset();"',
+            ];
         }
 
         array_insert($GLOBALS['TL_DCA']['tl_lead']['list']['global_operations'], 0, $arrOperations);
     }
-
 
     /**
      * Check if a user has access to lead data.
      *
      * @param $dc
      */
-    private function checkPermission()
+    private function checkPermission(): void
     {
-        if (Input::get('master') == '') {
+        if (empty(Input::get('master'))) {
             Controller::redirect('contao/main.php?act=error');
         }
 
@@ -185,25 +191,25 @@ class LeadListener
             return;
         }
 
-        if (!is_array($objUser->forms) || !in_array(\Input::get('master'), $objUser->forms)) {
+        if (!\is_array($objUser->forms) || !\in_array(\Input::get('master'), $objUser->forms, true)) {
             System::log('Not enough permissions to access leads ID "'.\Input::get('master').'"', __METHOD__, TL_ERROR);
             Controller::redirect('contao/main.php?act=error');
         }
     }
 
     /**
-     * Add the notification center support
+     * Add the notification center support.
      */
-    private function addNotificationCenterSupport()
+    private function addNotificationCenterSupport(): void
     {
         if (!$this->notificationCenter->isAvailable()) {
             return;
         }
 
-        $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['notification'] = array(
+        $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['notification'] = [
             'label' => &$GLOBALS['TL_LANG']['tl_lead']['notification'],
-            'href'  => 'key=notification',
-            'icon'  => 'system/modules/notification_center/assets/notification.png',
-        );
+            'href' => 'key=notification',
+            'icon' => 'system/modules/notification_center/assets/notification.png',
+        ];
     }
 }

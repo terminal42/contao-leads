@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Haste\Util\StringUtil;
@@ -28,7 +39,7 @@ class TokenRowListener
             return;
         }
 
-        $tokens = array();
+        $tokens = [];
 
         foreach ($columnConfig['allFieldsConfig'] as $fieldConfig) {
             $value = '';
@@ -38,9 +49,9 @@ class TokenRowListener
                 $value = deserialize($value);
 
                 // Add multiple tokens (<fieldname>_<option_name>) for multi-choice fields
-                if (is_array($value)) {
+                if (\is_array($value)) {
                     foreach ($value as $choice) {
-                        $tokens[$fieldConfig['name'] . '_' . $choice] = 1;
+                        $tokens[$fieldConfig['name'].'_'.$choice] = 1;
                     }
                 }
 

@@ -1,9 +1,11 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -14,46 +16,53 @@ namespace Terminal42\LeadsBundle;
 class DataCollector
 {
     /**
-     * Form ID
+     * Form ID.
+     *
      * @var int
      */
     private $formId;
 
     /**
-     * Form field ids limitation
+     * Form field ids limitation.
+     *
      * @var array
      */
-    private $fieldIds = array();
+    private $fieldIds = [];
 
     /**
-     * Lead data row ids limitation
+     * Lead data row ids limitation.
+     *
      * @var array
      */
-    private $leadDataIds = array();
+    private $leadDataIds = [];
 
     /**
-     * Export from
+     * Export from.
+     *
      * @var int|null
      */
     private $from;
 
     /**
-     * Export to
+     * Export to.
+     *
      * @var int|null
      */
     private $to;
 
     /**
-     * Cache for getFieldsData()
+     * Cache for getFieldsData().
+     *
      * @var array
      */
-    private $getFieldsDataCache = array();
+    private $getFieldsDataCache = [];
 
     /**
-     * Cache for getExportData()
+     * Cache for getExportData().
+     *
      * @var array
      */
-    private $getExportDataCache = array();
+    private $getExportDataCache = [];
 
     /**
      * Constructor.
@@ -87,10 +96,8 @@ class DataCollector
 
     /**
      * Limit the result to a given array of field ids.
-     *
-     * @param array $fieldIds
      */
-    public function setFieldIds(array $fieldIds)
+    public function setFieldIds(array $fieldIds): void
     {
         $this->fieldIds = array_map('intval', $fieldIds);
     }
@@ -107,10 +114,8 @@ class DataCollector
 
     /**
      * Limit the export result to a given array of lead data ids.
-     *
-     * @param array $leadDataIds
      */
-    public function setLeadDataIds(array $leadDataIds)
+    public function setLeadDataIds(array $leadDataIds): void
     {
         $this->leadDataIds = $leadDataIds;
     }
@@ -130,7 +135,7 @@ class DataCollector
      *
      * @param int|null $time
      */
-    public function setFrom($time)
+    public function setFrom($time): void
     {
         $this->from = $time;
     }
@@ -150,26 +155,26 @@ class DataCollector
      *
      * @param int|null $to
      */
-    public function setTo($to)
+    public function setTo($to): void
     {
         $this->to = $to;
     }
 
     /**
-     * Gets a cache key for the instance of the data collector
+     * Gets a cache key for the instance of the data collector.
      *
      * @return string
      */
     public function getCacheKey()
     {
-        $key = md5($this->formId . ':' . implode(',', $this->fieldIds));
+        $key = md5($this->formId.':'.implode(',', $this->fieldIds));
 
         if (null !== $this->getFrom()) {
-            $key .= ':' . (int) $this->getFrom();
+            $key .= ':'.(int) $this->getFrom();
         }
 
         if (null !== $this->getTo()) {
-            $key .= ':' . (int) $this->getTo();
+            $key .= ':'.(int) $this->getTo();
         }
 
         return $key;
@@ -189,13 +194,13 @@ class DataCollector
             return $this->getFieldsDataCache[$cacheKey];
         }
 
-        $where = array('tl_lead.master_id=?');
+        $where = ['tl_lead.master_id=?'];
 
-        if (0 !== count($this->fieldIds)) {
-            $where[] = "tl_lead_data.field_id IN (" . implode(',', $this->fieldIds) . ")";
+        if (0 !== \count($this->fieldIds)) {
+            $where[] = 'tl_lead_data.field_id IN ('.implode(',', $this->fieldIds).')';
         }
 
-        $data = array();
+        $data = [];
         $db = \Database::getInstance()->prepare("
             SELECT * FROM (
                 SELECT
@@ -210,11 +215,11 @@ class DataCollector
                 FROM tl_lead_data
                 LEFT JOIN tl_form_field ON tl_form_field.id=tl_lead_data.field_id
                 LEFT JOIN tl_lead ON tl_lead_data.pid=tl_lead.id
-                WHERE " . implode(' AND ', $where) . "
+                WHERE ".implode(' AND ', $where).'
                 ORDER BY tl_lead.master_id!=tl_lead.form_id
             ) result_set
             GROUP BY field_id
-            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet('field_id', $this->fieldIds) : 'sorting')
+            ORDER BY '.(!empty($this->fieldIds) ? \Database::getInstance()->findInSet('field_id', $this->fieldIds) : 'sorting')
         )->execute($this->formId);
 
         while ($db->next()) {
@@ -240,21 +245,21 @@ class DataCollector
             return $this->getExportDataCache[$cacheKey];
         }
 
-        $where = array('tl_lead.master_id=?');
+        $where = ['tl_lead.master_id=?'];
 
-        if (0 !== count($this->leadDataIds)) {
-            $where[] = 'tl_lead.id IN(' . implode(',', $this->leadDataIds) . ')';
+        if (0 !== \count($this->leadDataIds)) {
+            $where[] = 'tl_lead.id IN('.implode(',', $this->leadDataIds).')';
         }
 
         if (null !== $this->getFrom()) {
-            $where[] = 'tl_lead.created >= ' . $this->getFrom();
+            $where[] = 'tl_lead.created >= '.$this->getFrom();
         }
 
         if (null !== $this->getTo()) {
-            $where[] = 'tl_lead.created <= ' . $this->getTo();
+            $where[] = 'tl_lead.created <= '.$this->getTo();
         }
 
-        $data = array();
+        $data = [];
         $db = \Database::getInstance()->prepare("
             SELECT
                 tl_lead_data.*,
@@ -265,9 +270,9 @@ class DataCollector
                 IFNULL((SELECT CONCAT(firstname, ' ', lastname) FROM tl_member WHERE id=tl_lead.member_id), '') AS member_name
             FROM tl_lead_data
             LEFT JOIN tl_lead ON tl_lead.id=tl_lead_data.pid
-            WHERE " . implode(' AND ', $where) . "
+            WHERE ".implode(' AND ', $where).'
             ORDER BY tl_lead.created DESC
-        ")->execute($this->formId);
+        ')->execute($this->formId);
 
         while ($db->next()) {
             $data[$db->pid][$db->field_id] = $db->row();
@@ -285,18 +290,17 @@ class DataCollector
      */
     public function getHeaderFields()
     {
-        $headerFields = array();
+        $headerFields = [];
 
         foreach ($this->getFieldsData() as $fieldId => $row) {
-
             // Show single checkbox label as field label
-            if ($row['label'] == $row['name']
+            if ($row['label'] === $row['name']
                 && 'checkbox' === $row['type']
-                && $row['options'] != ''
+                && '' !== $row['options']
             ) {
                 $options = deserialize($row['options'], true);
 
-                if (count($options) == 1) {
+                if (1 === \count($options)) {
                     $headerFields[$fieldId] = $options[0]['label'];
                     continue;
                 }

@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\Command;
 
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
@@ -49,7 +60,7 @@ class ExportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('leads:export')
@@ -81,12 +92,9 @@ class ExportCommand extends Command
     }
 
     /**
-     * Get the config ID
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
+     * Get the config ID.
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         if ($input->getOption('all') || null !== $input->getArgument('config_id')) {
             return;
@@ -94,7 +102,7 @@ class ExportCommand extends Command
 
         $configs = $this->getAllConfigs();
 
-        if (0 === count($configs)) {
+        if (0 === \count($configs)) {
             throw new \RuntimeException('No export configurations available.');
         }
 
@@ -121,7 +129,7 @@ class ExportCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         if ((!$input->getOption('all') && !$input->getArgument('config_id'))
             || ($input->getOption('all') && $input->getArgument('config_id'))
@@ -131,7 +139,7 @@ class ExportCommand extends Command
 
         $this->framework->initialize();
 
-        list($start, $stop) = $this->getStartStop($input);
+        [$start, $stop] = $this->getStartStop($input);
 
         if ($input->getOption('all')) {
             $success = $this->executeBatchExport($start, $stop);
@@ -158,7 +166,7 @@ class ExportCommand extends Command
     }
 
     /**
-     * Execute the batch export
+     * Execute the batch export.
      *
      * @param int|null $start
      * @param int|null $stop
@@ -180,7 +188,6 @@ class ExportCommand extends Command
     /**
      * Export a leads configuration with start and stop date if not empty.
      *
-     * @param int      $configId
      * @param string   $targetPath
      * @param int|null $start
      * @param int|null $stop
@@ -226,7 +233,7 @@ class ExportCommand extends Command
 
             $ids = $query->execute()->fetchAll(\PDO::FETCH_COLUMN);
 
-            if (0 === count($ids)) {
+            if (0 === \count($ids)) {
                 return false;
             }
         }
@@ -247,26 +254,24 @@ class ExportCommand extends Command
     /**
      * Get the start and stop options.
      *
-     * @param InputInterface $input
+     * @throws InvalidArgumentException
      *
      * @return array
-     *
-     * @throws InvalidArgumentException
      */
     private function getStartStop(InputInterface $input)
     {
         $start = $input->getOption('start') ? strtotime($input->getOption('start')) : null;
-        $stop  = $input->getOption('stop') ? strtotime($input->getOption('stop')) : null;
+        $stop = $input->getOption('stop') ? strtotime($input->getOption('stop')) : null;
 
         // Validate the start option
-        if ($start === false) {
+        if (false === $start) {
             throw new InvalidArgumentException(
                 sprintf('The "start" option is invalid: %s', $input->getOption('start'))
             );
         }
 
         // Validate the stop option
-        if ($stop === false) {
+        if (false === $stop) {
             throw new InvalidArgumentException(
                 sprintf('The "stop" option is invalid: %s', $input->getOption('stop'))
             );
@@ -276,14 +281,14 @@ class ExportCommand extends Command
     }
 
     /**
-     * Get all lead configs
+     * Get all lead configs.
      *
      * @return array
      */
     private function getAllConfigs()
     {
         $configs = [];
-        $rows    = $this->db->fetchAll("
+        $rows = $this->db->fetchAll("
             SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form 
             FROM tl_lead_export 
             WHERE cliExport='1' 

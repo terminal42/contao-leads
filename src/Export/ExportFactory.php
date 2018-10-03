@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\Export;
 
 use Doctrine\DBAL\Connection;
@@ -70,14 +81,14 @@ class ExportFactory
 
         $config = $result->fetch(FetchMode::STANDARD_OBJECT);
 
-        $config->master      = $config->master ?: $config->pid;
-        $config->fields      = deserialize($config->fields, true);
+        $config->master = $config->master ?: $config->pid;
+        $config->fields = deserialize($config->fields, true);
         $config->tokenFields = deserialize($config->tokenFields, true);
 
         return $config;
     }
 
-    private function loadServices()
+    private function loadServices(): void
     {
         if (null !== $this->instances) {
             return;
@@ -87,7 +98,7 @@ class ExportFactory
 
         foreach ($this->services as $service) {
             if (!$service instanceof ExportInterface) {
-                throw new \RuntimeException(sprintf('"%s" must implement %s', get_class($service), ExportInterface::class));
+                throw new \RuntimeException(sprintf('"%s" must implement %s', \get_class($service), ExportInterface::class));
             }
 
             if (!$service->isAvailable()) {

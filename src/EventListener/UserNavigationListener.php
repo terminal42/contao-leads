@@ -1,8 +1,11 @@
 <?php
-/**
+
+declare(strict_types=1);
+
+/*
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2016, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -37,16 +40,16 @@ class UserNavigationListener
      */
     public function __construct()
     {
-        $this->db      = Database::getInstance();
+        $this->db = Database::getInstance();
         $this->session = Session::getInstance();
-        $this->user    = BackendUser::getInstance();
+        $this->user = BackendUser::getInstance();
     }
 
     public function onLoadLanguageFile(string $name): void
     {
         if ('modules' === $name && 'lead' === \Input::get('do')) {
             $objForm = $this->db
-                ->prepare("SELECT * FROM tl_form WHERE id=?")
+                ->prepare('SELECT * FROM tl_form WHERE id=?')
                 ->execute(\Input::get('master'))
             ;
 
@@ -57,8 +60,7 @@ class UserNavigationListener
     /**
      * Add leads to the backend navigation.
      *
-     * @param array $modules
-     * @param bool  $showAll
+     * @param bool $showAll
      *
      * @return array
      */
@@ -66,7 +68,7 @@ class UserNavigationListener
     {
         $forms = $this->getForms();
 
-        if (0 === count($forms)) {
+        if (0 === \count($forms)) {
             unset($modules['leads']);
 
             return $modules;
@@ -75,23 +77,23 @@ class UserNavigationListener
         $isOpen = $showAll || $this->isOpen();
 
         if ($isOpen) {
-            $modules['leads']['modules'] = array();
+            $modules['leads']['modules'] = [];
 
             foreach ($forms as $form) {
-                $modules['leads']['modules']['lead_'. $form['id']] = array(
-                    'tables'    => array('tl_lead'),
+                $modules['leads']['modules']['lead_'. $form['id']] = [
+                    'tables'    => ['tl_lead'],
                     'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
                     'label'     => $form['leadMenuLabel'],
                     'icon'      => ' style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
                     'class'     => 'navigation leads',
                     'href'      => 'contao/main.php?do=lead&master='.$form['id'],
                     'isActive'  => 'lead' === Input::get('do') && $form['id'] === Input::get('master'),
-                );
+                ];
             }
         } else {
             $modules['leads']['modules'] = false;
-            $modules['leads']['icon']    = 'modPlus.gif';
-            $modules['leads']['title']   = specialchars($GLOBALS['TL_LANG']['MSC']['expandNode']);
+            $modules['leads']['icon'] = 'modPlus.gif';
+            $modules['leads']['title'] = specialchars($GLOBALS['TL_LANG']['MSC']['expandNode']);
         }
 
         return $modules;
@@ -99,39 +101,41 @@ class UserNavigationListener
 
     /**
      * Gets forms with enabled leads.
-     * 
+     *
      * @return array
      */
     private function getForms()
     {
         if (!$this->db->tableExists('tl_lead')) {
-            return array();
+            return [];
         }
 
         $allowedIds = $this->getAllowedFormIds();
 
         if (false === $allowedIds) {
-            return array();
+            return [];
         }
 
         $permission = true === $allowedIds ? '' : sprintf(' AND id IN (%s)', implode(',', $allowedIds));
 
         // Master forms
-        $forms = $this->db->execute("SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0" . $permission)
-            ->fetchAllAssoc();
+        $forms = $this->db->execute(
+            "SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0".$permission
+        )->fetchAllAssoc();
 
-        $ids = array();
+        $ids = [];
         foreach ($forms as $k => $form) {
             // Fallback label
-            $forms[$k]['leadMenuLabel'] =  $form['leadMenuLabel'] ?: $form['title'];
+            $forms[$k]['leadMenuLabel'] = $form['leadMenuLabel'] ?: $form['title'];
             $ids[] = $form['id'];
         }
 
         // Check for orphan data sets that have no associated form anymore
-        $filter = 0 === count($ids) ? '' : sprintf(' WHERE master_id NOT IN (%s)', implode(',', $ids));
+        $filter = 0 === \count($ids) ? '' : sprintf(' WHERE master_id NOT IN (%s)', implode(',', $ids));
 
-        $orphans = $this->db->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . $filter)
-            ->fetchAllAssoc();
+        $orphans = $this->db->execute(
+            "SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead".$filter
+        )->fetchAllAssoc();
 
         // Only show orphans to admins
         if ($this->user->isAdmin) {
@@ -141,7 +145,7 @@ class UserNavigationListener
         }
 
         // Order by leadMenuLabel
-        usort($forms, function($a, $b) {
+        usort($forms, function ($a, $b) {
             return $a['leadMenuLabel'] > $b['leadMenuLabel'];
         });
 
@@ -158,8 +162,8 @@ class UserNavigationListener
         }
 
         if (!$this->user->hasAccess('lead', 'modules')
-            || !is_array($this->user->forms)
-            || 0 === count($this->user->forms)
+            || !\is_array($this->user->forms)
+            || 0 === \count($this->user->forms)
         ) {
             return false;
         }

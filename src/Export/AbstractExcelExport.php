@@ -1,15 +1,17 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
  */
-namespace Terminal42\LeadsBundle\Export;
 
+namespace Terminal42\LeadsBundle\Export;
 
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
@@ -21,8 +23,6 @@ abstract class AbstractExcelExport extends AbstractExport
 {
     /**
      * Returns true if available.
-     *
-     * @return bool
      */
     public function isAvailable(): bool
     {
@@ -60,13 +60,12 @@ abstract class AbstractExcelExport extends AbstractExport
     /**
      * Default export without template.
      *
-     * @param               $config
-     * @param array         $columnConfig
-     * @param ArrayReader   $reader
-     * @param               $format
+     * @param $config
+     * @param $format
+     *
+     * @throws ExportFailedException
      *
      * @return \Contao\File
-     * @throws ExportFailedException
      */
     protected function exportWithoutTemplate(
         $config,
@@ -74,7 +73,7 @@ abstract class AbstractExcelExport extends AbstractExport
         ArrayReader $reader,
         $format
     ) {
-        $writer = new ExcelFileWriter('system/tmp/' . $this->exportFile->getFilenameForConfig($config));
+        $writer = new ExcelFileWriter('system/tmp/'.$this->exportFile->getFilenameForConfig($config));
         $writer->setFormat($format);
 
         // Add header fields
@@ -82,7 +81,7 @@ abstract class AbstractExcelExport extends AbstractExport
             $writer->enableHeaderFields();
         }
 
-        $writer->setRowCallback(function($data) use ($config, $columnConfig) {
+        $writer->setRowCallback(function ($data) use ($config, $columnConfig) {
             return $this->dataTransformer->compileRow($data, $config, $columnConfig);
         });
 
@@ -96,10 +95,8 @@ abstract class AbstractExcelExport extends AbstractExport
     /**
      * Export with template.
      *
-     * @param               $config
-     * @param array         $columnConfig
-     * @param ArrayReader   $reader
-     * @param               $format
+     * @param $config
+     * @param $format
      *
      * @return \Contao\File
      */
@@ -117,11 +114,11 @@ abstract class AbstractExcelExport extends AbstractExport
             $objResponse->send();
         }
 
-        $tmpPath = 'system/tmp/' . $this->exportFile->getFilenameForConfig($config);
+        $tmpPath = 'system/tmp/'.$this->exportFile->getFilenameForConfig($config);
         \Files::getInstance()->copy($template->path, $tmpPath);
 
         $excelReader = PHPExcel_IOFactory::createReader($format);
-        $excel = $excelReader->load(TL_ROOT . '/' . $tmpPath);
+        $excel = $excelReader->load(TL_ROOT.'/'.$tmpPath);
 
         $excel->setActiveSheetIndex((int) $config->sheetIndex);
         $sheet = $excel->getActiveSheet();
@@ -154,11 +151,11 @@ abstract class AbstractExcelExport extends AbstractExport
             }
 
             $currentColumn = 0;
-            $currentRow++;
+            ++$currentRow;
         }
 
         $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
-        $excelWriter->save(TL_ROOT . '/' . $tmpPath);
+        $excelWriter->save(TL_ROOT.'/'.$tmpPath);
 
         $this->updateLastRun($config);
 

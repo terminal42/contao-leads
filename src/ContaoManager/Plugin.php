@@ -1,9 +1,11 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -21,7 +23,7 @@ use Terminal42\LeadsBundle\Terminal42LeadsBundle;
 class Plugin implements BundlePluginInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getBundles(ParserInterface $parser)
     {
@@ -30,7 +32,7 @@ class Plugin implements BundlePluginInterface
                 ->setReplace(['leads'])
                 ->setLoadAfter([ContaoCoreBundle::class, 'haste', 'multicolumnwizard']),
             new ModuleConfig('haste'),
-            new ModuleConfig('multicolumnwizard')
+            new ModuleConfig('multicolumnwizard'),
         ];
     }
 }

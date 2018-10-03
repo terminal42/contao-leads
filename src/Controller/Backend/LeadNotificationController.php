@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * leads Extension for Contao Open Source CMS
+ *
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/terminal42/contao-leads
+ */
+
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
 use Contao\Controller;
@@ -46,12 +57,12 @@ class LeadNotificationController
         // Process the form
         if ('tl_leads_notification' === Input::post('FORM_SUBMIT')) {
             /**
-             * @var \FormModel   $form
+             * @var \FormModel
              * @var Notification $notification
              */
             if (!isset($notifications[Input::post('notification')])
-                || !is_array(\Input::post('IDS'))
-                || ($form = \FormModel::findByPk(\Input::get('master'))) === null
+                || !\is_array(\Input::post('IDS'))
+                || null === ($form = \FormModel::findByPk(\Input::get('master')))
                 || null === ($notification = Notification::findByPk(\Input::post('notification')))
             ) {
                 Controller::reload();
@@ -78,10 +89,9 @@ class LeadNotificationController
         return $this->generateForm($notifications, [\Input::get('id')]);
     }
 
-
     /**
      * @param Notification[] $notifications
-     * @param int[]                                    $ids
+     * @param int[]          $ids
      *
      * @return string
      */
@@ -104,8 +114,8 @@ class LeadNotificationController
 <div class="tl_formbody_edit">
 <input type="hidden" name="FORM_SUBMIT" value="tl_leads_notification">
 <input type="hidden" name="REQUEST_TOKEN" value="'.REQUEST_TOKEN.'">
-<input type="hidden" name="IDS[]" value="' . implode('">
-<input type="hidden" name="IDS[]" value="', $ids) . '">
+<input type="hidden" name="IDS[]" value="'.implode('">
+<input type="hidden" name="IDS[]" value="', $ids).'">
 
 <div class="tl_tbox">
   <h3><label for="notification">'.$GLOBALS['TL_LANG']['tl_lead']['notification_list'][0].'</label></h3>
@@ -113,7 +123,7 @@ class LeadNotificationController
 
         // Generate options
         foreach ($notifications as $id => $name) {
-            $return .= '<option value="' . $id . '">' . $name . '</option>';
+            $return .= '<option value="'.$id.'">'.$name.'</option>';
         }
 
         $return .= '
@@ -137,11 +147,9 @@ class LeadNotificationController
     }
 
     /**
-     * Send lead data using given notification
+     * Send lead data using given notification.
      *
-     * @param int                                    $leadId
-     * @param FormModel                             $form
-     * @param Notification $notification
+     * @param int $leadId
      *
      * @return bool
      */
@@ -149,58 +157,48 @@ class LeadNotificationController
     {
         $result = $notification->send($this->generateTokens($leadId, $form));
 
-        return !in_array(false, $result);
+        return !\in_array(false, $result, true);
     }
 
     /**
      * Generate simple tokens for a lead record.
      *
-     * @param int       $leadId
-     * @param FormModel $form
+     * @param int $leadId
      *
      * @return array
      */
     private function generateTokens($leadId, FormModel $form)
     {
-        $data   = array();
-        $labels = array();
+        $data = [];
+        $labels = [];
 
-        $leadDataCollection = \Database::getInstance()->prepare("
+        $leadDataCollection = \Database::getInstance()->prepare('
             SELECT
                 name,
                 value,
                 (SELECT label FROM tl_form_field WHERE tl_form_field.id=tl_lead_data.field_id) AS fieldLabel
             FROM tl_lead_data
             WHERE pid=?
-        ")->execute($leadId);
+        ')->execute($leadId);
 
         // Generate the form data and labels
         while ($leadDataCollection->next()) {
-            $data[$leadDataCollection->name]   = $leadDataCollection->value;
+            $data[$leadDataCollection->name] = $leadDataCollection->value;
             $labels[$leadDataCollection->name] = $leadDataCollection->fieldLabel ?: $leadDataCollection->name;
         }
 
         return $this->generateNotificationCenterTokens($data, $form->row(), $labels);
     }
 
-    /**
-     * Generates the NC tokens.
-     *
-     * @param array $arrData
-     * @param array $arrForm
-     * @param array $arrLabels
-     *
-     * @return array
-     */
-    private function generateNotificationCenterTokens(array $arrData, array $arrForm, array $arrLabels)
+    private function generateNotificationCenterTokens(array $arrData, array $arrForm, array $arrLabels): array
     {
-        $arrTokens = array();
+        $arrTokens = [];
         $arrTokens['raw_data'] = '';
 
         foreach ($arrData as $k => $v) {
             \Haste\Util\StringUtil::flatten($v, 'form_'.$k, $arrTokens);
-            $arrTokens['formlabel_'.$k] = isset($arrLabels[$k]) ? $arrLabels[$k] : ucfirst($k);
-            $arrTokens['raw_data'] .= (isset($arrLabels[$k]) ? $arrLabels[$k] : ucfirst($k)) . ': ' . (is_array($v) ? implode(', ', $v) : $v) . "\n";
+            $arrTokens['formlabel_'.$k] = $arrLabels[$k] ?? ucfirst($k);
+            $arrTokens['raw_data'] .= ($arrLabels[$k] ?? ucfirst($k)).': '.(\is_array($v) ? implode(', ', $v) : $v)."\n";
         }
 
         foreach ($arrForm as $k => $v) {

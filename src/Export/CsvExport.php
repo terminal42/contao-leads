@@ -1,9 +1,11 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -18,8 +20,6 @@ class CsvExport extends AbstractExport
 {
     /**
      * Returns true if available.
-     *
-     * @return bool
      */
     public function isAvailable(): bool
     {
@@ -31,7 +31,7 @@ class CsvExport extends AbstractExport
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
 
         $reader = new ArrayReader($dataCollector->getExportData());
-        $writer = new CsvFileWriter('system/tmp/' . $this->exportFile->getFilenameForConfig($config));
+        $writer = new CsvFileWriter('system/tmp/'.$this->exportFile->getFilenameForConfig($config));
 
         // Add header fields
         if ($config->headerFields) {
@@ -41,7 +41,7 @@ class CsvExport extends AbstractExport
 
         $columnConfig = $this->prepareDefaultExportConfig($config, $dataCollector);
 
-        $writer->setRowCallback(function($data) use ($config, $columnConfig) {
+        $writer->setRowCallback(function ($data) use ($config, $columnConfig) {
             return $this->dataTransformer->compileRow($data, $config, $columnConfig);
         });
 

@@ -1,9 +1,11 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -19,14 +21,13 @@ class YesnoTransformer extends AbstractTransformer
      *
      * @param mixed $value The value in the original representation
      *
-     * @return mixed The value in the transformed representation
+     * @throws TransformationFailedException when the transformation fails
      *
-     * @throws TransformationFailedException When the transformation fails.
+     * @return mixed The value in the transformed representation
      */
     public function transform($value)
     {
-        if ($value == '1') {
-
+        if ('1' === $value) {
             return $GLOBALS['TL_LANG']['MSC']['yes'];
         }
 
@@ -40,14 +41,13 @@ class YesnoTransformer extends AbstractTransformer
      *
      * @param mixed $value The value in the transformed representation
      *
-     * @return mixed The value in the original representation
+     * @throws TransformationFailedException when the transformation fails
      *
-     * @throws TransformationFailedException When the transformation fails.
+     * @return mixed The value in the original representation
      */
     public function reverseTransform($value)
     {
-        if ($value == $GLOBALS['TL_LANG']['MSC']['yes']) {
-
+        if ($value === $GLOBALS['TL_LANG']['MSC']['yes']) {
             return '1';
         }
 

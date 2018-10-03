@@ -1,9 +1,11 @@
 <?php
 
-/**
+declare(strict_types=1);
+
+/*
  * leads Extension for Contao Open Source CMS
  *
- * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
+ * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
  * @link       http://github.com/terminal42/contao-leads
@@ -14,19 +16,12 @@ namespace Terminal42\LeadsBundle\DataTransformer;
 abstract class AbstractDateTransformer extends AbstractTransformer
 {
     /**
-     * PHP date format
+     * PHP date format.
      */
     protected $format;
 
     /**
-     * Transforms a value from the original representation to a transformed representation.
-     * An example might be transforming a unix timestamp to a human readable date format.
-     *
-     * @param mixed $value The value in the original representation
-     *
-     * @return mixed The value in the transformed representation
-     *
-     * @throws TransformationFailedException When the transformation fails.
+     * {@inheritdoc}
      */
     public function transform($value)
     {
@@ -34,21 +29,12 @@ abstract class AbstractDateTransformer extends AbstractTransformer
     }
 
     /**
-     * Transforms a value from the transformed representation to its original
-     * representation.
-     * An example might be transforming a human readable date format to a unix timestamp.
-     *
-     * @param mixed $value The value in the transformed representation
-     *
-     * @return mixed The value in the original representation
-     *
-     * @throws TransformationFailedException When the transformation fails.
+     * {@inheritdoc}
      */
     public function reverseTransform($value)
     {
         try {
             return (new \Date($value, $this->format))->tstamp;
-
         } catch (\Exception $e) {
             throw new TransformationFailedException($e->getMessage(), 0, $e);
         }
