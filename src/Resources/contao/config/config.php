@@ -38,9 +38,6 @@ if ('BE' === TL_MODE) {
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadLanguageFile'][]  = array('Terminal42\LeadsBundle\Leads', 'loadLeadName');
-$GLOBALS['TL_HOOKS']['getUserNavigation'][] = array('Terminal42\LeadsBundle\EventListener\UserNavigationListener', 'onGetUserNavigation');
-$GLOBALS['TL_HOOKS']['processFormData'][]   = array('Terminal42\LeadsBundle\Leads', 'processFormData');
 $GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Leads', 'handleSystemColumnExports');
 $GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Leads', 'handleTokenExports');
 

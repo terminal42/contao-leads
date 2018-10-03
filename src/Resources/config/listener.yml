@@ -1,4 +1,13 @@
 services:
+    Terminal42\LeadsBundle\EventListener\FormDataListener:
+        tags:
+        - { name: contao.hook, hook: processFormData }
+
+    Terminal42\LeadsBundle\EventListener\UserNavigationListener:
+        tags:
+        - { name: contao.hook, hook: loadLanguageFile }
+        - { name: contao.hook, hook: getUserNavigation }
+
     Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener:
         public: true
         arguments:

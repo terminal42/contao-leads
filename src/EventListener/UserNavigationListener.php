@@ -42,6 +42,18 @@ class UserNavigationListener
         $this->user    = BackendUser::getInstance();
     }
 
+    public function onLoadLanguageFile(string $name): void
+    {
+        if ('modules' === $name && 'lead' === \Input::get('do')) {
+            $objForm = $this->db
+                ->prepare("SELECT * FROM tl_form WHERE id=?")
+                ->execute(\Input::get('master'))
+            ;
+
+            $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ?: $objForm->title;
+        }
+    }
+
     /**
      * Add leads to the backend navigation.
      *
