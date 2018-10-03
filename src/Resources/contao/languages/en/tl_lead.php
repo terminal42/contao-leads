@@ -6,9 +6,8 @@
  * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
+ * @see       http://github.com/terminal42/contao-leads
  */
-
 
 /**
  * Fields
@@ -20,7 +19,6 @@ $GLOBALS['TL_LANG']['tl_lead']['created']           = array('Received');
 $GLOBALS['TL_LANG']['tl_lead']['member']            = array('Member');
 $GLOBALS['TL_LANG']['tl_lead']['notification_list'] = array('Notification', 'Please choose the notification to send.');
 
-
 /**
  * Buttons
  */
@@ -30,7 +28,6 @@ $GLOBALS['TL_LANG']['tl_lead']['notification']      = array('Send notification',
 $GLOBALS['TL_LANG']['tl_lead']['data']              = array('Lead data', 'Show field data of lead ID %s');
 $GLOBALS['TL_LANG']['tl_lead']['export']            = array('Export', 'Downloads leads as file');
 $GLOBALS['TL_LANG']['tl_lead']['export_config']     = array('Configuration', 'Define export configuration');
-
 
 /**
  * References

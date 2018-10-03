@@ -6,16 +6,14 @@
  * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
+ * @see       http://github.com/terminal42/contao-leads
  */
-
 
 /**
  * Load forms language
  */
 \System::loadLanguageFile('tl_form');
 \System::loadLanguageFile('tl_form_field');
-
 
 /**
  * Fields
@@ -39,14 +37,12 @@ $GLOBALS['TL_LANG']['tl_lead_export']['tokenFields_tokensValue']  = array('Simpl
 $GLOBALS['TL_LANG']['tl_lead_export']['lastRun']                  = array('Letztes Exportdatum', 'Bitte geben Sie hier das letzte Exportdatum an. Der Wert wird automatisch bei aktivierter Option geändert.');
 $GLOBALS['TL_LANG']['tl_lead_export']['skipLastRun']              = array('Nur neue Anfragen seit letztem Export exportieren', 'Wählen Sie hier ob nur die neuen Anfrage-Daten seit dem letzten Exportdatum exportiert werden sollen.');
 
-
 /**
  * Legends
  */
 $GLOBALS['TL_LANG']['tl_lead_export']['name_legend']   = 'Name und Datentyp';
 $GLOBALS['TL_LANG']['tl_lead_export']['config_legend'] = 'Konfiguration';
 $GLOBALS['TL_LANG']['tl_lead_export']['date_legend']   = 'Export-Datum';
-
 
 /**
  * Reference
@@ -68,15 +64,12 @@ $GLOBALS['TL_LANG']['tl_lead_export']['field_created']                      = 'E
 $GLOBALS['TL_LANG']['tl_lead_export']['field_member']                       = 'Mitglied';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_skip']                         = 'Spalte überspringen';
 
-
-
 /**
  * Export types
  */
 $GLOBALS['TL_LANG']['tl_lead_export']['type']['csv']  = 'CSV (.csv)';
 $GLOBALS['TL_LANG']['tl_lead_export']['type']['xls']  = 'Excel 97/2000/2003 (.xls)';
 $GLOBALS['TL_LANG']['tl_lead_export']['type']['xlsx'] = 'Excel 2007/2010 (.xlsx)';
-
 
 /**
  * Buttons

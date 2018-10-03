@@ -6,7 +6,7 @@
  * @copyright  Copyright (c) 2011-2015, terminal42 gmbh
  * @author     terminal42 gmbh <info@terminal42.ch>
  * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
+ * @see       http://github.com/terminal42/contao-leads
  */
 
 /**
@@ -230,7 +230,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'inputType'               => 'text',
             'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'clr long'),
             'sql'                     => "varchar(255) NOT NULL default ''",
-            'save_callback'           => [[Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onSaveTargetPath']],
+            'save_callback'           => array(array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onSaveTargetPath')),
         ),
         'fields' => array
         (
@@ -278,7 +278,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                 ),
             )),
             'sql'                     => "blob NULL",
-            'load_callback'           => array([Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onFieldsLoadCallback'])
+            'load_callback'           => array(array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onFieldsLoadCallback'))
         ),
         'tokenFields' => array
         (
