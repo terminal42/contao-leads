@@ -11,13 +11,12 @@
 
 namespace Terminal42\LeadsBundle\DataTransformer;
 
-
-abstract class AbstractDateTransformer implements DataTransformerInterface, DisplayInBackendInterface
+abstract class AbstractDateTransformer extends AbstractTransformer
 {
     /**
      * PHP date format
      */
-    protected $format = null;
+    protected $format;
 
     /**
      * Transforms a value from the original representation to a transformed representation.
@@ -48,12 +47,10 @@ abstract class AbstractDateTransformer implements DataTransformerInterface, Disp
     public function reverseTransform($value)
     {
         try {
-            $date = new \Date($value, $this->format);
-
-            return $date->tstamp;
+            return (new \Date($value, $this->format))->tstamp;
 
         } catch (\Exception $e) {
-            throw new TransformationFailedException($e->getMessage());
+            throw new TransformationFailedException($e->getMessage(), 0, $e);
         }
     }
 }

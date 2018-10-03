@@ -14,8 +14,6 @@ namespace Terminal42\LeadsBundle\Export;
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
-use Terminal42\LeadsBundle\Export\Utils\File;
-use Terminal42\LeadsBundle\Export\Utils\Row;
 use PHPExcel_Cell;
 use PHPExcel_IOFactory;
 
@@ -50,31 +48,30 @@ abstract class AbstractExcelExport extends AbstractExport
             $reader->setHeaderFields($this->prepareDefaultHeaderFields($config, $dataCollector));
         }
 
-        $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
+        $columnConfig = $this->prepareDefaultExportConfig($config, $dataCollector);
 
         if ($config->useTemplate) {
-            return $this->exportWithTemplate($config, $reader, $row, $format);
+            return $this->exportWithTemplate($config, $columnConfig, $reader, $format);
         }
 
-        return $this->exportWithoutTemplate($config, $reader, $row, $format);
+        return $this->exportWithoutTemplate($config, $columnConfig, $reader, $format);
     }
 
     /**
      * Default export without template.
      *
      * @param               $config
+     * @param array         $columnConfig
      * @param ArrayReader   $reader
-     * @param Row           $row
      * @param               $format
      *
      * @return \Contao\File
-     *
      * @throws ExportFailedException
      */
     protected function exportWithoutTemplate(
         $config,
+        array $columnConfig,
         ArrayReader $reader,
-        Row $row,
         $format
     ) {
         $writer = new ExcelFileWriter('system/tmp/' . $this->exportFile->getFilenameForConfig($config));
@@ -85,8 +82,8 @@ abstract class AbstractExcelExport extends AbstractExport
             $writer->enableHeaderFields();
         }
 
-        $writer->setRowCallback(function($data) use ($row) {
-            return $row->compile($data);
+        $writer->setRowCallback(function($data) use ($config, $columnConfig) {
+            return $this->dataTransformer->compileRow($data, $config, $columnConfig);
         });
 
         $this->handleDefaultExportResult($writer->writeFrom($reader));
@@ -100,16 +97,16 @@ abstract class AbstractExcelExport extends AbstractExport
      * Export with template.
      *
      * @param               $config
+     * @param array         $columnConfig
      * @param ArrayReader   $reader
-     * @param Row           $row
      * @param               $format
      *
      * @return \Contao\File
      */
     protected function exportWithTemplate(
         $config,
+        array $columnConfig,
         ArrayReader $reader,
-        Row $row,
         $format
     ) {
         // Fetch the template and make a copy of it
@@ -133,7 +130,7 @@ abstract class AbstractExcelExport extends AbstractExport
         $currentColumn = 0;
 
         foreach ($reader as $readerRow) {
-            $compiledRow = $row->compile($readerRow);
+            $compiledRow = $this->dataTransformer->compileRow($readerRow, $config, $columnConfig);
 
             foreach ($compiledRow as $k => $value) {
                 // Support explicit target column

@@ -274,7 +274,6 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                     'exclude'                 => true,
                     'inputType'               => 'select',
                     'options_callback'        => array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onFormatOptionsCallback'),
-                    'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_format'],
                     'eval'                    => array('style'=>'width:150px;')
                 ),
             )),

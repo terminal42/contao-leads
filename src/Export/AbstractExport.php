@@ -12,23 +12,30 @@ namespace Terminal42\LeadsBundle\Export;
 
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Leads;
+use Terminal42\LeadsBundle\Util\DataTransformer;
 use Terminal42\LeadsBundle\Util\ExportFile;
 
 abstract class AbstractExport implements ExportInterface
 {
     /**
-     * Last run that will be updated
-     * @var int
+     * @var DataTransformer
      */
-    protected $newLastRun;
+    protected $dataTransformer;
 
     /**
      * @var ExportFile
      */
     protected $exportFile;
 
-    public function __construct(ExportFile $exportFile)
+    /**
+     * Last run that will be updated
+     * @var int
+     */
+    protected $newLastRun;
+
+    public function __construct(DataTransformer $dataTransformer, ExportFile $exportFile)
     {
+        $this->dataTransformer = $dataTransformer;
         $this->exportFile = $exportFile;
     }
 
@@ -52,7 +59,7 @@ abstract class AbstractExport implements ExportInterface
     /**
      * Prepares the default DataCollector instance based on the configuration.
      *
-     * @param \Database\Result $config
+     * @param \stdClass $config
      * @param array|null       $ids
      *
      * @return DataCollector

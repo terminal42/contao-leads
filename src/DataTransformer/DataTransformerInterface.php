@@ -13,6 +13,10 @@ namespace Terminal42\LeadsBundle\DataTransformer;
 
 interface DataTransformerInterface
 {
+    public function getType(): string;
+
+    public function getLabel(): string;
+
     /**
      * Transforms a value from the original representation to a transformed representation.
      * An example might be transforming a unix timestamp to a human readable date format.

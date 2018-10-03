@@ -8,6 +8,14 @@ services:
         - { name: contao.hook, hook: loadLanguageFile }
         - { name: contao.hook, hook: getUserNavigation }
 
+    Terminal42\LeadsBundle\EventListener\SystemColumnRowListener:
+        arguments: ['@Terminal42\LeadsBundle\Util\DataTransformer']
+        tags: [{ name: kernel.event_listener, event: terminal42_leads.transform_row, method: onTransformRow, priority: 100 }]
+
+    Terminal42\LeadsBundle\EventListener\TokenRowListener:
+        arguments: ['@Terminal42\LeadsBundle\Util\DataTransformer']
+        tags: [{ name: kernel.event_listener, event: terminal42_leads.transform_row, method: onTransformRow }]
+
     Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener:
         public: true
         arguments:
@@ -18,3 +26,4 @@ services:
         public: true
         arguments:
             - '@Terminal42\LeadsBundle\Export\ExportFactory'
+            - '@Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory'

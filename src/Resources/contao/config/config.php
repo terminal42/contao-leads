@@ -34,22 +34,3 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 if ('BE' === TL_MODE) {
     $GLOBALS['TL_CSS'][] = 'bundles/terminal42leads/leads.css';
 }
-
-/**
- * Hooks
- */
-$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Leads', 'handleSystemColumnExports');
-$GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Leads', 'handleTokenExports');
-
-/**
- * Data transformers
- */
-$GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
-(
-    'raw'               => 'Terminal42\LeadsBundle\DataTransformer\RawTransformer',
-    'date'              => 'Terminal42\LeadsBundle\DataTransformer\DateTransformer',
-    'datim'             => 'Terminal42\LeadsBundle\DataTransformer\DatimTransformer',
-    'time'              => 'Terminal42\LeadsBundle\DataTransformer\TimeTransformer',
-    'yesno'             => 'Terminal42\LeadsBundle\DataTransformer\YesNoTransformer',
-    'uuidToFilePath'    => 'Terminal42\LeadsBundle\DataTransformer\UuidToFilePathTransformer',
-);

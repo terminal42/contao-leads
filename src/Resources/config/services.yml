@@ -10,20 +10,41 @@ services:
             - '@filesystem'
         tags: ['console.command']
 
-    Terminal42\LeadsBundle\Util\NotificationCenter:
-        arguments: ['%kernel.bundles%']
+    Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory:
+        arguments: [!tagged terminal42_leads.data_transformer]
+
+    Terminal42\LeadsBundle\DataTransformer\DateTransformer: ~
+    Terminal42\LeadsBundle\DataTransformer\DatimTransformer: ~
+    Terminal42\LeadsBundle\DataTransformer\RawTransformer: ~
+    Terminal42\LeadsBundle\DataTransformer\TimeTransformer: ~
+    Terminal42\LeadsBundle\DataTransformer\UuidToFilePathTransformer: ~
+    Terminal42\LeadsBundle\DataTransformer\YesnoTransformer: ~
 
     Terminal42\LeadsBundle\Export\ExportFactory:
         arguments: [!tagged terminal42_leads.export, '@database_connection']
 
     Terminal42\LeadsBundle\Export\CsvExport:
-        arguments: ['@Terminal42\LeadsBundle\Util\ExportFile']
+        arguments:
+            - '@Terminal42\LeadsBundle\Util\DataTransformer'
+            - '@Terminal42\LeadsBundle\Util\ExportFile'
 
     Terminal42\LeadsBundle\Export\XlsExport:
-        arguments: ['@Terminal42\LeadsBundle\Util\ExportFile']
+        arguments:
+            - '@Terminal42\LeadsBundle\Util\DataTransformer'
+            - '@Terminal42\LeadsBundle\Util\ExportFile'
 
     Terminal42\LeadsBundle\Export\XlsxExport:
-        arguments: ['@Terminal42\LeadsBundle\Util\ExportFile']
+        arguments:
+            - '@Terminal42\LeadsBundle\Util\DataTransformer'
+            - '@Terminal42\LeadsBundle\Util\ExportFile'
+
+    Terminal42\LeadsBundle\Util\DataTransformer:
+        arguments:
+            - '@event_dispatcher'
+            - '@Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory'
 
     Terminal42\LeadsBundle\Util\ExportFile:
         arguments: ['@event_dispatcher']
+
+    Terminal42\LeadsBundle\Util\NotificationCenter:
+        arguments: ['%kernel.bundles%']

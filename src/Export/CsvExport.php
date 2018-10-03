@@ -13,8 +13,6 @@ namespace Terminal42\LeadsBundle\Export;
 
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
-use Terminal42\LeadsBundle\Export\Utils\File;
-use Terminal42\LeadsBundle\Export\Utils\Row;
 
 class CsvExport extends AbstractExport
 {
@@ -41,10 +39,10 @@ class CsvExport extends AbstractExport
             $writer->enableHeaderFields();
         }
 
-        $row = new Row($config, $this->prepareDefaultExportConfig($config, $dataCollector));
+        $columnConfig = $this->prepareDefaultExportConfig($config, $dataCollector);
 
-        $writer->setRowCallback(function($data) use ($row) {
-            return $row->compile($data);
+        $writer->setRowCallback(function($data) use ($config, $columnConfig) {
+            return $this->dataTransformer->compileRow($data, $config, $columnConfig);
         });
 
         $this->handleDefaultExportResult($writer->writeFrom($reader));

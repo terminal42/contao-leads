@@ -11,7 +11,7 @@
 
 namespace Terminal42\LeadsBundle\DataTransformer;
 
-class RawTransformer implements DataTransformerInterface, DisplayInBackendInterface
+class RawTransformer extends AbstractTransformer
 {
     /**
      * Transforms a value from the original representation to a transformed representation.

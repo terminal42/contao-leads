@@ -7,6 +7,7 @@ use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
+use Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory;
 use Terminal42\LeadsBundle\Export\ExportFactory;
 
 class LeadExportListener
@@ -16,9 +17,15 @@ class LeadExportListener
      */
     private $exportFactory;
 
-    public function __construct(ExportFactory $exportFactory)
+    /**
+     * @var DataTransformerFactory
+     */
+    private $dataTransformers;
+
+    public function __construct(ExportFactory $exportFactory, DataTransformerFactory $dataTransformers)
     {
         $this->exportFactory = $exportFactory;
+        $this->dataTransformers = $dataTransformers;
     }
 
     public function onLoadCallback(DataContainer $dc)
@@ -143,23 +150,11 @@ class LeadExportListener
     {
         $options = array();
 
-        foreach (array_keys($GLOBALS['LEADS_DATA_TRANSFORMERS']) as $transformerClassKey) {
-
-            /** @var \Terminal42\LeadsBundle\DataTransformer\DataTransformerInterface $transformer */
-            $transformer = new $GLOBALS['LEADS_DATA_TRANSFORMERS'][$transformerClassKey]();
-
-            if ($transformer instanceof \Terminal42\LeadsBundle\DataTransformer\DataTransformerInterface
-                && $transformer instanceof \Terminal42\LeadsBundle\DataTransformer\DisplayInBackendInterface
-            ) {
-                $options[] = $transformerClassKey;
-            }
+        foreach ($this->dataTransformers->getServices() as $dataTransformer) {
+            $options[$dataTransformer->getType()] = $dataTransformer->getLabel();
         }
 
-        // Backwards compatibility
-        return array_merge(
-            (array) $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['format']['options'],
-            $options
-        );
+        return $options;
     }
 
     /**

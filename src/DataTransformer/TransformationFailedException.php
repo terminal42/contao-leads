@@ -11,4 +11,6 @@
 
 namespace Terminal42\LeadsBundle\DataTransformer;
 
-class TransformationFailedException extends \Exception {}
+class TransformationFailedException extends \RuntimeException
+{
+}

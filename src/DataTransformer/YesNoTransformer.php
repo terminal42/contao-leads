@@ -11,7 +11,7 @@
 
 namespace Terminal42\LeadsBundle\DataTransformer;
 
-class YesNoTransformer implements DataTransformerInterface
+class YesnoTransformer extends AbstractTransformer
 {
     /**
      * Transforms a value from the original representation to a transformed representation.

@@ -65,6 +65,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['date']              = &$
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['datim']             = &$GLOBALS['TL_LANG']['tl_form_field']['datim'][0];
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['time']              = &$GLOBALS['TL_LANG']['tl_form_field']['time'][0];
 $GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['uuidToFilePath']    = 'File UUID -> File path';
+$GLOBALS['TL_LANG']['tl_lead_export']['fields_format']['yesno']             = 'Yes/No';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_form']                         = 'Form';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_created']                      = 'Date created';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_member']                       = 'Member';
