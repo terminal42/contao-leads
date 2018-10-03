@@ -5,6 +5,7 @@ namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 use Contao\Controller;
 use Contao\Input;
 use Contao\System;
+use Haste\Util\StringUtil;
 use Terminal42\LeadsBundle\Export\ExportFactory;
 use Terminal42\LeadsBundle\Util\NotificationCenter;
 
@@ -57,10 +58,10 @@ class LeadListener
         $objData = \Database::getInstance()->prepare("SELECT * FROM tl_lead_data WHERE pid=?")->execute($row['id']);
 
         while ($objData->next()) {
-            \Haste\Util\StringUtil::flatten(deserialize($objData->value), $objData->name, $arrTokens);
+            StringUtil::flatten(deserialize($objData->value), $objData->name, $arrTokens);
         }
 
-        return \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($objForm->leadLabel, $arrTokens);
+        return StringUtil::recursiveReplaceTokensAndTags($objForm->leadLabel, $arrTokens);
     }
 
     /**

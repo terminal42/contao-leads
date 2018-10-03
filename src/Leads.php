@@ -12,8 +12,8 @@
 namespace Terminal42\LeadsBundle;
 
 use Haste\Util\Format;
+use Haste\Util\StringUtil;
 use Terminal42\LeadsBundle\Export\Utils\Row;
-use Terminal42\LeadsBundle\Export\Utils\Tokens;
 
 class Leads extends \Controller
 {
@@ -134,7 +134,7 @@ class Leads extends \Controller
             $tokens[$fieldConfig['name']] = $value;
         }
 
-        return Tokens::recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens);
+        return StringUtil::recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens);
     }
 
 
