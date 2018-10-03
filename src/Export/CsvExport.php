@@ -16,29 +16,19 @@ use Haste\IO\Writer\CsvFileWriter;
 use Terminal42\LeadsBundle\Export\Utils\File;
 use Terminal42\LeadsBundle\Export\Utils\Row;
 
-class Csv extends AbstractExport
+class CsvExport extends AbstractExport
 {
     /**
      * Returns true if available.
      *
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable(): bool
     {
         return true;
     }
 
-    /**
-     * Exports a given set of data row ids using a given configuration.
-     *
-     * @param \Database\Result $config
-     * @param array|null       $ids
-     *
-     * @return \Contao\File
-     *
-     * @throws ExportFailedException
-     */
-    public function export($config, $ids = null)
+    public function export(\stdClass $config, $ids = null): \Contao\File
     {
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
 

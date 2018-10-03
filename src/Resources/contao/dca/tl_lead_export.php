@@ -140,13 +140,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
         'type' => array
         (
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['type'],
-            'default'                 => key($GLOBALS['LEADS_EXPORT']),
             'exclude'                 => true,
             'filter'                  => true,
             'inputType'               => 'select',
             'options_callback'        => array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onTypeOptionsCallback'),
-            'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['type'],
-            'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'w50'),
+            'eval'                    => array('submitOnChange'=>true, 'includeBlankOption'=>true, 'tl_class'=>'w50'),
             'sql'                     => "varchar(32) NOT NULL default ''"
         ),
         'filename' => array

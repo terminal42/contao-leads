@@ -10,8 +10,6 @@
  */
 namespace Terminal42\LeadsBundle\Export;
 
-
-use Contao\File;
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Leads;
 
@@ -21,14 +19,24 @@ abstract class AbstractExport implements ExportInterface
      * Last run that will be updated
      * @var int
      */
-    protected $newLastRun = null;
+    protected $newLastRun;
 
-    /**
-     * Returns true if available.
-     *
-     * @return bool
-     */
-    abstract public function isAvailable();
+    public function getType(): string
+    {
+        $className = get_called_class();
+        $className = substr($className, strrpos($className, '\\') + 1);
+
+        if ('Export' === substr($className, -6)) {
+            $className = substr($className, 0, -6);
+        }
+
+        return lcfirst($className);
+    }
+
+    public function getLabel(): string
+    {
+        return $GLOBALS['TL_LANG']['tl_lead_export']['type'][$this->getType()] ?? $this->getType();
+    }
 
     /**
      * Prepares the default DataCollector instance based on the configuration.

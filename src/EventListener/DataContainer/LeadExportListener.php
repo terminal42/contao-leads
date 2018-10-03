@@ -7,15 +7,25 @@ use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
+use Terminal42\LeadsBundle\Export\ExportFactory;
 
 class LeadExportListener
 {
+    /**
+     * @var ExportFactory
+     */
+    private $exportFactory;
+
+    public function __construct(ExportFactory $exportFactory)
+    {
+        $this->exportFactory = $exportFactory;
+    }
+
     public function onLoadCallback(DataContainer $dc)
     {
         $this->checkPermission();
         $this->updatePalette($dc);
         $this->loadJsAndCss();
-
     }
 
     public function onChildRecordCallback(array $row): string
@@ -27,24 +37,8 @@ class LeadExportListener
     {
         $options = array();
 
-        foreach (array_keys($GLOBALS['LEADS_EXPORT']) as $exporterClassKey) {
-
-            $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$exporterClassKey];
-
-            if (!is_array($exporterDefinition)) {
-
-                /** @var \Terminal42\LeadsBundle\Export\ExportInterface $exporter */
-                $exporter = new $exporterDefinition();
-
-                if ($exporter instanceof \Terminal42\LeadsBundle\Export\ExportInterface
-                    && $exporter->isAvailable()
-                ) {
-                    $options[] = $exporterClassKey;
-                }
-            } else {
-                // Backwards compatibility
-                $options[] = $exporterClassKey;
-            }
+        foreach ($this->exportFactory->getServices() as $export) {
+            $options[$export->getType()] = $export->getLabel();
         }
 
         return $options;

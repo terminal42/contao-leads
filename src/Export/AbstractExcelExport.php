@@ -26,7 +26,7 @@ abstract class AbstractExcelExport extends AbstractExport
      *
      * @return bool
      */
-    public function isAvailable()
+    public function isAvailable(): bool
     {
         return class_exists('PHPExcel') && class_exists('PHPExcel_IOFactory');
     }

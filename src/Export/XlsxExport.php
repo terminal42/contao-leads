@@ -10,8 +10,9 @@
  */
 namespace Terminal42\LeadsBundle\Export;
 
+use Contao\File;
 
-class Xlsx extends AbstractExcelExport
+class XlsxExport extends AbstractExcelExport
 {
     /**
      * Exports a given set of data row ids using a given configuration.
@@ -21,7 +22,7 @@ class Xlsx extends AbstractExcelExport
      *
      * @return \Contao\File
      */
-    public function export($config, $ids = null)
+    public function export(\stdClass $config, $ids = null): File
     {
         return $this->exportWithFormat($config, $ids, 'Excel2007');
     }

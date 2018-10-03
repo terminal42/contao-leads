@@ -8,18 +8,45 @@ use Doctrine\DBAL\FetchMode;
 class ExportFactory
 {
     /**
+     * @var iterable
+     */
+    private $services;
+
+    /**
+     * @var ExportInterface[]
+     */
+    private $instances;
+
+    /**
      * @var Connection
      */
     private $database;
 
-    public function __construct(Connection $database)
+    public function __construct(iterable $services, Connection $database)
     {
         $this->database = $database;
+        $this->services = $services;
+    }
+
+    /**
+     * @return ExportInterface[]
+     */
+    public function getServices(): array
+    {
+        $this->loadServices();
+
+        return $this->instances;
     }
 
     public function createForType(string $type): ExportInterface
     {
-        return new $GLOBALS['LEADS_EXPORT'][$type]();
+        $this->loadServices();
+
+        if (!isset($this->instances[$type])) {
+            throw new \InvalidArgumentException(sprintf('Export type "%s" does not exist.', $type));
+        }
+
+        return $this->instances[$type];
     }
 
     public function buildConfig(int $configId): \stdClass
@@ -48,5 +75,26 @@ class ExportFactory
         $config->tokenFields = deserialize($config->tokenFields, true);
 
         return $config;
+    }
+
+    private function loadServices()
+    {
+        if (null !== $this->instances) {
+            return;
+        }
+
+        $this->instances = [];
+
+        foreach ($this->services as $service) {
+            if (!$service instanceof ExportInterface) {
+                throw new \RuntimeException(sprintf('"%s" must implement %s', get_class($service), ExportInterface::class));
+            }
+
+            if (!$service->isAvailable()) {
+                return;
+            }
+
+            $this->instances[$service->getType()] = $service;
+        }
     }
 }

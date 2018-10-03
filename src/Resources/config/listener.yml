@@ -13,3 +13,8 @@ services:
         arguments:
             - '@Terminal42\LeadsBundle\Util\NotificationCenter'
             - '@Terminal42\LeadsBundle\Export\ExportFactory'
+
+    Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener:
+        public: true
+        arguments:
+            - '@Terminal42\LeadsBundle\Export\ExportFactory'

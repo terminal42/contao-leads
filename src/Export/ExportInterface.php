@@ -15,20 +15,11 @@ use Contao\File;
 
 interface ExportInterface
 {
-    /**
-     * Returns true if available.
-     *
-     * @return bool
-     */
-    public function isAvailable();
+    public function getType(): string;
 
-    /**
-     * Exports a given set of data row ids using a given configuration.
-     *
-     * @param \Database\Result $config
-     * @param array|null       $ids
-     *
-     * @return File
-     */
-    public function export($config, $ids = null);
+    public function getLabel(): string;
+
+    public function isAvailable(): bool;
+
+    public function export(\stdClass $config, $ids = null): File;
 }

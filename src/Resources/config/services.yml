@@ -1,15 +1,23 @@
 services:
+    _defaults:
+        autoconfigure: true
+
     Terminal42\LeadsBundle\Command\ExportCommand:
         arguments:
             - '@contao.framework'
             - '@database_connection'
             - '@Terminal42\LeadsBundle\Export\ExportFactory'
             - '@filesystem'
-        tags:
-            - { name: console.command }
+        tags: ['console.command']
 
     Terminal42\LeadsBundle\Util\NotificationCenter:
         arguments: ['%kernel.bundles%']
 
     Terminal42\LeadsBundle\Export\ExportFactory:
-        arguments: ['@database_connection']
+        arguments: [!tagged terminal42_leads.export, '@database_connection']
+
+    Terminal42\LeadsBundle\Export\CsvExport: ~
+
+    Terminal42\LeadsBundle\Export\XlsExport: ~
+
+    Terminal42\LeadsBundle\Export\XlsxExport: ~

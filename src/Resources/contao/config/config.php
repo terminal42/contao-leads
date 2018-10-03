@@ -42,16 +42,6 @@ $GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Lead
 $GLOBALS['TL_HOOKS']['getLeadsExportRow'][] = array('Terminal42\LeadsBundle\Leads', 'handleTokenExports');
 
 /**
- * Leads export types
- */
-$GLOBALS['LEADS_EXPORT'] = array
-(
-    'csv'   => 'Terminal42\LeadsBundle\Exporter\Csv',
-    'xls'   => 'Terminal42\LeadsBundle\Exporter\Xls',
-    'xlsx'  => 'Terminal42\LeadsBundle\Exporter\Xlsx',
-);
-
-/**
  * Data transformers
  */
 $GLOBALS['LEADS_DATA_TRANSFORMERS'] = array
