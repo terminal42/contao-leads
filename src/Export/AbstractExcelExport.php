@@ -77,7 +77,7 @@ abstract class AbstractExcelExport extends AbstractExport
         Row $row,
         $format
     ) {
-        $writer = new ExcelFileWriter('system/tmp/' . File::getName($config));
+        $writer = new ExcelFileWriter('system/tmp/' . $this->exportFile->getFilenameForConfig($config));
         $writer->setFormat($format);
 
         // Add header fields
@@ -120,7 +120,7 @@ abstract class AbstractExcelExport extends AbstractExport
             $objResponse->send();
         }
 
-        $tmpPath = 'system/tmp/' . File::getName($config);
+        $tmpPath = 'system/tmp/' . $this->exportFile->getFilenameForConfig($config);
         \Files::getInstance()->copy($template->path, $tmpPath);
 
         $excelReader = PHPExcel_IOFactory::createReader($format);

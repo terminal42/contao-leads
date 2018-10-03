@@ -12,6 +12,7 @@ namespace Terminal42\LeadsBundle\Export;
 
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Leads;
+use Terminal42\LeadsBundle\Util\ExportFile;
 
 abstract class AbstractExport implements ExportInterface
 {
@@ -20,6 +21,16 @@ abstract class AbstractExport implements ExportInterface
      * @var int
      */
     protected $newLastRun;
+
+    /**
+     * @var ExportFile
+     */
+    protected $exportFile;
+
+    public function __construct(ExportFile $exportFile)
+    {
+        $this->exportFile = $exportFile;
+    }
 
     public function getType(): string
     {

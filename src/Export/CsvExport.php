@@ -33,7 +33,7 @@ class CsvExport extends AbstractExport
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
 
         $reader = new ArrayReader($dataCollector->getExportData());
-        $writer = new CsvFileWriter('system/tmp/' . File::getName($config));
+        $writer = new CsvFileWriter('system/tmp/' . $this->exportFile->getFilenameForConfig($config));
 
         // Add header fields
         if ($config->headerFields) {

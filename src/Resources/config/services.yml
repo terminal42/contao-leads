@@ -16,8 +16,14 @@ services:
     Terminal42\LeadsBundle\Export\ExportFactory:
         arguments: [!tagged terminal42_leads.export, '@database_connection']
 
-    Terminal42\LeadsBundle\Export\CsvExport: ~
+    Terminal42\LeadsBundle\Export\CsvExport:
+        arguments: ['@Terminal42\LeadsBundle\Util\ExportFile']
 
-    Terminal42\LeadsBundle\Export\XlsExport: ~
+    Terminal42\LeadsBundle\Export\XlsExport:
+        arguments: ['@Terminal42\LeadsBundle\Util\ExportFile']
 
-    Terminal42\LeadsBundle\Export\XlsxExport: ~
+    Terminal42\LeadsBundle\Export\XlsxExport:
+        arguments: ['@Terminal42\LeadsBundle\Util\ExportFile']
+
+    Terminal42\LeadsBundle\Util\ExportFile:
+        arguments: ['@event_dispatcher']
