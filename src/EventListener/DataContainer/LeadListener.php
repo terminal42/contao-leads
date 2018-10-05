@@ -17,6 +17,7 @@ use Contao\Controller;
 use Contao\Input;
 use Contao\System;
 use Haste\Util\StringUtil;
+use Symfony\Component\Routing\RouterInterface;
 use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 use Terminal42\LeadsBundle\Util\NotificationCenter;
 
@@ -32,10 +33,16 @@ class LeadListener
      */
     private $exportFactory;
 
-    public function __construct(NotificationCenter $notificationCenter, ExporterFactory $exportFactory)
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    public function __construct(NotificationCenter $notificationCenter, ExporterFactory $exportFactory, RouterInterface $router)
     {
         $this->notificationCenter = $notificationCenter;
         $this->exportFactory = $exportFactory;
+        $this->router = $router;
     }
 
     public function onLoadCallback(): void
@@ -95,6 +102,18 @@ class LeadListener
         }
 
         return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id='.Input::get('master').'" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
+    }
+
+    public function onShowButtonCallback(array $row, $href, $label, $title, $icon, $attributes, $table)
+    {
+        return sprintf(
+            '<a href="%s" title="%s" onclick="Backend.openModalIframe({\'title\':\'%s\',\'url\':this.href});return false"%s>%s</a> ',
+            $this->router->generate('terminal42_leads.details', ['id' => $row['id'], 'popup' => 1]),
+            \StringUtil::specialchars($title),
+            \StringUtil::specialchars(str_replace("'", "\\'", sprintf($GLOBALS['TL_LANG'][$table]['show'][1], $row['id']))),
+            $attributes,
+            \Image::getHtml($icon, $label)
+        );
     }
 
     /**

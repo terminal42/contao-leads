@@ -1,11 +1,15 @@
 services:
+    _defaults:
+        autoconfigure: true
+
     Terminal42\LeadsBundle\Controller\Backend\LeadExportController:
         public: true
         arguments: ['@Terminal42\LeadsBundle\Exporter\ExporterFactory']
 
     Terminal42\LeadsBundle\Controller\Backend\LeadNotificationController:
-        arguments: ['@Terminal42\LeadsBundle\Util\NotificationCenter']
         public: true
+        arguments: ['@Terminal42\LeadsBundle\Util\NotificationCenter']
 
     Terminal42\LeadsBundle\Controller\Backend\LeadDetailsController:
         public: true
+        arguments: ['@contao.framework', '@twig']

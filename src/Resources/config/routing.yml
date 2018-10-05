@@ -1,0 +1,3 @@
+terminal42_leads:
+    resource: '@Terminal42LeadsBundle/Controller/'
+    type:     annotation

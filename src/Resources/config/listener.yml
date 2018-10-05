@@ -21,6 +21,7 @@ services:
         arguments:
             - '@Terminal42\LeadsBundle\Util\NotificationCenter'
             - '@Terminal42\LeadsBundle\Exporter\ExporterFactory'
+            - '@router'
 
     Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener:
         public: true

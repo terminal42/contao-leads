@@ -90,8 +90,9 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'show' => array
             (
                 'label'         => &$GLOBALS['TL_LANG']['tl_lead']['show'],
-                'href'          => 'key=show',
+                'href'          => '',
                 'icon'          => 'show.gif',
+                'button_callback' => [\Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener::class, 'onShowButtonCallback'],
             ),
             'data' => array
             (

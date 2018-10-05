@@ -1,0 +1,57 @@
+{% extends "@ContaoCore/Backend/be_page.html.twig" %}
+
+{% block headline %}{% endblock %}
+{% block error %}{% endblock %}
+
+{% block main %}
+    <table class="tl_show">
+        <tbody>
+        <tr>
+            <td><span class="tl_label">ID: </span></td>
+            <td>{{ recordId }}</td>
+        </tr>
+        <tr>
+            <td class="tl_bg"><span class="tl_label">{% trans from 'contao_tl_lead' %}tl_lead.created.0{% endtrans %}: </span></td>
+            <td class="tl_bg">{{ created }}</td>
+        </tr>
+        <tr>
+            <td><span class="tl_label">{% trans from 'contao_tl_lead' %}tl_lead.form_id.0{% endtrans %}: </span></td>
+            <td>{{ form.title }} <span style="color:#b3b3b3; padding-left:3px;">[ID {{ form.id }}]</span></td>
+        </tr>
+
+        {% if form.master %}
+        <tr>
+            <td class="tl_bg"><span class="tl_label">{% trans from 'contao_tl_lead' %}tl_lead.master_id.0{% endtrans %}: </span></td>
+            <td class="tl_bg">{{ form.master.title }} <span style="color:#b3b3b3; padding-left:3px;">[ID {{ form.master.id }}]</span></td>
+        </tr>
+        {% endif %}
+
+        <tr>
+            <td{% if not form.master %} class="tl_bg"{% endif %}><span class="tl_label">{% trans from 'contao_tl_lead' %}tl_lead.language.0{% endtrans %}: </span></td>
+            <td{% if not form.master %} class="tl_bg"{% endif %}>{{ language.label }} <span style="color:#b3b3b3; padding-left:3px;">[{{ language.id }}]</span></td>
+        </tr>
+
+        {% if member %}
+        <tr>
+            <td{% if form.master %} class="tl_bg"{% endif %}><span class="tl_label">{% trans from 'contao_tl_lead' %}tl_lead.member.0{% endtrans %}: </span></td>
+            <td{% if form.master %} class="tl_bg"{% endif %}>{{ member.name }} <span style="color:#b3b3b3; padding-left:3px;">[ID {{ member.id }}]</span></td>
+        </tr>
+        {% endif %}
+
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+
+        {% set counter = 0 %}
+        {% for row in rows %}
+        <tr>
+            <td class="{{ cycle(['tl_bg', ''], counter) }}"><span class="tl_label">{{ row.name }}: </span></td>
+            <td class="{{ cycle(['tl_bg', ''], counter) }}">{{ row.label }}{% if row.value %} <span style="color:#b3b3b3; padding-left:3px;">{{ row.value }}</span>{% endif %}</td>
+        </tr>
+            {% set counter = counter + 1 %}
+        {% endfor %}
+
+        </tbody>
+    </table>
+{% endblock %}

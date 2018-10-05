@@ -1,5 +1,9 @@
 <?php
 
+/** @noinspection StaticInvocationViaThisInspection */
+/** @noinspection PhpTranslationDomainInspection */
+/** @noinspection PhpTranslationKeyInspection */
+
 declare(strict_types=1);
 
 /*
@@ -13,121 +17,133 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
-use Contao\BackendTemplate;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
 use Contao\System;
-use Haste\Util\Format;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Twig\Environment;
 
 class LeadDetailsController
 {
     /**
-     * Override the default "show" dialog.
-     *
-     * @param $dc
-     *
-     * @return string
+     * @var ContaoFramework
      */
-    public function __invoke($dc)
-    {
-        $arrLanguages = System::getLanguages();
+    private $framework;
 
-        $objForm = Database::getInstance()->prepare("
+    /**
+     * @var System
+     */
+    private $systemAdapter;
+    /**
+     * @var Environment
+     */
+    private $twig;
+
+    public function __construct(ContaoFramework $framework , Environment $twig)
+    {
+        $this->framework = $framework;
+        $this->twig = $twig;
+
+        $this->systemAdapter = $framework->getAdapter(System::class);
+    }
+
+    /**
+     * @Route("/contao/lead/{id}/details", name="terminal42_leads.details", defaults={"_scope"="backend"})
+     */
+    public function __invoke(int $id)
+    {
+        $this->framework->initialize();
+
+        $formData = $this->getFormData($id);
+        $languages = $this->systemAdapter->getLanguages();
+
+        return new Response($this->twig->render(
+            'Terminal42LeadsBundle:Backend:lead_details.html.twig',
+            [
+                'recordId' => $id,
+                'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $formData->created),
+                'form' => [
+                    'title' => $formData->form_title,
+                    'id' => $formData->form_id,
+                    'master' => $formData->master_id === $formData->form_id ? false : [
+                        'title' => $formData->master_title,
+                        'id' => $formData->master_id,
+                    ],
+                ],
+                'language' => [
+                    'id' => $formData->language,
+                    'label' => $languages[$formData->language],
+                ],
+                'member' => !$formData->member_id ? false : [
+                    'name' => $formData->member_name,
+                    'id' => $formData->member_id,
+                ],
+                'rows' => $this->getRows($id),
+            ]
+        ));
+    }
+
+    private function getFormData($leadId)
+    {
+        return Database::getInstance()->prepare("
             SELECT l.*, s.title AS form_title, f.title AS master_title, CONCAT(m.firstname, ' ', m.lastname) AS member_name
             FROM tl_lead l
             LEFT OUTER JOIN tl_form s ON l.form_id=s.id
             LEFT OUTER JOIN tl_form f ON l.master_id=f.id
             LEFT OUTER JOIN tl_member m ON l.member_id=m.id
             WHERE l.id=?
-        ")->execute($dc->id);
+        ")->execute($leadId);
+    }
 
-        $objData = Database::getInstance()->prepare("
+    private function getRows($leadId): array
+    {
+        $rowData = Database::getInstance()->prepare("
             SELECT d.*, IF(ff.label IS NULL OR ff.label='', d.name, ff.label) AS name
             FROM tl_lead_data d
             LEFT OUTER JOIN tl_form_field ff ON d.master_id=ff.id
             WHERE d.pid=?
             ORDER BY d.sorting
-        ")->execute($dc->id);
+        ")->execute($leadId);
 
-        /** @var \BackendTemplate|object $template */
-        $template = new BackendTemplate('be_leads_show');
-        $template->recordId         = $dc->id;
-        $template->referer          = \System::getReferer(true);
-        $template->subheadline      = sprintf($GLOBALS['TL_LANG']['MSC']['showRecord'], 'ID ' . $dc->id);
-        $template->createdLabel     = $GLOBALS['TL_LANG']['tl_lead']['created'][0];
-        $template->createdValue     = \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $objForm->created);
-        $template->formLabel        = $GLOBALS['TL_LANG']['tl_lead']['form_id'][0];
-        $template->formTitle        = $objForm->form_title;
-        $template->formId           = $objForm->form_id;
-
-        $template->isMasterForm     = $objForm->master_id == $objForm->form_id;
-        $template->masterLabel      = $GLOBALS['TL_LANG']['tl_lead']['master_id'][0];
-        $template->masterTitle      = $objForm->master_title;
-        $template->masterId         = $objForm->master_id;
-
-        $template->languageLabel    = $GLOBALS['TL_LANG']['tl_lead']['language'][0];
-        $template->languageTrans    = $arrLanguages[$objForm->language];
-        $template->languageValue    = $objForm->language;
-
-        $template->hasMember        = $objForm->member_id > 0;
-        $template->memberLabel      = $GLOBALS['TL_LANG']['tl_lead']['member'][0];
-        $template->memberName       = $objForm->member_name;
-        $template->memberId         = $objForm->member_id;
-
-        $i = 0;
         $rows = [];
 
-        while ($objData->next()) {
-            $rows[] = [
-                'label' => $objData->name,
-                'value' => $this->formatValue($objData),
-                'class' => ($i % 2) ? 'tl_bg' : '',
-            ];
+        while ($rowData->next()) {
 
-            ++$i;
+            $rows[] = [
+                'name' => $rowData->name,
+                'label' => $this->formatLabel($rowData),
+                'value' => $this->formatValue($rowData),
+            ];
         }
 
-        $template->data = $rows;
-
-        return $template->parse();
+        return $rows;
     }
 
-    /**
-     * Format a lead field for list view.
-     *
-     * @param object $objData
-     *
-     * @return string
-     */
-    private function formatValue($objData)
+    private function formatLabel($row): string
     {
-        $fieldModel = \FormFieldModel::findByPk($objData->field_id);
+        $strValue = implode(', ', deserialize($row->value, true));
 
-        if (null !== $fieldModel) {
-            $data = $fieldModel->row();
-            $data['eval'] = $fieldModel->row();
-            $strValue = Format::dcaValueFromArray($data, $objData->value);
-            $strLabel = Format::dcaLabelFromArray($data);
-
-            return $strLabel.' <span style="color:#b3b3b3; padding-left:3px;">['.$strValue.']</span>';
-        }
-
-        $strValue = implode(', ', deserialize($objData->value, true));
-
-        if (!empty($objData->label) && $objData->label !== $objData->value) {
-            $strLabel = $objData->label;
-            $arrLabel = deserialize($objData->label, true);
+        if (!empty($row->label) && $row->label !== $row->value) {
+            $strLabel = $row->label;
+            $arrLabel = deserialize($row->label, true);
 
             if (!empty($arrLabel)) {
                 $strLabel = implode(', ', $arrLabel);
             }
 
-            if (empty($strValue)) {
-                return $strLabel;
-            }
-
-            $strValue = $strLabel.' <span style="color:#b3b3b3; padding-left:3px;">['.$strValue.']</span>';
+            $strValue = $strLabel;
         }
 
         return $strValue;
+    }
+
+    private function formatValue($row): ?string
+    {
+        if (empty($row->label) || $row->label === $row->value) {
+            return null;
+        }
+
+        return implode(', ', deserialize($row->value, true));
     }
 }
