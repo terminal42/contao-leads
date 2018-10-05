@@ -11,12 +11,12 @@ declare(strict_types=1);
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Export;
+namespace Terminal42\LeadsBundle\Exporter;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 
-class ExportFactory
+class ExporterFactory
 {
     /**
      * @var iterable
@@ -24,7 +24,7 @@ class ExportFactory
     private $services;
 
     /**
-     * @var ExportInterface[]
+     * @var ExporterInterface[]
      */
     private $instances;
 
@@ -40,7 +40,7 @@ class ExportFactory
     }
 
     /**
-     * @return ExportInterface[]
+     * @return ExporterInterface[]
      */
     public function getServices(): array
     {
@@ -49,7 +49,7 @@ class ExportFactory
         return $this->instances;
     }
 
-    public function createForType(string $type): ExportInterface
+    public function createForType(string $type): ExporterInterface
     {
         $this->loadServices();
 
@@ -97,8 +97,8 @@ class ExportFactory
         $this->instances = [];
 
         foreach ($this->services as $service) {
-            if (!$service instanceof ExportInterface) {
-                throw new \RuntimeException(sprintf('"%s" must implement %s', \get_class($service), ExportInterface::class));
+            if (!$service instanceof ExporterInterface) {
+                throw new \RuntimeException(sprintf('"%s" must implement %s', \get_class($service), ExporterInterface::class));
             }
 
             if (!$service->isAvailable()) {

@@ -11,11 +11,11 @@ declare(strict_types=1);
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Export;
+namespace Terminal42\LeadsBundle\Exporter;
 
 use Contao\File;
 
-class XlsExport extends AbstractExcelExport
+class XlsxExporter extends AbstractExcelExporter
 {
     /**
      * Exports a given set of data row ids using a given configuration.
@@ -25,6 +25,6 @@ class XlsExport extends AbstractExcelExport
      */
     public function export(\stdClass $config, $ids = null): File
     {
-        return $this->exportWithFormat($config, $ids, 'Excel5');
+        return $this->exportWithFormat($config, $ids, 'Excel2007');
     }
 }

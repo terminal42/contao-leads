@@ -11,11 +11,11 @@ declare(strict_types=1);
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Export;
+namespace Terminal42\LeadsBundle\Exporter;
 
 use Contao\File;
 
-interface ExportInterface
+interface ExporterInterface
 {
     public function getType(): string;
 

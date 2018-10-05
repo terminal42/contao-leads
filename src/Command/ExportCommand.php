@@ -23,7 +23,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Filesystem\Filesystem;
-use Terminal42\LeadsBundle\Export\ExportFactory;
+use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 
 class ExportCommand extends Command
 {
@@ -38,7 +38,7 @@ class ExportCommand extends Command
     private $db;
 
     /**
-     * @var ExportFactory
+     * @var ExporterFactory
      */
     private $exportFactory;
 
@@ -47,7 +47,7 @@ class ExportCommand extends Command
      */
     private $filesystem;
 
-    public function __construct(ContaoFrameworkInterface $framework, Connection $db, ExportFactory $exportFactory, Filesystem $filesystem = null)
+    public function __construct(ContaoFrameworkInterface $framework, Connection $db, ExporterFactory $exportFactory, Filesystem $filesystem = null)
     {
         $this->framework = $framework;
         $this->db = $db;

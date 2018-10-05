@@ -11,14 +11,14 @@ declare(strict_types=1);
  * @link       http://github.com/terminal42/contao-leads
  */
 
-namespace Terminal42\LeadsBundle\Export;
+namespace Terminal42\LeadsBundle\Exporter;
 
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Leads;
 use Terminal42\LeadsBundle\Util\DataTransformer;
 use Terminal42\LeadsBundle\Util\ExportFile;
 
-abstract class AbstractExport implements ExportInterface
+abstract class AbstractExporter implements ExporterInterface
 {
     /**
      * @var DataTransformer
@@ -48,8 +48,8 @@ abstract class AbstractExport implements ExportInterface
         $className = \get_called_class();
         $className = substr($className, strrpos($className, '\\') + 1);
 
-        if ('Export' === substr($className, -6)) {
-            $className = substr($className, 0, -6);
+        if ('Exporter' === substr($className, -8)) {
+            $className = substr($className, 0, -8);
         }
 
         return lcfirst($className);

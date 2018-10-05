@@ -19,12 +19,12 @@ use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
 use Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory;
-use Terminal42\LeadsBundle\Export\ExportFactory;
+use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 
 class LeadExportListener
 {
     /**
-     * @var ExportFactory
+     * @var ExporterFactory
      */
     private $exportFactory;
 
@@ -33,7 +33,7 @@ class LeadExportListener
      */
     private $dataTransformers;
 
-    public function __construct(ExportFactory $exportFactory, DataTransformerFactory $dataTransformers)
+    public function __construct(ExporterFactory $exportFactory, DataTransformerFactory $dataTransformers)
     {
         $this->exportFactory = $exportFactory;
         $this->dataTransformers = $dataTransformers;

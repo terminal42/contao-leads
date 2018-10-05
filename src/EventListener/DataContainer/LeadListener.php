@@ -17,7 +17,7 @@ use Contao\Controller;
 use Contao\Input;
 use Contao\System;
 use Haste\Util\StringUtil;
-use Terminal42\LeadsBundle\Export\ExportFactory;
+use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 use Terminal42\LeadsBundle\Util\NotificationCenter;
 
 class LeadListener
@@ -28,11 +28,11 @@ class LeadListener
     private $notificationCenter;
 
     /**
-     * @var ExportFactory
+     * @var ExporterFactory
      */
     private $exportFactory;
 
-    public function __construct(NotificationCenter $notificationCenter, ExportFactory $exportFactory)
+    public function __construct(NotificationCenter $notificationCenter, ExporterFactory $exportFactory)
     {
         $this->notificationCenter = $notificationCenter;
         $this->exportFactory = $exportFactory;

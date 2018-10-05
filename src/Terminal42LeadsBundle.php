@@ -16,7 +16,7 @@ namespace Terminal42\LeadsBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Terminal42\LeadsBundle\DataTransformer\DataTransformerInterface;
-use Terminal42\LeadsBundle\Export\ExportInterface;
+use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 
 class Terminal42LeadsBundle extends Bundle
 {
@@ -24,7 +24,7 @@ class Terminal42LeadsBundle extends Bundle
     {
         parent::build($container);
 
-        $container->registerForAutoconfiguration(ExportInterface::class)
+        $container->registerForAutoconfiguration(ExporterInterface::class)
             ->addTag('terminal42_leads.export')
         ;
 

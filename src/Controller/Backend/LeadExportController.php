@@ -15,11 +15,11 @@ namespace Terminal42\LeadsBundle\Controller\Backend;
 
 use Contao\Controller;
 use Contao\Input;
-use Terminal42\LeadsBundle\Export\ExportFactory;
+use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 
 class LeadExportController
 {
-    public function __construct(ExportFactory $exportFactory)
+    public function __construct(ExporterFactory $exportFactory)
     {
         $this->exportFactory = $exportFactory;
     }

@@ -6,7 +6,7 @@ services:
         arguments:
             - '@contao.framework'
             - '@database_connection'
-            - '@Terminal42\LeadsBundle\Export\ExportFactory'
+            - '@Terminal42\LeadsBundle\Exporter\ExporterFactory'
             - '@filesystem'
         tags: ['console.command']
 
@@ -20,20 +20,20 @@ services:
     Terminal42\LeadsBundle\DataTransformer\UuidToFilePathTransformer: ~
     Terminal42\LeadsBundle\DataTransformer\YesnoTransformer: ~
 
-    Terminal42\LeadsBundle\Export\ExportFactory:
+    Terminal42\LeadsBundle\Exporter\ExporterFactory:
         arguments: [!tagged terminal42_leads.export, '@database_connection']
 
-    Terminal42\LeadsBundle\Export\CsvExport:
+    Terminal42\LeadsBundle\Exporter\CsvExporter:
         arguments:
             - '@Terminal42\LeadsBundle\Util\DataTransformer'
             - '@Terminal42\LeadsBundle\Util\ExportFile'
 
-    Terminal42\LeadsBundle\Export\XlsExport:
+    Terminal42\LeadsBundle\Exporter\XlsExporter:
         arguments:
             - '@Terminal42\LeadsBundle\Util\DataTransformer'
             - '@Terminal42\LeadsBundle\Util\ExportFile'
 
-    Terminal42\LeadsBundle\Export\XlsxExport:
+    Terminal42\LeadsBundle\Exporter\XlsxExporter:
         arguments:
             - '@Terminal42\LeadsBundle\Util\DataTransformer'
             - '@Terminal42\LeadsBundle\Util\ExportFile'
