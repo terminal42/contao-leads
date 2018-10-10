@@ -59,39 +59,42 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = array
     (
         'id' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL auto_increment"
+            'sql'                   => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true],
         ),
         'pid' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                   => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+            'relation'              => ['table' => 'tl_lead', 'type' => 'belongsTo'],
         ),
         'tstamp' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                   => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ),
         'sorting' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                   => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ),
         'master_id' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                   => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+            'relation'              => ['table' => 'tl_form_field', 'type' => 'hasOne'],
         ),
         'field_id' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                   => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+            'relation'              => ['table' => 'tl_form_field', 'type' => 'hasOne'],
         ),
         'name' => array
         (
-            'sql'                     => "varchar(64) NOT NULL default ''"
+            'sql'                   => ['type' => 'string', 'length' => 64, 'default' => ''],
         ),
         'value' => array
         (
-            'sql'                     => "text NULL"
+            'sql'                   => ['type' => 'text', 'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_TEXT, 'notnull' => false],
         ),
         'label' => array
         (
-            'sql'                     => "text NULL"
+            'sql'                   => ['type' => 'text', 'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_TEXT, 'notnull' => false],
         ),
     )
 );

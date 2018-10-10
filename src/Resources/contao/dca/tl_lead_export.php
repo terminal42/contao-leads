@@ -118,15 +118,16 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     (
         'id' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL auto_increment"
+            'sql'                     => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true],
         ),
         'pid' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                     => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+            'relation'                => ['table' => 'tl_lead', 'type' => 'belongsTo'],
         ),
         'tstamp' => array
         (
-            'sql'                     => "int(10) unsigned NOT NULL default '0'"
+            'sql'                     => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ),
         'name' => array
         (
@@ -135,7 +136,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'search'                  => true,
             'inputType'               => 'text',
             'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
-            'sql'                     => "varchar(255) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'default' => ''],
         ),
         'type' => array
         (
@@ -145,7 +146,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'inputType'               => 'select',
             'options_callback'        => array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onTypeOptionsCallback'),
             'eval'                    => array('submitOnChange'=>true, 'includeBlankOption'=>true, 'tl_class'=>'w50'),
-            'sql'                     => "varchar(32) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'length' => 32, 'default' => ''],
         ),
         'filename' => array
         (
@@ -155,7 +156,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'inputType'               => 'text',
             'eval'                    => array('decodeEntities'=>true, 'maxlength'=>128, 'helpwizard'=>true, 'tl_class'=>'w50'),
             'explanation'             => 'leadsTags',
-            'sql'                     => "varchar(128) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'length' => 128, 'default' => ''],
         ),
         'useTemplate' => array
         (
@@ -164,7 +165,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'checkbox',
             'eval'                    => array('tl_class'=>'clr', 'submitOnChange'=>true),
-            'sql'                     => "char(1) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => ''],
         ),
         'template' => array
         (
@@ -173,7 +174,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'fileTree',
             'eval'                    => array('filesOnly'=>true, 'fieldType'=>'radio', 'mandatory'=>true, 'tl_class'=>'clr'),
-            'sql'                     => "binary(16) NULL",
+            'sql'                     => ['type' => 'binary_string', 'length' => 16, 'fixed' => true, 'notnull' => false],
         ),
         'startIndex' => array
         (
@@ -182,7 +183,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'text',
             'eval'                    => array('mandatory'=>true, 'tl_class'=>'w50', 'rgxp'=>'digit'),
-            'sql'                     => "int(10) NOT NULL default '0'"
+            'sql'                     => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ),
         'sheetIndex' => array
         (
@@ -191,7 +192,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'text',
             'eval'                    => array('mandatory'=>true, 'tl_class'=>'w50', 'rgxp'=>'digit'),
-            'sql'                     => "int(10) NOT NULL default '0'"
+            'sql'                     => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ),
         'headerFields' => array
         (
@@ -200,7 +201,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'checkbox',
             'eval'                    => array('tl_class'=>'clr'),
-            'sql'                     => "char(1) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => ''],
         ),
         'export' => array
         (
@@ -212,7 +213,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'options'                 => array('all', 'fields', 'tokens'),
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
             'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
-            'sql'                     => "varchar(8) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'length' => 8, 'default' => ''],
         ),
         'cliExport' => array
         (
@@ -221,7 +222,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'checkbox',
             'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
-            'sql'                     => "char(1) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => ''],
         ),
         'targetPath' => array
         (
@@ -229,7 +230,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'inputType'               => 'text',
             'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'clr long'),
-            'sql'                     => "varchar(255) NOT NULL default ''",
+            'sql'                     => ['type' => 'string', 'default' => ''],
             'save_callback'           => array(array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onSaveTargetPath')),
         ),
         'fields' => array
@@ -277,7 +278,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                     'eval'                    => array('style'=>'width:150px;')
                 ),
             )),
-            'sql'                     => "blob NULL",
+            'sql'                     => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
             'load_callback'           => array(array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onFieldsLoadCallback'))
         ),
         'tokenFields' => array
@@ -309,7 +310,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                     'eval'                    => array('style'=>'width:420px;')
                 ),
             )),
-            'sql'                     => "blob NULL",
+            'sql'                     => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
         ),
         'lastRun' => array
         (
@@ -317,7 +318,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'exclude'                 => true,
             'inputType'               => 'text',
             'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'nullIfEmpty'=>true, 'tl_class'=>'w50 wizard'),
-            'sql'                     => 'int(10) NULL'
+            'sql'                     => ['type' => 'integer', 'notnull' => false],
         ),
         'skipLastRun' => array
         (
@@ -326,7 +327,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'checkbox',
             'eval'                    => array('tl_class'=>'w50 m12'),
-            'sql'                     => "char(1) NOT NULL default ''"
+            'sql'                     => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => ''],
         ),
     )
 );

@@ -117,15 +117,16 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
     (
         'id' => array
         (
-            'sql'               => "int(10) unsigned NOT NULL auto_increment",
+            'sql'               => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true],
         ),
         'tstamp' => array
         (
-            'sql'                  => "int(10) unsigned NOT NULL default '0'",
+            'sql'               => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ),
         'master_id' => array
         (
-            'sql'                  => "int(10) unsigned NOT NULL default '0'",
+            'sql'               => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+            'relation'          => ['table' => 'tl_form', 'type' => 'hasOne'],
         ),
         'form_id' => array
         (
@@ -133,7 +134,8 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'filter'            => true,
             'sorting'           => true,
             'foreignKey'        => 'tl_form.title',
-            'sql'               => "int(10) unsigned NOT NULL default '0'",
+            'sql'               => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+            'relation'          => ['table' => 'tl_form', 'type' => 'hasOne'],
         ),
         'language' => array
         (
@@ -141,7 +143,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'filter'            => true,
             'sorting'           => true,
             'options'           => \System::getLanguages(),
-            'sql'               => "varchar(5) NOT NULL default ''"
+            'sql'               => ['type' => 'string', 'length' => 5, 'default' => ''],
         ),
         'created' => array
         (
@@ -149,7 +151,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'sorting'           => true,
             'flag'              => 8,
             'eval'              => array('rgxp'=>'datim'),
-            'sql'               => "int(10) unsigned NOT NULL default '0'",
+            'sql'               => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ),
         'member_id' => array
         (
@@ -158,11 +160,12 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'sorting'           => true,
             'flag'              => 12,
             'foreignKey'        => "tl_member.CONCAT(lastname, ' ', firstname)",
-            'sql'               => "int(10) unsigned NOT NULL default '0'",
+            'sql'               => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+            'relation'          => ['table' => 'tl_member', 'type' => 'hasOne'],
         ),
         'post_data' => array
         (
-            'sql'               => "mediumblob NULL",
+            'sql'               => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
         ),
     ),
 );
