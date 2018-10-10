@@ -22,6 +22,7 @@ services:
             - '@Terminal42\LeadsBundle\Util\NotificationCenter'
             - '@Terminal42\LeadsBundle\Exporter\ExporterFactory'
             - '@router'
+            - '@security.authorization_checker'
 
     Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener:
         public: true

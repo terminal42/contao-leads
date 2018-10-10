@@ -22,6 +22,9 @@ use Contao\Database;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Terminal42\LeadsBundle\Model\Lead;
 use Twig\Environment;
 
 class LeadDetailsController
@@ -36,24 +39,40 @@ class LeadDetailsController
      */
     private $systemAdapter;
     /**
+     * @var AuthorizationChecker
+     */
+    private $authorizationChecker;
+
+    /**
      * @var Environment
      */
     private $twig;
 
-    public function __construct(ContaoFramework $framework , Environment $twig)
+    public function __construct(ContaoFramework $framework , Environment $twig, AuthorizationChecker $authorizationChecker)
     {
         $this->framework = $framework;
         $this->twig = $twig;
+        $this->authorizationChecker = $authorizationChecker;
 
         $this->systemAdapter = $framework->getAdapter(System::class);
     }
 
     /**
-     * @Route("/contao/lead/{id}/details", name="terminal42_leads.details", defaults={"_scope"="backend"})
+     * @Route("/contao/lead/{id}/show", name="terminal42_leads.details", defaults={"_scope"="backend"})
      */
     public function __invoke(int $id)
     {
         $this->framework->initialize();
+
+        $lead = Lead::findByPk($id);
+
+        if (!$lead instanceof Lead || !$this->authorizationChecker->isGranted('lead_form', $lead->master_id)) {
+            $exception = new AccessDeniedException('Not enough permissions to access lead ID "'.$lead->id.'"');
+            $exception->setAttributes('lead_form');
+            $exception->setSubject($lead);
+
+            throw $exception;
+        }
 
         $formData = $this->getFormData($id);
         $languages = $this->systemAdapter->getLanguages();

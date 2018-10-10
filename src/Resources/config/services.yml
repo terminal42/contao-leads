@@ -38,6 +38,8 @@ services:
             - '@Terminal42\LeadsBundle\Util\DataTransformer'
             - '@Terminal42\LeadsBundle\Util\ExportFile'
 
+    Terminal42\LeadsBundle\Security\LeadVoter: ~
+
     Terminal42\LeadsBundle\Util\DataTransformer:
         arguments:
             - '@event_dispatcher'

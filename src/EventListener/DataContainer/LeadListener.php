@@ -18,6 +18,8 @@ use Contao\Input;
 use Contao\System;
 use Haste\Util\StringUtil;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 use Terminal42\LeadsBundle\Util\NotificationCenter;
 
@@ -38,17 +40,30 @@ class LeadListener
      */
     private $router;
 
-    public function __construct(NotificationCenter $notificationCenter, ExporterFactory $exportFactory, RouterInterface $router)
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    public function __construct(NotificationCenter $notificationCenter, ExporterFactory $exportFactory, RouterInterface $router, AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->notificationCenter = $notificationCenter;
         $this->exportFactory = $exportFactory;
         $this->router = $router;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     public function onLoadCallback(): void
     {
+        if (!$this->authorizationChecker->isGranted('lead_form', (int) Input::get('master'))) {
+            $exception = new AccessDeniedException('Not enough permissions to access leads ID "'.Input::get('master').'"');
+            $exception->setAttributes('lead_form');
+            $exception->setSubject(Input::get('master'));
+
+            throw $exception;
+        }
+
         $this->loadExportConfigs();
-        $this->checkPermission();
         $this->addNotificationCenterSupport();
     }
 
@@ -191,29 +206,6 @@ class LeadListener
         }
 
         array_insert($GLOBALS['TL_DCA']['tl_lead']['list']['global_operations'], 0, $arrOperations);
-    }
-
-    /**
-     * Check if a user has access to lead data.
-     *
-     * @param $dc
-     */
-    private function checkPermission(): void
-    {
-        if (empty(Input::get('master'))) {
-            Controller::redirect('contao/main.php?act=error');
-        }
-
-        $objUser = \BackendUser::getInstance();
-
-        if ($objUser->isAdmin) {
-            return;
-        }
-
-        if (!\is_array($objUser->forms) || !\in_array(\Input::get('master'), $objUser->forms, true)) {
-            System::log('Not enough permissions to access leads ID "'.\Input::get('master').'"', __METHOD__, TL_ERROR);
-            Controller::redirect('contao/main.php?act=error');
-        }
     }
 
     /**
