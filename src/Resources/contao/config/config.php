@@ -33,3 +33,7 @@ array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 if ('BE' === TL_MODE) {
     $GLOBALS['TL_CSS'][] = 'bundles/terminal42leads/leads.css';
 }
+
+$GLOBALS['TL_MODELS']['tl_lead'] = \Terminal42\LeadsBundle\Model\Lead::class;
+$GLOBALS['TL_MODELS']['tl_lead_data'] = \Terminal42\LeadsBundle\Model\LeadData::class;
+$GLOBALS['TL_MODELS']['tl_lead_export'] = \Terminal42\LeadsBundle\Model\LeadExport::class;
