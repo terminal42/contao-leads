@@ -1,10 +1,8 @@
 import './leads.css';
 
-var Leads = {
-
-    initializeColumnDisplayHelper: function() {
-        var mcws = document.getElements('table.multicolumnwizard');
-        var self = this;
+(() => {
+    const initializeColumnDisplayHelper = () => {
+        var mcws = document.querySelectorAll('table.multicolumnwizard');
 
         // Cannot use regular click events because of MCW
         var MutationObserver = (function () {
@@ -17,23 +15,22 @@ var Leads = {
             return false;
         }());
 
-        mcws.forEach(function(mcw) {
-            var elements = self.fetchColumnDisplayElements(mcw);
+        mcws.forEach((mcw) => {
+            var elements = fetchColumnDisplayElements(mcw);
 
             if (MutationObserver) {
-                self.updateColumnDisplays(elements);
+                updateColumnDisplays(elements);
 
                 // Register observer
                 var observerConfig = {childList: true, subtree: true};
-                var observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
+                var observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
 
                         if (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0) {
-
                             observer.disconnect();
 
-                            elements = self.fetchColumnDisplayElements(mcw);
-                            self.updateColumnDisplays(elements);
+                            elements = fetchColumnDisplayElements(mcw);
+                            updateColumnDisplays(elements);
 
                             observer.observe(mcw, observerConfig);
                         }
@@ -48,15 +45,13 @@ var Leads = {
                 });
             }
         });
-    },
+    };
 
-    fetchColumnDisplayElements: function(mcw) {
-        return mcw.getElements('td.column_display');
-    },
+    const fetchColumnDisplayElements = (mcw) => {
+        return mcw.querySelectorAll('td.column_display');
+    };
 
-    updateColumnDisplays: function(elements) {
-        var self = this;
-
+    const updateColumnDisplays = (elements) => {
         elements.forEach(function(el, index) {
             var humanReadableIndex = index + 1;
 
@@ -64,12 +59,12 @@ var Leads = {
                 humanReadableIndex +
                 '</div>' +
                 '<div class="excel">' +
-                self.convertIndexToExcelColumn(humanReadableIndex) +
+                convertIndexToExcelColumn(humanReadableIndex) +
                 '</div>');
         });
-    },
+    };
 
-    convertIndexToExcelColumn: function(i) {
+    const convertIndexToExcelColumn = (i) => {
         var alpha = parseInt(i / 27, 10);
         var remainder = i - (alpha * 26);
         var column = '';
@@ -83,10 +78,9 @@ var Leads = {
         }
 
         return column;
-    }
-};
+    };
 
-window.addEvent('load', function()
-{
-    Leads.initializeColumnDisplayHelper();
-});
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeColumnDisplayHelper();
+    });
+})();
