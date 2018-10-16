@@ -4,7 +4,7 @@ services:
 
     Terminal42\LeadsBundle\Controller\Backend\LeadExportController:
         public: true
-        arguments: ['@Terminal42\LeadsBundle\Exporter\ExporterFactory']
+        arguments: ['@security.authorization_checker', '@Terminal42\LeadsBundle\Exporter\ExporterFactory']
 
     Terminal42\LeadsBundle\Controller\Backend\LeadNotificationController:
         public: true

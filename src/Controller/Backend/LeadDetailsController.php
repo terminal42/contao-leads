@@ -22,7 +22,7 @@ use Contao\Database;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Terminal42\LeadsBundle\Model\Lead;
 use Twig\Environment;
@@ -35,20 +35,21 @@ class LeadDetailsController
     private $framework;
 
     /**
-     * @var System
-     */
-    private $systemAdapter;
-    /**
-     * @var AuthorizationChecker
-     */
-    private $authorizationChecker;
-
-    /**
      * @var Environment
      */
     private $twig;
 
-    public function __construct(ContaoFramework $framework , Environment $twig, AuthorizationChecker $authorizationChecker)
+    /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    /**
+     * @var System
+     */
+    private $systemAdapter;
+
+    public function __construct(ContaoFramework $framework , Environment $twig, AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->framework = $framework;
         $this->twig = $twig;
@@ -58,7 +59,7 @@ class LeadDetailsController
     }
 
     /**
-     * @Route("/contao/lead/{id}/show", name="terminal42_leads.details", defaults={"_scope"="backend"})
+     * @Route("/contao/lead/{id}/show", name="terminal42_leads.details", requirements={"id"="\d"}, defaults={"_scope"="backend"})
      */
     public function __invoke(int $id)
     {
@@ -67,9 +68,9 @@ class LeadDetailsController
         $lead = Lead::findByPk($id);
 
         if (!$lead instanceof Lead || !$this->authorizationChecker->isGranted('lead_form', $lead->master_id)) {
-            $exception = new AccessDeniedException('Not enough permissions to access lead ID "'.$lead->id.'"');
+            $exception = new AccessDeniedException('Not enough permissions to access leads of form ID "'.$lead->master_id.'"');
             $exception->setAttributes('lead_form');
-            $exception->setSubject($lead);
+            $exception->setSubject($lead->master_id);
 
             throw $exception;
         }
