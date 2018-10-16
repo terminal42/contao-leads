@@ -26,6 +26,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
         'onload_callback' => array
         (
             array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener::class, 'onLoadCallback'),
+            array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportOperationListener::class, 'onLoadCallback'),
         ),
         'sql' => array
         (
@@ -63,12 +64,6 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'class'           => 'leads-export',
                 'attributes'      => 'onclick="Backend.getScrollOffset();"',
                 'button_callback' => array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener::class, 'onExportButtonCallback'),
-            ),
-            'export' => array
-            (
-                'label'         => &$GLOBALS['TL_LANG']['tl_lead']['export'],
-                'class'         => 'header_leads_export',
-                'attributes'    => 'onclick="Backend.getScrollOffset();" style="display:none"',
             ),
             'all' => array
             (

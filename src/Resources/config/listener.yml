@@ -30,3 +30,7 @@ services:
         arguments:
             - '@Terminal42\LeadsBundle\Exporter\ExporterFactory'
             - '@Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory'
+
+    Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportOperationListener:
+        public: true
+        arguments: ['@router']

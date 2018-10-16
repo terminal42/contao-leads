@@ -63,7 +63,6 @@ class LeadListener
             throw $exception;
         }
 
-        $this->loadExportConfigs();
         $this->addNotificationCenterSupport();
     }
 
@@ -178,34 +177,6 @@ class LeadListener
         }
 
         return $arrButtons;
-    }
-
-    /**
-     * Load the export configs.
-     */
-    private function loadExportConfigs(): void
-    {
-        $objConfigs = \Database::getInstance()
-                               ->prepare('SELECT * FROM tl_lead_export WHERE pid=? AND tstamp>0 ORDER BY name')
-                               ->execute(Input::get('master'))
-        ;
-
-        if (!$objConfigs->numRows) {
-            return;
-        }
-
-        $arrOperations = [];
-
-        while ($objConfigs->next()) {
-            $arrOperations['export_'.$objConfigs->id] = [
-                'label' => $objConfigs->name,
-                'href' => 'key=export&amp;config='.$objConfigs->id,
-                'class' => 'leads-export header_export_excel',
-                'attributes' => 'onclick="Backend.getScrollOffset();"',
-            ];
-        }
-
-        array_insert($GLOBALS['TL_DCA']['tl_lead']['list']['global_operations'], 0, $arrOperations);
     }
 
     /**
