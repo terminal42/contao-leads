@@ -68,7 +68,7 @@ class ExporterFactory
             ->select('e.*')
             ->addSelect('f.leadMaster AS master')
             ->from('tl_lead_export', 'e')
-            ->leftJoin('e', 'tl_form', 'f', 'tl_form.id = e.pid')
+            ->leftJoin('e', 'tl_form', 'f', 'f.id = e.pid')
             ->where('e.id = :id')
             ->setParameter('id', $configId)
         ;
