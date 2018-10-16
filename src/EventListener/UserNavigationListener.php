@@ -84,7 +84,6 @@ class UserNavigationListener
                     'tables'    => ['tl_lead'],
                     'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
                     'label'     => $form['leadMenuLabel'],
-                    'icon'      => ' style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
                     'class'     => 'navigation leads',
                     'href'      => 'contao/main.php?do=lead&master='.$form['id'],
                     'isActive'  => 'lead' === Input::get('do') && $form['id'] === Input::get('master'),

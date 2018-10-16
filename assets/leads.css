@@ -1,0 +1,51 @@
+#tl_navigation .tl_level_1_group .group-leads {
+    background: url(inbox.svg) 3px 2px no-repeat;
+    background-size: 14px 14px;
+}
+
+.header_leads_export {
+    background: url("export.png") no-repeat left center;
+    padding: 2px 0 3px 22px;
+}
+
+.header_export_csv {
+    background: url("export_csv.png") no-repeat left center;
+    padding: 2px 0 3px 22px;
+}
+
+.header_export_excel {
+    background: url("export_excel.png") no-repeat left center;
+    padding: 2px 0 3px 22px;
+}
+
+#leadsexportmenu
+{
+    display:none;
+    position:absolute;
+    z-index:99999999;
+    background-color:#fff;
+    border:1px solid #ccc;
+    padding:3px 6px;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    border-radius:4px;
+}
+
+#leadsexportmenu a
+{
+    display:block;
+    padding-top: 3px;
+    white-space: nowrap;
+    margin-left: 0 !important;
+}
+
+#leadsexportmenu img
+{
+    padding-bottom: 1px;
+    vertical-align: middle;
+}
+
+table.multicolumnwizard td.column_display div {
+    color: #ccc;
+    font-size: 8px;
+}
