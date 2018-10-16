@@ -145,7 +145,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'filter'                  => true,
             'inputType'               => 'select',
             'options_callback'        => array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onTypeOptionsCallback'),
-            'eval'                    => array('submitOnChange'=>true, 'includeBlankOption'=>true, 'tl_class'=>'w50'),
+            'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'includeBlankOption'=>true, 'tl_class'=>'w50'),
             'sql'                     => ['type' => 'string', 'length' => 32, 'default' => ''],
         ),
         'filename' => array
