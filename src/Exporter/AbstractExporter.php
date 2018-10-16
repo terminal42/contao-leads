@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\Exporter;
 
 use Terminal42\LeadsBundle\DataCollector;
-use Terminal42\LeadsBundle\Leads;
+use Terminal42\LeadsBundle\Model\Lead;
 use Terminal42\LeadsBundle\Util\DataTransformer;
 use Terminal42\LeadsBundle\Util\ExportFile;
 
@@ -107,10 +107,11 @@ abstract class AbstractExporter implements ExporterInterface
     protected function prepareDefaultHeaderFields($config, DataCollector $dataCollector)
     {
         $headerFields = [];
+        $systemColumns = Lead::getSystemColumns();
 
         // Config: all
         if ('all' === $config->export) {
-            foreach (Leads::getSystemColumns() as $systemColumn) {
+            foreach ($systemColumns as $systemColumn) {
                 $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field'.$systemColumn['field']];
             }
 
@@ -139,7 +140,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $headerFields[] = $column['name'];
             } else {
                 // System column
-                if (\in_array($column['field'], array_keys(Leads::getSystemColumns()), true)) {
+                if (array_key_exists($column['field'], $systemColumns)) {
                     $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field'.$column['field']];
                 } else {
                     if (isset($dataHeaderFields[$column['field']])) {
@@ -168,7 +169,7 @@ abstract class AbstractExporter implements ExporterInterface
         // Config: all
         if ('all' === $config->export) {
             // Add base information columns (system columns)
-            foreach (Leads::getSystemColumns() as $systemColumn) {
+            foreach (Lead::getSystemColumns() as $systemColumn) {
                 $columnConfig[] = $systemColumn;
             }
 
@@ -195,9 +196,7 @@ abstract class AbstractExporter implements ExporterInterface
             }
 
             foreach ($config->tokenFields as $column) {
-                $column = array_merge($column, [
-                    'allFieldsConfig' => $allFieldsConfig,
-                ]);
+                $column = $column['allFieldsConfig'] = $allFieldsConfig;
 
                 $columnConfig[] = $column;
             }
@@ -206,11 +205,11 @@ abstract class AbstractExporter implements ExporterInterface
         }
 
         // Config: custom
-        $systemColumns = Leads::getSystemColumns();
+        $systemColumns = Lead::getSystemColumns();
 
         foreach ($config->fields as $column) {
             // System column
-            if (\in_array($column['field'], array_keys($systemColumns), true)) {
+            if (array_key_exists($column['field'], $systemColumns)) {
                 $columnConfig[] = $systemColumns[$column['field']];
             } else {
                 // Skip non existing fields

@@ -20,6 +20,7 @@ use Contao\Input;
 use Contao\System;
 use Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory;
 use Terminal42\LeadsBundle\Exporter\ExporterFactory;
+use Terminal42\LeadsBundle\Model\Lead;
 
 class LeadExportListener
 {
@@ -95,7 +96,7 @@ class LeadExportListener
 
         // Load the form fields
         if (empty($arrFields) && $dc->id) {
-            $arrFields = array_values(\Terminal42\LeadsBundle\Leads::getSystemColumns());
+            $arrFields = array_values(Lead::getSystemColumns());
 
             $objFields = Database::getInstance()->prepare(
                 "SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)"
@@ -127,10 +128,8 @@ class LeadExportListener
 
         $arrFields = [];
 
-        $systemColumns = \Terminal42\LeadsBundle\Leads::getSystemColumns();
-
-        foreach ($systemColumns as $k => $systemColumn) {
-            $arrFields[$k] = $systemColumn['name'];
+        foreach (Lead::getSystemColumns() as $k => $column) {
+            $arrFields[$k] = $column['name'];
         }
 
         $objFields = \Database::getInstance()

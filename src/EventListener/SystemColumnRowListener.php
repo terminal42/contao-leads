@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Terminal42\LeadsBundle\Event\TransformRowEvent;
-use Terminal42\LeadsBundle\Leads;
+use Terminal42\LeadsBundle\Model\Lead;
 use Terminal42\LeadsBundle\Util\DataTransformer;
 
 class SystemColumnRowListener
@@ -31,7 +31,7 @@ class SystemColumnRowListener
 
     public function onTransformRow(TransformRowEvent $event): void
     {
-        $systemColumns = Leads::getSystemColumns();
+        $systemColumns = Lead::getSystemColumns();
         $columnConfig = $event->getColumnConfig();
 
         if (!isset($columnConfig['field'])
