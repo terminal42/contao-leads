@@ -4,6 +4,7 @@ services:
         - { name: contao.hook, hook: processFormData }
 
     Terminal42\LeadsBundle\EventListener\UserNavigationListener:
+        arguments: ['@database_connection', '@security.token_storage']
         tags:
         - { name: contao.hook, hook: loadLanguageFile }
         - { name: contao.hook, hook: getUserNavigation }

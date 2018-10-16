@@ -14,46 +14,44 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Contao\BackendUser;
-use Contao\Database;
 use Contao\Input;
-use Contao\Session;
+use Doctrine\DBAL\Connection;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class UserNavigationListener
 {
     /**
-     * @var Database
+     * @var Connection
      */
-    private $db;
+    private $database;
 
     /**
-     * @var Session
+     * @var TokenStorage
      */
-    private $session;
+    private $tokenStorage;
 
     /**
-     * @var BackendUser
+     * @var array
      */
-    private $user;
+    private $forms;
 
-    /**
-     * Constructor.
-     */
-    public function __construct()
+    public function __construct(Connection $database, TokenStorage $tokenStorage)
     {
-        $this->db = Database::getInstance();
-        $this->session = Session::getInstance();
-        $this->user = BackendUser::getInstance();
+        $this->database = $database;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function onLoadLanguageFile(string $name): void
     {
         if ('modules' === $name && 'lead' === \Input::get('do')) {
-            $objForm = $this->db
-                ->prepare('SELECT * FROM tl_form WHERE id=?')
-                ->execute(\Input::get('master'))
-            ;
+            $formId = \Input::get('master');
 
-            $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ?: $objForm->title;
+            foreach ($this->getForms() as $form) {
+                if ($form['id'] === $formId) {
+                    $GLOBALS['TL_LANG']['MOD']['lead'][0] = $form['leadMenuLabel'] ?: $form['title'];
+                    break;
+                }
+            }
         }
     }
 
@@ -64,7 +62,7 @@ class UserNavigationListener
      *
      * @return array
      */
-    public function onGetUserNavigation(array $modules, $showAll)
+    public function onGetUserNavigation(array $modules)
     {
         $forms = $this->getForms();
 
@@ -74,25 +72,16 @@ class UserNavigationListener
             return $modules;
         }
 
-        $isOpen = $showAll || $this->isOpen();
+        $modules['leads']['modules'] = [];
 
-        if ($isOpen) {
-            $modules['leads']['modules'] = [];
-
-            foreach ($forms as $form) {
-                $modules['leads']['modules']['lead_'. $form['id']] = [
-                    'tables'    => ['tl_lead'],
-                    'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
-                    'label'     => $form['leadMenuLabel'],
-                    'class'     => 'navigation leads',
-                    'href'      => 'contao/main.php?do=lead&master='.$form['id'],
-                    'isActive'  => 'lead' === Input::get('do') && $form['id'] === Input::get('master'),
-                ];
-            }
-        } else {
-            $modules['leads']['modules'] = false;
-            $modules['leads']['icon'] = 'modPlus.gif';
-            $modules['leads']['title'] = specialchars($GLOBALS['TL_LANG']['MSC']['expandNode']);
+        foreach ($forms as $form) {
+            $modules['leads']['modules']['lead_'. $form['id']] = [
+                'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
+                'label'     => $form['leadMenuLabel'] ?: $form['title'],
+                'class'     => 'navigation leads',
+                'href'      => 'contao/main.php?do=lead&master='.$form['id'],
+                'isActive'  => 'lead' === Input::get('do') && $form['id'] === Input::get('master'),
+            ];
         }
 
         return $modules;
@@ -105,82 +94,87 @@ class UserNavigationListener
      */
     private function getForms()
     {
-        if (!$this->db->tableExists('tl_lead')) {
+        if (null !== $this->forms) {
+            return $this->forms;
+        }
+
+        if (!$this->database->getSchemaManager()->tablesExist(['tl_lead'])) {
             return [];
         }
 
         $allowedIds = $this->getAllowedFormIds();
 
-        if (false === $allowedIds) {
+        if (empty($allowedIds) && !$this->isAdmin()) {
             return [];
         }
 
-        $permission = true === $allowedIds ? '' : sprintf(' AND id IN (%s)', implode(',', $allowedIds));
+        $qb = $this->database->createQueryBuilder();
+        $qb
+            ->select('id, title, leadMenuLabel')
+            ->from('tl_form')
+            ->where("leadEnabled='1'")
+            ->andWhere('leadMaster=0')
+        ;
 
-        // Master forms
-        $forms = $this->db->execute(
-            "SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0".$permission
-        )->fetchAllAssoc();
-
-        $ids = [];
-        foreach ($forms as $k => $form) {
-            // Fallback label
-            $forms[$k]['leadMenuLabel'] = $form['leadMenuLabel'] ?: $form['title'];
-            $ids[] = $form['id'];
+        if (!$this->isAdmin()) {
+            $qb->andWhere('id IN (:ids)')->setParameter('ids', $allowedIds, Connection::PARAM_INT_ARRAY);
         }
 
-        // Check for orphan data sets that have no associated form anymore
-        $filter = 0 === \count($ids) ? '' : sprintf(' WHERE master_id NOT IN (%s)', implode(',', $ids));
+        $forms = $qb->execute()->fetchAll();
+        $forms = array_merge($forms, $this->findOrphans(array_column($forms, 'id')));
 
-        $orphans = $this->db->execute(
-            "SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead".$filter
-        )->fetchAllAssoc();
-
-        // Only show orphans to admins
-        if ($this->user->isAdmin) {
-            foreach ($orphans as $orphan) {
-                $forms[] = $orphan;
-            }
-        }
-
-        // Order by leadMenuLabel
         usort($forms, function ($a, $b) {
-            return $a['leadMenuLabel'] > $b['leadMenuLabel'];
+            $labelA = $a['leadMenuLabel'] ?: $a['title'];
+            $labelB = $b['leadMenuLabel'] ?: $b['title'];
+
+            return $labelA > $labelB;
         });
 
-        return $forms;
+        return $this->forms = $forms;
     }
 
     /**
-     * @return bool|int[]
+     * Find lead records where the related form has been deleted.
      */
-    private function getAllowedFormIds()
+    private function findOrphans(array $formIds): array
     {
-        if ($this->user->isAdmin) {
-            return true;
+        if (!$this->isAdmin()) {
+            return [];
         }
 
-        if (!$this->user->hasAccess('lead', 'modules')
-            || !\is_array($this->user->forms)
-            || 0 === \count($this->user->forms)
+        $qb = $this->database->createQueryBuilder();
+
+        $qb
+            ->select("master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel")
+            ->from('tl_lead')
+            ->groupBy('master_id')
+        ;
+
+        if (!empty($formIds)) {
+            $qb->where('master_id NOT IN (:masterId)')->setParameter('masterId', $formIds, Connection::PARAM_INT_ARRAY);
+        }
+
+        return $qb->execute()->fetchAll();
+    }
+
+    private function getAllowedFormIds(): array
+    {
+        $user = ($token = $this->tokenStorage->getToken()) !== null ? $token->getUser() : null;
+
+        if (!$user instanceof BackendUser
+            || !$user->hasAccess('lead', 'modules')
+            || !\is_array($user->forms)
         ) {
-            return false;
+            return [];
         }
 
-        return array_map('intval', $this->user->forms);
+        return array_map('intval', (array) $user->forms);
     }
 
-    /**
-     * @return bool
-     */
-    private function isOpen()
+    private function isAdmin()
     {
-        if (version_compare(VERSION, '4.4', '>=')) {
-            return true;
-        }
+        $token = $this->tokenStorage->getToken();
 
-        $backendModules = $this->session->get('backend_modules');
-
-        return (bool) $backendModules['leads'];
+        return null !== $token && $token->getUser() instanceof BackendUser && $token->getUser()->isAdmin;
     }
 }
