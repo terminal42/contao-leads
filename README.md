@@ -11,7 +11,7 @@ for the backend module of your Lead and define the listing of the form data usin
 
 The leads extension additionally offers an export function for each Lead in the backend. You can 
 configure it as you wish! Export options for CSV and Excel are available. _However_ you need to 
-install either the [[php_excel](https://contao.org/en/extension-list/view/php_excel.en.html)] extension or the `phpoffice/phpexcel` package for Excel support, otherwise the Excel export option will not be 
+install the `phpoffice/phpspreadsheet` package for Excel support, otherwise the Excel export option will not be
 available. 
 
 Simple Tokens

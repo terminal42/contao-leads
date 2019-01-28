@@ -16,8 +16,9 @@ use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
 use Leads\Exporter\Utils\File;
 use Leads\Exporter\Utils\Row;
-use PHPExcel_Cell;
-use PHPExcel_IOFactory;
+use PhpOffice\PhpSpreadsheet\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 abstract class AbstractExcelExporter extends AbstractExporter
 {
@@ -28,7 +29,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
      */
     public function isAvailable()
     {
-        return class_exists('PHPExcel') && class_exists('PHPExcel_IOFactory');
+        return class_exists('PhpOffice\\PhpSpreadsheet\\Spreadsheet');
     }
 
     /**
@@ -118,7 +119,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $tmpPath = 'system/tmp/' . File::getName($config);
         \Files::getInstance()->copy($template->path, $tmpPath);
 
-        $excelReader = PHPExcel_IOFactory::createReader($format);
+        $excelReader = IOFactory::createReader($format);
         $excel = $excelReader->load(TL_ROOT . '/' . $tmpPath);
 
         $excel->setActiveSheetIndex((int) $config->sheetIndex);
@@ -136,7 +137,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
                     $column = $config->tokenFields[$k]['targetColumn'];
 
                     if (!is_numeric($column)) {
-                        $column = PHPExcel_Cell::columnIndexFromString($column) - 1;
+                        $column = Coordinate::columnIndexFromString($column) - 1;
                     }
                 } else {
                     // Use next column, ignoring explicit target columns in the counter
@@ -147,7 +148,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
                     $column,
                     $currentRow,
                     (string) $value,
-                    \PHPExcel_Cell_DataType::TYPE_STRING2
+                    DataType::TYPE_STRING2
                 );
             }
 
@@ -155,7 +156,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
             $currentRow++;
         }
 
-        $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
+        $excelWriter = IOFactory::createWriter($excel, $format);
         $excelWriter->save(TL_ROOT . '/' . $tmpPath);
 
         $this->updateLastRun($config);
