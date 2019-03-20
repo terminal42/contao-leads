@@ -171,7 +171,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
                 return $options;
             },
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['type'],
-            'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'w50'),
+            'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'w50'),
             'sql'                     => "varchar(32) NOT NULL default ''"
         ),
         'filename' => array
