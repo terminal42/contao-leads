@@ -26,7 +26,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
      */
     public function isAvailable(): bool
     {
-        return class_exists('PHPExcel') && class_exists('PHPExcel_IOFactory');
+        return class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet') || (class_exists('PHPExcel') && class_exists('PHPExcel_IOFactory'));
     }
 
     /**
