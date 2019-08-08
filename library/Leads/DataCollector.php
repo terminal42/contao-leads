@@ -192,7 +192,7 @@ class DataCollector
         $where = array('tl_lead.master_id=?');
 
         if (0 !== count($this->fieldIds)) {
-            $where[] = "tl_lead_data.master_id IN (" . implode(',', $this->fieldIds) . ")";
+            $where[] = "tl_lead_data.field_id IN (" . implode(',', $this->fieldIds) . ")";
         }
 
         $data = array();
