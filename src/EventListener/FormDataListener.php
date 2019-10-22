@@ -95,8 +95,8 @@ class FormDataListener
                     // HOOK: add custom logic
                     if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && \is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'])) {
                         foreach ($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'] as $callback) {
-                            System::importStatic($callback[0]);
-                            $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
+                            $objCallback = System::importStatic($callback[0]);
+                            $objCallback->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
                         }
                     }
 
@@ -107,8 +107,8 @@ class FormDataListener
             // HOOK: add custom logic
             if (isset($GLOBALS['TL_HOOKS']['storeLeadsData']) && \is_array($GLOBALS['TL_HOOKS']['storeLeadsData'])) {
                 foreach ($GLOBALS['TL_HOOKS']['storeLeadsData'] as $callback) {
-                    System::importStatic($callback[0]);
-                    $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
+                    $objCallback = System::importStatic($callback[0]);
+                    $objCallback->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
                 }
             }
         }
