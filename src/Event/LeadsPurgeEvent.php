@@ -5,7 +5,7 @@ namespace Terminal42\LeadsBundle\Event;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * The terminal42.leads_purge event is triggered while 'leads:purge' after the purge is executed
+ * The terminal42_leads.purge event is triggered while 'leads:purge' after the purge is executed
  *
  * Class LeadsPurgeEvent
  * @package Terminal42\LeadsBundle\Event
@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\Event;
 class LeadsPurgeEvent extends Event
 {
 
-    public const EVENT_NAME = 'terminal42.leads_purge';
+    public const EVENT_NAME = 'terminal42_leads.purge';
 
     /**
      * @var array
