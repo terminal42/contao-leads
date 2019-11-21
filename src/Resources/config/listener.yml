@@ -38,7 +38,7 @@ services:
     Terminal42\LeadsBundle\EventListener\CronjobListener:
         public: true
         arguments:
-            - "@Terminal42\LeadsBundle\Service\LeadsPurger"
-            - "@logger"
+            - '@Terminal42\LeadsBundle\Service\LeadsPurger'
+            - '@logger'
         tags:
             - { name: 'monolog.logger', channel: 'terminal42_leads' }
