@@ -2,7 +2,7 @@
 
 namespace Terminal42\LeadsBundle\Service;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\FilesModel;
 use Contao\StringUtil;
@@ -17,7 +17,7 @@ use Terminal42\LeadsBundle\Event\LeadsPurgeEvent;
 class LeadsPurger
 {
     /**
-     * @var ContaoFrameworkInterface
+     * @var ContaoFramework
      */
     private $framework;
 
@@ -49,7 +49,7 @@ class LeadsPurger
 
     /**
      * LeadsPurger constructor.
-     * @param ContaoFrameworkInterface $framework
+     * @param ContaoFramework $framework
      * @param Connection $db
      * @param string $rootDir
      * @param LoggerInterface $logger
@@ -57,7 +57,7 @@ class LeadsPurger
      * @param Filesystem|null $fs
      */
     public function __construct(
-        ContaoFrameworkInterface $framework,
+        ContaoFramework $framework,
         Connection $db,
         string $rootDir,
         LoggerInterface $logger,
