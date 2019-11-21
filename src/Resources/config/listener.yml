@@ -35,10 +35,10 @@ services:
         public: true
         arguments: ['@router']
 
-    terminal42_leads.listener.cronjob:
-        class: Terminal42\LeadsBundle\EventListener\CronjobListener
+    Terminal42\LeadsBundle\EventListener\CronjobListener:
+        public: true
         arguments:
-            - "@terminal42_leads.purger"
+            - "@Terminal42\LeadsBundle\Service\LeadsPurger"
             - "@logger"
         tags:
             - { name: 'monolog.logger', channel: 'terminal42_leads' }
