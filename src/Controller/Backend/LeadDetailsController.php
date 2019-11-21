@@ -59,7 +59,7 @@ class LeadDetailsController
     }
 
     /**
-     * @Route("/contao/lead/{id}/show", name="terminal42_leads.details", requirements={"id"="\d"}, defaults={"_scope"="backend"})
+     * @Route("/contao/lead/{id}/show", name="terminal42_leads.details", requirements={"id"="\d+"}, defaults={"_scope"="backend"})
      */
     public function __invoke(int $id)
     {
