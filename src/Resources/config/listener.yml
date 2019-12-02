@@ -34,3 +34,11 @@ services:
     Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportOperationListener:
         public: true
         arguments: ['@router']
+
+    Terminal42\LeadsBundle\EventListener\CronjobListener:
+        public: true
+        arguments:
+            - '@Terminal42\LeadsBundle\Service\LeadsPurger'
+            - '@logger'
+        tags:
+            - { name: 'monolog.logger', channel: 'terminal42_leads' }

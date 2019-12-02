@@ -50,3 +50,20 @@ services:
 
     Terminal42\LeadsBundle\Util\NotificationCenter:
         arguments: ['%kernel.bundles%']
+
+    Terminal42\LeadsBundle\Service\LeadsPurger:
+        arguments:
+            - '@contao.framework'
+            - '@database_connection'
+            - '%kernel.project_dir%'
+            - '@logger'
+            - '@event_dispatcher'
+            - '@filesystem'
+        tags:
+            - { name: 'monolog.logger', channel: 'terminal42_leads' }
+
+    Terminal42\LeadsBundle\Command\PurgeCommand:
+        arguments:
+            - '@Terminal42\LeadsBundle\Service\LeadsPurger'
+        tags:
+            - { name: console.command }
