@@ -59,7 +59,7 @@ class LeadDetailsController
     }
 
     /**
-     * @Route("/contao/lead/{id}/show", name="terminal42_leads.details", requirements={"id"="\d"}, defaults={"_scope"="backend"})
+     * @Route("/contao/lead/{id}/show", name="terminal42_leads.details", requirements={"id"="\d+"}, defaults={"_scope"="backend"})
      */
     public function __invoke(int $id)
     {
@@ -79,7 +79,7 @@ class LeadDetailsController
         $languages = $this->systemAdapter->getLanguages();
 
         return new Response($this->twig->render(
-            'Terminal42LeadsBundle:Backend:lead_details.html.twig',
+            '@Terminal42Leads/Backend/lead_details.html.twig',
             [
                 'recordId' => $id,
                 'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $formData->created),
