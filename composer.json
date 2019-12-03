@@ -22,10 +22,10 @@
         "menatwork/contao-multicolumnwizard": "~3.2"
     },
     "require-dev": {
-        "phpoffice/phpexcel": "^1.8"
+        "phpoffice/phpspreadsheet": "^1.8"
     },
     "suggest": {
-        "phpoffice/phpexcel": "To enable excel export of lead data."
+        "phpoffice/phpspreadsheet": "To enable Excel export of lead data."
     },
     "autoload": {
         "psr-0": {
