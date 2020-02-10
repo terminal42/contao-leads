@@ -210,7 +210,7 @@ class DataCollector
             LEFT JOIN tl_form_field ON tl_form_field.id=tl_lead_data.field_id
             LEFT JOIN tl_lead ON tl_lead_data.pid=tl_lead.id
             WHERE " . implode(' AND ', $where) . "
-            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet('field_id', $this->fieldIds) : 'sorting') . ", tl_lead.master_id!=tl_lead.form_id"
+            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet('tl_lead_data.field_id', $this->fieldIds) : 'tl_lead_data.sorting') . ", tl_lead.master_id!=tl_lead.form_id"
         )->execute($this->formId);
 
         while ($db->next()) {
