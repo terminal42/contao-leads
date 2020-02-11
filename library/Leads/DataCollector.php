@@ -198,19 +198,32 @@ class DataCollector
         $data = array();
         $db = \Database::getInstance()->prepare("
             SELECT
-                tl_lead_data.field_id AS id,
-                IFNULL(tl_form_field.name, tl_lead_data.name) AS name,
-                IF(tl_form_field.label IS NULL OR tl_form_field.label='', tl_lead_data.name, tl_form_field.label) AS label,
-                tl_form_field.type,
-                tl_form_field.options,
-                tl_lead_data.field_id,
-                tl_lead_data.master_id,
-                tl_lead_data.sorting
-            FROM tl_lead_data
-            LEFT JOIN tl_form_field ON tl_form_field.id=tl_lead_data.field_id
-            LEFT JOIN tl_lead ON tl_lead_data.pid=tl_lead.id
-            WHERE " . implode(' AND ', $where) . "
-            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet('tl_lead_data.field_id', $this->fieldIds) : 'tl_lead_data.sorting') . ", tl_lead.master_id!=tl_lead.form_id"
+                id,
+                MAX(name) AS name,
+                MAX(label) AS label,
+                type,
+                options,
+                field_id,
+                MAX(master_id) AS master_id,
+                MAX(sorting) AS sorting
+            FROM (
+                SELECT
+                    tl_lead_data.field_id AS id,
+                    IFNULL(tl_form_field.name, tl_lead_data.name) AS name,
+                    IF(tl_form_field.label IS NULL OR tl_form_field.label='', tl_lead_data.name, tl_form_field.label) AS label,
+                    tl_form_field.type,
+                    tl_form_field.options,
+                    tl_lead_data.field_id,
+                    tl_lead_data.master_id,
+                    tl_lead_data.sorting
+                FROM tl_lead_data
+                LEFT JOIN tl_form_field ON tl_form_field.id=tl_lead_data.field_id
+                LEFT JOIN tl_lead ON tl_lead_data.pid=tl_lead.id
+                WHERE " . implode(' AND ', $where) . "
+                ORDER BY tl_lead.master_id!=tl_lead.form_id
+            ) result_set
+            GROUP BY field_id
+            ORDER BY " . (!empty($this->fieldIds) ? \Database::getInstance()->findInSet('field_id', $this->fieldIds) : 'sorting')
         )->execute($this->formId);
 
         while ($db->next()) {
