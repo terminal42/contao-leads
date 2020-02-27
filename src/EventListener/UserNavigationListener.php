@@ -16,7 +16,7 @@ namespace Terminal42\LeadsBundle\EventListener;
 use Contao\BackendUser;
 use Contao\Input;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserNavigationListener
 {
@@ -26,7 +26,7 @@ class UserNavigationListener
     private $database;
 
     /**
-     * @var TokenStorage
+     * @var TokenStorageInterface
      */
     private $tokenStorage;
 
@@ -35,7 +35,7 @@ class UserNavigationListener
      */
     private $forms;
 
-    public function __construct(Connection $database, TokenStorage $tokenStorage)
+    public function __construct(Connection $database, TokenStorageInterface $tokenStorage)
     {
         $this->database = $database;
         $this->tokenStorage = $tokenStorage;
