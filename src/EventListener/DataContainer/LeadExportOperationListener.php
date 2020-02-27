@@ -13,18 +13,8 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
-use Contao\Controller;
-use Contao\Input;
-use Contao\System;
-use Doctrine\DBAL\Connection;
-use Haste\Util\StringUtil;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
-use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 use Terminal42\LeadsBundle\Model\LeadExport;
-use Terminal42\LeadsBundle\Util\NotificationCenter;
 
 class LeadExportOperationListener
 {
