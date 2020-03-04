@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
+use Contao\Input;
 use Symfony\Component\Routing\RouterInterface;
 use Terminal42\LeadsBundle\Model\LeadExport;
 
@@ -30,8 +31,11 @@ class LeadExportOperationListener
 
     public function onLoadCallback(): void
     {
-        /** @var LeadExport[] $configs */
-        $configs = LeadExport::findAll();
+        $configs = null;
+        if (($formId = (int)Input::get('master')) > 0) {
+            /** @var LeadExport[] $configs */
+            $configs = LeadExport::findByPid($formId);
+        }
 
         if (null === $configs) {
             return;
