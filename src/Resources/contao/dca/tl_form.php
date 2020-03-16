@@ -35,6 +35,8 @@ $GLOBALS['TL_DCA']['tl_form']['subpalettes']['leadEnabled'] = 'leadMaster';
  * Fields
  */
 // TODO use array for SQL definition
+$GLOBALS['TL_DCA']['tl_form']['fields']['title']['eval']['decodeEntities'] = true;
+
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadEnabled'] = array
 (
     'label'                 => &$GLOBALS['TL_LANG']['tl_form']['leadEnabled'],
@@ -59,7 +61,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMenuLabel'] = array
     'label'                 => &$GLOBALS['TL_LANG']['tl_form']['leadMenuLabel'],
     'exclude'               => true,
     'inputType'             => 'text',
-    'eval'                  => array('maxlength'=>255, 'tl_class'=>'w50'),
+    'eval'                  => array('maxlength'=>255, 'tl_class'=>'w50', 'decodeEntities'=>true),
     'sql'                   => "varchar(255) NOT NULL default ''"
 );
 
