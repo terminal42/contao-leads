@@ -214,7 +214,7 @@ class Leads extends \Controller
                 $arrModules['leads']['modules']['lead_' . $form['id']] = array(
                     'tables'    => array('tl_lead'),
                     'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
-                    'label'     => $form['leadMenuLabel'],
+                    'label'     => html_entity_decode($form['leadMenuLabel']),
                     'icon'      => ' style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
                     'class'     => 'navigation leads',
                     'href'      => 'contao/main.php?do=lead&master=' . $form['id'],
