@@ -41,7 +41,7 @@ class SystemColumnRowListener
             return;
         }
 
-        $firstEntry = reset($data);
+        $firstEntry = reset($event->getData());
         $systemColumnConfig = $systemColumns[$columnConfig['field']];
 
         $value = (isset($systemColumnConfig['valueColRef']) ? $firstEntry[$systemColumnConfig['valueColRef']] : null);
