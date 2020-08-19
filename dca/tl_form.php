@@ -120,9 +120,9 @@ class tl_form_lead extends Backend
     public function modifyPalette($dc)
     {
         $strPalette = 'leadEnabled';
-        $objForm = \Database::getInstance()->execute("SELECT * FROM tl_form WHERE id=" . (int) $dc->id);
+        $objForm = \Contao\FormModel::findByPk($dc->id);
 
-        if ($objForm->leadEnabled) {
+        if ($objForm && $objForm->leadEnabled) {
             $strPalette .= ',leadMaster';
 
             if ($objForm->leadMaster == 0) {
