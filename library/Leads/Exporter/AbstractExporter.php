@@ -11,6 +11,7 @@
 namespace Leads\Exporter;
 
 
+use Contao\FormFieldModel;
 use Leads\DataCollector;
 use Leads\Leads;
 
@@ -125,7 +126,9 @@ abstract class AbstractExporter implements ExporterInterface
                     if (isset($dataHeaderFields[$column['field']])) {
                         $headerFields[] = $dataHeaderFields[$column['field']];
                     } else {
-                        $headerFields[] = '';
+                        // Field does not have data. Try to get label from database configuration
+                        $formField = FormFieldModel::findByPk($column['field']);
+                        $headerFields[] = $formField ? $formField->label : '';
                     }
                 }
             }
@@ -196,8 +199,9 @@ abstract class AbstractExporter implements ExporterInterface
 
             } else {
 
-                // Skip non existing fields
+                // Field does not have any data. Field seems got added later
                 if (!isset($fieldsData[$column['field']])) {
+                    $columnConfig[] = $column;
                     continue;
                 }
 
