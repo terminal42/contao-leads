@@ -458,6 +458,9 @@ class tl_lead extends Backend
                 || ($form = \FormModel::findByPk(\Input::get('master'))) === null
                 || null === ($notification = \NotificationCenter\Model\Notification::findByPk(\Input::post('notification')))
             ) {
+                \Message::addError(
+                    sprintf($GLOBALS['TL_LANG']['tl_lead']['notification_error'], (int) \Input::post('notification'))
+                );
                 \Controller::reload();
             }
 

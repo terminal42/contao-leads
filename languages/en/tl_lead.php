@@ -41,3 +41,4 @@ $GLOBALS['TL_LANG']['tl_lead']['label_format']  = 'Request from %s';
  * Misc
  */
 $GLOBALS['TL_LANG']['tl_lead']['notification_confirm'] = 'The notification has been sent for lead ID %s.';
+$GLOBALS['TL_LANG']['tl_lead']['notification_error'] = 'Sending notification for lead ID %s failed.';
