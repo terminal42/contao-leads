@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Exporter;
 
+use Contao\FormFieldModel;
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Model\Lead;
 use Terminal42\LeadsBundle\Util\DataTransformer;
@@ -146,7 +147,9 @@ abstract class AbstractExporter implements ExporterInterface
                     if (isset($dataHeaderFields[$column['field']])) {
                         $headerFields[] = $dataHeaderFields[$column['field']];
                     } else {
-                        $headerFields[] = '';
+                        // Field does not have data. Try to get label from database configuration
+                        $formField = FormFieldModel::findByPk($column['field']);
+                        $headerFields[] = $formField ? $formField->label : '';
                     }
                 }
             }
@@ -212,8 +215,9 @@ abstract class AbstractExporter implements ExporterInterface
             if (array_key_exists($column['field'], $systemColumns)) {
                 $columnConfig[] = $systemColumns[$column['field']];
             } else {
-                // Skip non existing fields
+                // Field does not have any data. Field seems got added later
                 if (!isset($fieldsData[$column['field']])) {
+                    $columnConfig[] = $column;
                     continue;
                 }
 
