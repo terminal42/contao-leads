@@ -105,12 +105,9 @@ class Leads extends \Controller
             $data = $fieldModel->row();
             $data['eval'] = $fieldModel->row();
             $strValue = Format::dcaValueFromArray($data, $objData->value);
-            $strLabel = Format::dcaLabelFromArray($data);
-
-            return $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+        } else {
+            $strValue = implode(', ', deserialize($objData->value, true));
         }
-
-        $strValue = implode(', ', deserialize($objData->value, true));
 
         if ($objData->label != '') {
             $strLabel = $objData->label;
@@ -120,7 +117,9 @@ class Leads extends \Controller
                 $strLabel = implode(', ', $arrLabel);
             }
 
-            $strValue = $strLabel . ' <span style="color:#b3b3b3; padding-left:3px;">[' . $strValue . ']</span>';
+            if ($strLabel !== $strValue) {
+                $strValue = $strLabel.' <span style="color:#b3b3b3; padding-left:3px;">['.$strValue.']</span>';
+            }
         }
 
         return $strValue;
