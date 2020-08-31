@@ -16,7 +16,6 @@ namespace Terminal42\LeadsBundle\ContaoManager;
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
-use Contao\ManagerPlugin\Bundle\Config\ModuleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use Contao\ManagerPlugin\Routing\RoutingPluginInterface;
 use Symfony\Component\Config\Loader\LoaderResolverInterface;
@@ -34,8 +33,6 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface
             (new BundleConfig(Terminal42LeadsBundle::class))
                 ->setReplace(['leads'])
                 ->setLoadAfter([ContaoCoreBundle::class, 'haste', 'multicolumnwizard']),
-            new ModuleConfig('haste'),
-            new ModuleConfig('multicolumnwizard'),
         ];
     }
 
