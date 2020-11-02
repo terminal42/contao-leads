@@ -37,7 +37,7 @@ class LeadExportController
     }
 
     /**
-     * @Route("/contao/lead/export/{id}", name="terminal42_leads.export", requirements={"id"="\d"}, defaults={"_scope"="backend"})
+     * @Route("/contao/lead/export/{id}", name="terminal42_leads.export", requirements={"id"="\d+"}, defaults={"_scope"="backend"})
      */
     public function __invoke(int $id): void
     {

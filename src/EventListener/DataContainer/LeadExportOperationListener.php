@@ -51,7 +51,7 @@ class LeadExportOperationListener
                 'button_callback' => function ($href, $label, $title, $class, $attributes) use ($config) {
                     return sprintf(
                         '<a href="%s" class="%s" title="%s"%s>%s</a> ',
-                        $this->router->generate('terminal42_leads.export', ['id' => $config->id]),
+                        $this->router->generate('terminal42_leads.export', ['id' => (int)$config->id]),
                         $class,
                         specialchars($title),
                         $attributes,
