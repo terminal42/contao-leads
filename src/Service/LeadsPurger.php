@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Terminal42\LeadsBundle\Service;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
@@ -8,8 +10,9 @@ use Contao\FilesModel;
 use Contao\StringUtil;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
-use Exception;
+use Doctrine\DBAL\Exception;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Terminal42\LeadsBundle\Event\LeadsPurgeEvent;
@@ -69,14 +72,14 @@ class LeadsPurger
         $this->rootDir = $rootDir;
         $this->logger = $logger;
         $this->eventDispatcher = $eventDispatcher;
-        $this->fs = $fs ? $fs : new Filesystem();
+        $this->fs = $fs ?: new Filesystem();
     }
 
     /**
      * @return string
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
-    public function execute()
+    public function execute(): string
     {
         $this->framework->initialize();
 
@@ -98,12 +101,12 @@ class LeadsPurger
 
     /**
      * @return bool
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
-    private function executeBatchPurge()
+    private function executeBatchPurge(): bool
     {
         $purged = false;
-        $forms = $this->db->fetchAll(
+        $forms = $this->db->fetchAllAssociative(
             "SELECT id, title, leadPeriod, leadPurgeUploads FROM tl_form WHERE leadPeriod != ''"
         );
 
@@ -134,12 +137,11 @@ class LeadsPurger
      * @param $timePeriod
      * @return int
      */
-    private function convertTimePeriodToTime($timePeriod)
+    private function convertTimePeriodToTime($timePeriod): int
     {
         $range = StringUtil::deserialize($timePeriod);
 
-        if (is_array($range) && isset($range['unit']) && isset($range['value']) && !empty($range['value'])
-            && false !== ($timestamp = strtotime('- '.$range['value'].' '.$range['unit']))) {
+        if (isset($range['unit'], $range['value']) && is_array($range) && !empty($range['value']) && false !== ($timestamp = strtotime('- ' . $range['value'] . ' ' . $range['unit']))) {
             return $timestamp;
         }
 
@@ -150,12 +152,13 @@ class LeadsPurger
      * @param $masterFormId
      * @param $timestamp
      * @return array
+     * @throws Exception
      */
-    private function getAllLeads($masterFormId, $timestamp)
+    private function getAllLeads($masterFormId, $timestamp): array
     {
         $leads = [];
 
-        $rows = $this->db->fetchAll(
+        $rows = $this->db->fetchAllAssociative(
             "SELECT * FROM tl_lead WHERE master_id=? AND created<?",
             [$masterFormId, $timestamp]
         );
@@ -171,15 +174,15 @@ class LeadsPurger
      * @param array $leads
      * @param array $masterForm
      * @return int
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
-    private function purgeLeads(array $leads, array $masterForm)
+    private function purgeLeads(array $leads, array $masterForm): int
     {
         $deleted = 0;
         $ids = implode(',', array_keys($leads));
 
         if (!empty($ids)) {
-            $deleted = (int)$this->db->executeUpdate(
+            $deleted = (int)$this->db->executeStatement(
                 "DELETE FROM tl_lead WHERE id IN(".$ids.")"
             );
 
@@ -195,8 +198,9 @@ class LeadsPurger
     /**
      * @param array $leads
      * @return array
+     * @throws Exception
      */
-    private function getAllLeadsData(array $leads)
+    private function getAllLeadsData(array $leads): array
     {
         $leadsData = [];
 
@@ -204,7 +208,7 @@ class LeadsPurger
 
             $ids = implode(',', array_keys($leads));
 
-            $rows = $this->db->fetchAll(
+            $rows = $this->db->fetchAllAssociative(
                 "SELECT d.*, f.type AS field_type FROM tl_lead_data d
                       LEFT JOIN tl_form_field f ON d.field_id = f.id
                       WHERE d.pid IN(".$ids.")"
@@ -223,9 +227,9 @@ class LeadsPurger
      * @param array $leadsData
      * @param array $masterForm
      * @return int
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws Exception
      */
-    private function purgeLeadsData(array $leadsData, array $masterForm)
+    private function purgeLeadsData(array $leadsData, array $masterForm): int
     {
         $deleted = 0;
 
@@ -233,7 +237,7 @@ class LeadsPurger
 
             $ids = implode(',', array_keys($leadsData));
 
-            $deleted = (int)$this->db->executeUpdate(
+            $deleted = (int)$this->db->executeStatement(
                 "DELETE FROM tl_lead_data WHERE id IN(".$ids.")"
             );
 
@@ -251,7 +255,7 @@ class LeadsPurger
      * @param string $leadPurgeUploads
      * @return array
      */
-    private function getUploads(array $leadsData, string $leadPurgeUploads)
+    private function getUploads(array $leadsData, string $leadPurgeUploads): array
     {
         $uploads = [];
         if (!empty($leadsData) && !empty($leadPurgeUploads)) {
@@ -269,15 +273,13 @@ class LeadsPurger
      * @param string $value
      * @return FilesModel|null
      */
-    private function getUploadFileModel(string $value)
+    private function getUploadFileModel(string $value): ?FilesModel
     {
         if (!Validator::isUuid($value)) {
             return null;
         }
 
-        $filesModel = $this->framework->getAdapter(FilesModel::class)->findByUuid($value);
-
-        return $filesModel;
+        return $this->framework->getAdapter(FilesModel::class)->findByUuid($value);
     }
 
 
@@ -286,7 +288,7 @@ class LeadsPurger
      * @param array $masterForm
      * @return int
      */
-    private function purgeUploads(array $uploads, array $masterForm)
+    private function purgeUploads(array $uploads, array $masterForm): int
     {
         if (empty($uploads)) {
             return 0;
@@ -312,7 +314,7 @@ class LeadsPurger
      * @param FilesModel|null $filesModel
      * @return int
      */
-    private function purgeUpload(int $dataId, ?FilesModel $filesModel)
+    private function purgeUpload(int $dataId, ?FilesModel $filesModel): int
     {
         if (null === $filesModel) {
             $this->logger->error(
@@ -343,7 +345,7 @@ class LeadsPurger
 
             return 1;
 
-        } catch (Exception $exception) {
+        } catch (RuntimeException $exception) {
             $this->logger->error(
                 sprintf('Purge leads upload (filesModel ID %d): %s', $filesModel->id, $exception->getMessage()),
                 ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]
