@@ -28,6 +28,8 @@ class FormListener
             $pm
                 ->addField('leadMenuLabel', null, PaletteManipulator::POSITION_APPEND)
                 ->addField('leadLabel', null, PaletteManipulator::POSITION_APPEND)
+                ->addField('leadPeriod', null, PaletteManipulator::POSITION_APPEND)
+                ->addField('leadPurgeUploads', null, PaletteManipulator::POSITION_APPEND)
                 ->applyToSubpalette('leadEnabled', 'tl_form')
             ;
         }
