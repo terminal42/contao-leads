@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Command;
 
+use Doctrine\DBAL\Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -39,10 +41,10 @@ class PurgeCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return int|null|void
-     * @throws \Doctrine\DBAL\DBALException
+     * @return int|void
+     * @throws Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('<info>'.$this->purger->execute().'</info>');
     }
