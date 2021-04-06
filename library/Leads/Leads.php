@@ -487,6 +487,13 @@ class Leads extends \Controller
         \System::loadLanguageFile('tl_lead_export');
 
         return array(
+            '_pid' => array( // make ID selectable (added by CO/BODA - Ronald Boda)
+                'field'         => '_pid',
+                'name'          => 'ID',
+                'value'         => 'value',
+                'format'        => 'raw',
+                'valueColRef'   => 'pid'
+            ),
             '_form' => array(
                 'field'         => '_form',
                 'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],

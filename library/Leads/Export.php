@@ -83,6 +83,13 @@ class Export
 
         // Add base information columns
         if ($objConfig->export == 'all') {
+            $arrFields[] = array // add ID (added by CO/BODA - Ronald Boda)
+            (
+                'field' => '_pid',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
             $arrFields[] = array
             (
                 'field' => '_form',
@@ -107,6 +114,9 @@ class Export
                 'format' => 'raw'
             );
         } else {
+            if ($objConfig->fields['_pid']) { // Add ID (added by CO/BODA - Ronald Boda)
+                $arrFields[] = $objConfig->fields['_pid'];
+            }
             if ($objConfig->fields['_form']) {
                 $arrFields[] = $objConfig->fields['_form'];
             }
@@ -163,6 +173,10 @@ class Export
             // Get the special field value and label
             if (isset($arrField['field'])) {
                 switch ($arrField['field']) {
+                    case '_pid': // Add ID (added by CO/BODA - Ronald Boda)
+                        $varValue = $arrFirst['_pid'];
+                        break;
+
                     case '_form':
                         $varValue = $arrFirst['form_id'];
                         $strLabel = $arrFirst['form_name'];
@@ -263,10 +277,14 @@ class Export
             if ($objConfig->export == 'all') {
                 \System::loadLanguageFile('tl_lead_export');
 
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['_pid']; // insert ID in export-file (added by CO/BODA - Ronald Boda)
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
             } else {
+                if ($objConfig->fields['_pid']) { // insert ID in export-file (added by CO/BODA - Ronald Boda)
+                    $arrHeader[] = $objConfig->fields['_pid']['name'];
+                }
                 if ($objConfig->fields['_form']) {
                     $arrHeader[] = $objConfig->fields['_form']['name'];
                 }
