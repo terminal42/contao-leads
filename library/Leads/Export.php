@@ -83,7 +83,7 @@ class Export
 
         // Add base information columns
         if ($objConfig->export == 'all') {
-            $arrFields[] = array // add ID (added by CO/BODA - Ronald Boda)
+            $arrFields[] = array
             (
                 'field' => '_pid',
                 'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'],
@@ -121,9 +121,7 @@ class Export
                 'format' => 'raw'
             );
         } else {
-
             if ($objConfig->fields['_pid']) {
-
                 $arrFields[] = $objConfig->fields['_pid'];
             }
             if ($objConfig->fields['_form']) {
@@ -182,9 +180,7 @@ class Export
             // Get the special field value and label
             if (isset($arrField['field'])) {
                 switch ($arrField['field']) {
-
                     case '_pid':
-
                         $varValue = $arrFirst['_pid'];
                         break;
 
@@ -288,15 +284,12 @@ class Export
             if ($objConfig->export == 'all') {
                 \System::loadLanguageFile('tl_lead_export');
 
-
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['_pid'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
             } else {
-
                 if ($objConfig->fields['_pid']) {
-
                     $arrHeader[] = $objConfig->fields['_pid']['name'];
                 }
                 if ($objConfig->fields['_form']) {

@@ -20,6 +20,7 @@
 /**
  * Fields
  */
+$GLOBALS['TL_LANG']['tl_lead_export']['pid']                      = array('ID');
 $GLOBALS['TL_LANG']['tl_lead_export']['name']                     = array('Config name', 'Please enter the config name.');
 $GLOBALS['TL_LANG']['tl_lead_export']['type']                     = array('Data type', 'Please choose the data type here.');
 $GLOBALS['TL_LANG']['tl_lead_export']['filename']                 = array('Custom file name', 'Here you can enter a custom file name. You can use wildcards (e.g. ##date##). See help wizard for details.');

@@ -487,7 +487,6 @@ class Leads extends \Controller
         \System::loadLanguageFile('tl_lead_export');
 
         return array(
-
             '_pid' => array(
                 'field'         => '_pid',
                 'name'          => 'ID',
