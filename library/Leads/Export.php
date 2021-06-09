@@ -85,6 +85,20 @@ class Export
         if ($objConfig->export == 'all') {
             $arrFields[] = array
             (
+                'field' => '_pid',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+            $arrFields[] = array
+            (
+                'field' => '_pid',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+            $arrFields[] = array
+            (
                 'field' => '_form',
                 'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
                 'value' => 'all',
@@ -107,6 +121,9 @@ class Export
                 'format' => 'raw'
             );
         } else {
+            if ($objConfig->fields['_pid']) {
+                $arrFields[] = $objConfig->fields['_pid'];
+            }
             if ($objConfig->fields['_form']) {
                 $arrFields[] = $objConfig->fields['_form'];
             }
@@ -163,6 +180,10 @@ class Export
             // Get the special field value and label
             if (isset($arrField['field'])) {
                 switch ($arrField['field']) {
+                    case '_pid':
+                        $varValue = $arrFirst['_pid'];
+                        break;
+
                     case '_form':
                         $varValue = $arrFirst['form_id'];
                         $strLabel = $arrFirst['form_name'];
@@ -263,10 +284,14 @@ class Export
             if ($objConfig->export == 'all') {
                 \System::loadLanguageFile('tl_lead_export');
 
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['_pid'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
                 $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
             } else {
+                if ($objConfig->fields['_pid']) {
+                    $arrHeader[] = $objConfig->fields['_pid']['name'];
+                }
                 if ($objConfig->fields['_form']) {
                     $arrHeader[] = $objConfig->fields['_form']['name'];
                 }
