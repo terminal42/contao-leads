@@ -251,7 +251,7 @@ class Leads extends \Controller
                     $GLOBALS['TL_LANGUAGE'],
                     $arrForm['id'],
                     ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']),
-                    (FE_USER_LOGGED_IN === true ? \FrontendUser::getInstance()->id : 0),
+                    (FE_USER_LOGGED_IN === true ? (int) \FrontendUser::getInstance()->id : 0),
                     serialize($arrPost)
                 )
                 ->insertId
