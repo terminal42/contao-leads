@@ -247,10 +247,11 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
             'exclude'                 => true,
             'inputType'               => 'select',
+            'default'                 => 'all',
             'options'                 => array('label', 'all', 'value'),
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
             'eval'                    => array('tl_class'=>'w50'),
-            'sql'                     => "varchar(8) NOT NULL default ''"
+            'sql'                     => "varchar(8) NOT NULL default 'all'"
         ),
         'fields' => array
         (
