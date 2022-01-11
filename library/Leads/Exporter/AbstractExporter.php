@@ -159,7 +159,7 @@ abstract class AbstractExporter implements ExporterInterface
             foreach ($dataCollector->getFieldsData() as $fieldId => $fieldConfig) {
                 $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
 
-                $fieldConfig['value'] = 'all';
+                $fieldConfig['value'] = $config->exportValue;
                 $columnConfig[] = $fieldConfig;
             }
 

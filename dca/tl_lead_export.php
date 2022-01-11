@@ -108,6 +108,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
     // Subpalettes
     'subpalettes' => array
     (
+        'export_all'                    => 'exportValue',
         'export_fields'                 => 'fields',
         'export_tokens'                 => 'tokenFields',
         'useTemplate'                   => 'template,startIndex,sheetIndex',
@@ -239,6 +240,16 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
             'options'                 => array('all', 'fields', 'tokens'),
             'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['export'],
             'eval'                    => array('mandatory'=>true, 'submitOnChange'=>true, 'tl_class'=>'clr'),
+            'sql'                     => "varchar(8) NOT NULL default ''"
+        ),
+        'exportValue' => array
+        (
+            'label'                   => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
+            'exclude'                 => true,
+            'inputType'               => 'select',
+            'options'                 => array('label', 'all', 'value'),
+            'reference'               => &$GLOBALS['TL_LANG']['tl_lead_export']['fields_value'],
+            'eval'                    => array('tl_class'=>'w50'),
             'sql'                     => "varchar(8) NOT NULL default ''"
         ),
         'fields' => array
