@@ -12,8 +12,8 @@
     ],
     "require":{
         "php":"^7.1 || ^8.0",
-        "symfony/console": "^3.4 || ^4.0",
-        "symfony/filesystem": "^3.4 || ^4.0",
+        "symfony/console": "^3.4 || ^4.0 || ^5.4",
+        "symfony/filesystem": "^3.4 || ^4.0 || ^5.4",
         "contao/core-bundle":"^4.6",
         "codefog/contao-haste": "^4.11.4",
         "menatwork/contao-multicolumnwizard": "^3.3"
