@@ -63,6 +63,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
                 'icon'            => 'settings.gif',
                 'class'           => 'leads-export',
                 'attributes'      => 'onclick="Backend.getScrollOffset();"',
+                'href'            => '',
                 'button_callback' => array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener::class, 'onExportButtonCallback'),
             ),
             'all' => array
