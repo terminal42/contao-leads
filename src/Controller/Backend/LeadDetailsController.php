@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\CoreBundle\Util\LocaleUtil;
 use Contao\Database;
 use Contao\Date;
 use Contao\StringUtil;
@@ -70,6 +71,11 @@ class LeadDetailsController
 
         $formData = $this->getFormData($id);
         $languages = $this->systemAdapter->getLanguages();
+        $locale = $formData->language;
+
+        if (class_exists(LocaleUtil::class)) {
+            $locale = LocaleUtil::formatAsLocale($locale);
+        }
 
         return new Response($this->twig->render(
             '@Terminal42Leads/Backend/lead_details.html.twig',
@@ -86,7 +92,7 @@ class LeadDetailsController
                 ],
                 'language' => [
                     'id' => $formData->language,
-                    'label' => $languages[$formData->language],
+                    'label' => $languages[$locale] ?? $locale,
                 ],
                 'member' => !$formData->member_id ? false : [
                     'name' => $formData->member_name,
