@@ -82,8 +82,8 @@ class ExporterFactory
         $config = $result->fetch(FetchMode::STANDARD_OBJECT);
 
         $config->master = $config->master ?: $config->pid;
-        $config->fields = deserialize($config->fields, true);
-        $config->tokenFields = deserialize($config->tokenFields, true);
+        $config->fields = \Contao\StringUtil::deserialize($config->fields, true);
+        $config->tokenFields = \Contao\StringUtil::deserialize($config->tokenFields, true);
 
         return $config;
     }

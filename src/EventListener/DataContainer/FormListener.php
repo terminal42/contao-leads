@@ -15,6 +15,7 @@ namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\DataContainer;
+use Contao\StringUtil;
 
 class FormListener
 {
@@ -56,7 +57,7 @@ class FormListener
         $fieldsMapper = array_combine($oldFormFields->fetchEach('id'), $newFormFields->fetchEach('id'));
 
         while ($exports->next()) {
-            $fields = deserialize($exports->fields, true);
+            $fields = StringUtil::deserialize($exports->fields, true);
 
             // Map the fields
             foreach ($fields as $k => $v) {

@@ -17,6 +17,7 @@ use Contao\Controller;
 use Contao\Database;
 use Contao\DataContainer;
 use Contao\Input;
+use Contao\StringUtil;
 use Contao\System;
 use Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory;
 use Terminal42\LeadsBundle\Exporter\ExporterFactory;
@@ -92,7 +93,7 @@ class LeadExportListener
      */
     public function onFieldsLoadCallback($varValue, $dc = null)
     {
-        $arrFields = deserialize($varValue, true);
+        $arrFields = StringUtil::deserialize($varValue, true);
 
         // Load the form fields
         if (empty($arrFields) && $dc->id) {

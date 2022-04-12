@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Util;
 
+use Contao\StringUtil;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Terminal42\LeadsBundle\DataTransformer\DataTransformerFactory;
 use Terminal42\LeadsBundle\Event\TransformRowEvent;
@@ -83,7 +84,7 @@ class DataTransformer
      */
     public function transformValue($value, array $columnConfig)
     {
-        $value = implode(', ', deserialize($value, true));
+        $value = implode(', ', StringUtil::deserialize($value, true));
 
         // Merge transformers chosen by user (format) with an array of arbitrary ones
         // defined by any developer.
@@ -149,7 +150,7 @@ class DataTransformer
     private function prepareLabel($label)
     {
         if (!empty($label)) {
-            $labelChunks = deserialize($label);
+            $labelChunks = StringUtil::deserialize($label);
 
             if (\is_array($labelChunks) && !empty($labelChunks)) {
                 $label = implode(', ', $label);

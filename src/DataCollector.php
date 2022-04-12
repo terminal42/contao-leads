@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle;
 
+use Contao\StringUtil;
+
 class DataCollector
 {
     /**
@@ -307,7 +309,7 @@ class DataCollector
                 && 'checkbox' === $row['type']
                 && '' !== $row['options']
             ) {
-                $options = deserialize($row['options'], true);
+                $options = StringUtil::deserialize($row['options'], true);
 
                 if (1 === \count($options)) {
                     $headerFields[$fieldId] = $options[0]['label'];

@@ -46,7 +46,7 @@ class TokenRowListener
 
             if (isset($data[$fieldConfig['id']])) {
                 $value = $data[$fieldConfig['id']]['value'];
-                $value = deserialize($value);
+                $value = \Contao\StringUtil::deserialize($value);
 
                 // Add multiple tokens (<fieldname>_<option_name>) for multi-choice fields
                 if (\is_array($value)) {
