@@ -46,7 +46,6 @@ class DataTransformer
 
         foreach ($columnConfigs as $columnConfig) {
             $event = $this->eventDispatcher->dispatch(
-                'terminal42_leads.transform_row',
                 new TransformRowEvent($data, $config, $columnConfig)
             );
 
