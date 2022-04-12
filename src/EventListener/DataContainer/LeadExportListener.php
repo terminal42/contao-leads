@@ -190,7 +190,7 @@ class LeadExportListener
         $strPalette = $objRecord->type ?: 'default';
         $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace(
             'export',
-            'export,'.$GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'],
+            'export,'.($GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'] ?? ''),
             $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]
         );
     }
