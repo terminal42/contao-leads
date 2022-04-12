@@ -90,7 +90,7 @@ class LeadListener
         $objData = \Database::getInstance()->prepare('SELECT * FROM tl_lead_data WHERE pid=?')->execute($row['id']);
 
         while ($objData->next()) {
-            StringUtil::flatten(StringUtil::deserialize($objData->value), $objData->name, $arrTokens);
+            StringUtil::flatten(\Contao\StringUtil::deserialize($objData->value), $objData->name, $arrTokens);
         }
 
         return StringUtil::recursiveReplaceTokensAndTags($objForm->leadLabel, $arrTokens);
