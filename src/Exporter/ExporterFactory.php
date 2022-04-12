@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\Exporter;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
 
 class ExporterFactory
 {
@@ -79,7 +78,12 @@ class ExporterFactory
             throw new \InvalidArgumentException(sprintf('Export config ID %s not found', $configId));
         }
 
-        $config = $result->fetch(FetchMode::STANDARD_OBJECT);
+        $configData = $result->fetchAssociative();
+
+        $config = new \stdClass();
+        foreach ($configData as $property => $value) {
+            $config->{$property} = $value;
+        }
 
         $config->master = $config->master ?: $config->pid;
         $config->fields = \Contao\StringUtil::deserialize($config->fields, true);
