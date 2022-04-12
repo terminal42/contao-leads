@@ -56,7 +56,7 @@ class ExportFile
             ]
         );
 
-        return $this->eventDispatcher->dispatch($event);
+        return $this->eventDispatcher->dispatch($event, 'terminal42_leads.export_file');
     }
 
     private function getUniqueFilename(\stdClass $config)
