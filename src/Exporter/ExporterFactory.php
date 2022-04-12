@@ -78,12 +78,7 @@ class ExporterFactory
             throw new \InvalidArgumentException(sprintf('Export config ID %s not found', $configId));
         }
 
-        $configData = $result->fetchAssociative();
-
-        $config = new \stdClass();
-        foreach ($configData as $property => $value) {
-            $config->{$property} = $value;
-        }
+        $config = (object) $result->fetchAssociative();
 
         $config->master = $config->master ?: $config->pid;
         $config->fields = \Contao\StringUtil::deserialize($config->fields, true);
