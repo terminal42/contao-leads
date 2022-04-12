@@ -201,6 +201,8 @@ class LeadExportListener
     private function loadJsAndCss(): void
     {
         $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
-        $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];
+        if (isset($GLOBALS['BE_MOD']['leads']['lead']['stylesheet'])) {
+            $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];
+        }
     }
 }
