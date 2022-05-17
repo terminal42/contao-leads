@@ -199,7 +199,7 @@ class Leads extends \Controller
         }
 
         $arrSession = \Session::getInstance()->get('backend_modules');
-        $blnOpen = $arrSession['leads'] || $blnShowAll || version_compare(VERSION, '4.4', '>=');
+        $blnOpen = ($arrSession['leads'] ?? false) || $blnShowAll || version_compare(VERSION, '4.4', '>=');
         $arrModules['leads']['modules'] = array();
 
         if ($blnOpen) {
