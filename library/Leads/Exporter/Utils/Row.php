@@ -103,8 +103,8 @@ class Row
             } else {
                 // Internal field
                 $row   = current($data);
-                $value = $row[$columnConfig['valueColRef']];
-                $label = $row[$columnConfig['labelColRef']];
+                $value = $row[$columnConfig['valueColRef']] ?? null;
+                $label = $row[$columnConfig['labelColRef']] ?? null;
             }
 
             $value      = static::transformValue($value, $columnConfig);
@@ -132,8 +132,8 @@ class Row
         // defined by any developer.
         if ($columnConfig['format']) {
             $columnConfig['transformers'] = array_merge(
-                (array) $columnConfig['format'],
-                (array) $columnConfig['transformers']
+                (array) ($columnConfig['format'] ?? []),
+                (array) ($columnConfig['transformers'] ?? [])
             );
         }
 

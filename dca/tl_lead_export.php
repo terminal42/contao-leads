@@ -300,7 +300,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = array
 
                         // Backwards compatibility
                         return array_merge(
-                            (array) $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['format']['options'],
+                            (array) ($GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['format']['options'] ?? []),
                             $options
                         );
                     },

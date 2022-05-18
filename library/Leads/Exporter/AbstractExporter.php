@@ -237,7 +237,7 @@ abstract class AbstractExporter implements ExporterInterface
 
             if (count($options) == 1) {
                 $fieldConfig['transformers'] = array_merge(
-                    (array) $fieldConfig['transformers'],
+                    (array) ($fieldConfig['transformers'] ?? []),
                     array('yesno')
                 );
             }
