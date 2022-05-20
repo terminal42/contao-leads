@@ -98,7 +98,7 @@ class Row
 
             // Regular form field
             if (isset($columnConfig['id'])) {
-                $value = $data[$columnConfig['id']]['value'];
+                $value = $data[$columnConfig['id']]['value'] ?? null;
                 $label = $columnConfig['label'];
             } else {
                 // Internal field
