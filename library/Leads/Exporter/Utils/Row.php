@@ -98,13 +98,13 @@ class Row
 
             // Regular form field
             if (isset($columnConfig['id'])) {
-                $value = $data[$columnConfig['id']]['value'] ?? null;
+                $value = isset($columnConfig['id'], $data[$columnConfig['id']]['value']) ? $data[$columnConfig['id']]['value'] : null;
                 $label = $columnConfig['label'];
             } else {
                 // Internal field
                 $row   = current($data);
-                $value = $row[$columnConfig['valueColRef']] ?? null;
-                $label = $row[$columnConfig['labelColRef']] ?? null;
+                $value = isset($columnConfig['valueColRef'], $row[$columnConfig['valueColRef']]) ? $row[$columnConfig['valueColRef']] : null;
+                $label = isset($columnConfig['labelColRef'], $row[$columnConfig['labelColRef']]) ? $row[$columnConfig['labelColRef']] : null;
             }
 
             $value      = static::transformValue($value, $columnConfig);
