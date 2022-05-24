@@ -291,7 +291,7 @@ class Leads extends \Controller
                 }
 
                 // Files
-                if (isset($arrFiles[$objFields->postName]) && $arrFiles[$objFields->postName]['uploaded']) {
+                if (isset($arrFiles[$objFields->postName]) && ($arrFiles[$objFields->postName]['uploaded'] ?? false)) {
                     $varValue = Leads::prepareValue($arrFiles[$objFields->postName], $objFields);
                     $varLabel = Leads::prepareLabel($varValue, $objFields);
 
