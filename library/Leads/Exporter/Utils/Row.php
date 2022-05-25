@@ -130,7 +130,7 @@ class Row
 
         // Merge transformers chosen by user (format) with an array of arbitrary ones
         // defined by any developer.
-        if ($columnConfig['format']) {
+        if ($columnConfig['format'] ?? false) {
             $columnConfig['transformers'] = array_merge(
                 (array) ($columnConfig['format'] ?? []),
                 (array) ($columnConfig['transformers'] ?? [])
@@ -141,7 +141,7 @@ class Row
          * Apply data transformers
          * @var $dataTransformer DataTransformerInterface
          */
-        $transformers = (array) $columnConfig['transformers'];
+        $transformers = (array) ($columnConfig['transformers'] ?? []);
 
         foreach ($transformers as $transformerKey) {
 
