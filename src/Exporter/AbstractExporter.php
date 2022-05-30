@@ -248,7 +248,7 @@ abstract class AbstractExporter implements ExporterInterface
             && 'checkbox' === $fieldConfig['type']
             && '' !== $fieldConfig['options']
         ) {
-            $options = deserialize($fieldConfig['options'], true);
+            $options = \Contao\StringUtil::deserialize($fieldConfig['options'], true);
 
             if (1 === \count($options)) {
                 $fieldConfig['transformers'] = array_merge(

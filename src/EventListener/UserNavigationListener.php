@@ -15,6 +15,7 @@ namespace Terminal42\LeadsBundle\EventListener;
 
 use Contao\BackendUser;
 use Contao\Input;
+use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -76,7 +77,7 @@ class UserNavigationListener
 
         foreach ($forms as $form) {
             $modules['leads']['modules']['lead_'. $form['id']] = [
-                'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
+                'title'     => StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
                 'label'     => $form['leadMenuLabel'] ?: $form['title'],
                 'class'     => 'navigation leads',
                 'href'      => 'contao/main.php?do=lead&master='.$form['id'],

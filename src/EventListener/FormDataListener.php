@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener;
 
+use Contao\StringUtil;
 use Contao\System;
 
 class FormDataListener
@@ -168,7 +169,7 @@ class FormDataListener
         $varValue = $this->convertRgxp($varValue, $objField->rgxp);
 
         if (!empty($objField->options)) {
-            $arrOptions = deserialize($objField->options, true);
+            $arrOptions = StringUtil::deserialize($objField->options, true);
 
             foreach ($arrOptions as $arrOption) {
                 if ($arrOption['value'] === $varValue && '' !== $arrOption['label']) {

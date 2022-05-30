@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\Controller;
+use Contao\StringUtil;
 use Contao\System;
 
 class LeadDataListener
@@ -29,7 +30,7 @@ class LeadDataListener
             return;
         }
 
-        $objUser->forms = deserialize($objUser->forms);
+        $objUser->forms = StringUtil::deserialize($objUser->forms);
 
         if (!\is_array($objUser->forms) || empty($objUser->forms)) {
             System::log('Not enough permissions to access leads data ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
@@ -57,8 +58,8 @@ class LeadDataListener
      */
     public function onChildRecordCallback($row)
     {
-        $label = implode(', ', deserialize($row['label'], true));
-        $value = implode(', ', deserialize($row['value'], true));
+        $label = implode(', ', StringUtil::deserialize($row['label'], true));
+        $value = implode(', ', StringUtil::deserialize($row['value'], true));
 
         if ($label === $value) {
             $value = '';

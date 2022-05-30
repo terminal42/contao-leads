@@ -19,6 +19,7 @@ namespace Terminal42\LeadsBundle\Controller\Backend;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
+use Contao\StringUtil;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -142,11 +143,11 @@ class LeadDetailsController
 
     private function formatLabel($row): string
     {
-        $strValue = implode(', ', deserialize($row->value, true));
+        $strValue = implode(', ', StringUtil::deserialize($row->value, true));
 
         if (!empty($row->label) && $row->label !== $row->value) {
             $strLabel = $row->label;
-            $arrLabel = deserialize($row->label, true);
+            $arrLabel = StringUtil::deserialize($row->label, true);
 
             if (!empty($arrLabel)) {
                 $strLabel = implode(', ', $arrLabel);
@@ -164,6 +165,6 @@ class LeadDetailsController
             return null;
         }
 
-        return implode(', ', deserialize($row->value, true));
+        return implode(', ', StringUtil::deserialize($row->value, true));
     }
 }

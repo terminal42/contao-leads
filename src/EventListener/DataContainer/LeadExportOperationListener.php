@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\Input;
+use Contao\StringUtil;
 use Symfony\Component\Routing\RouterInterface;
 use Terminal42\LeadsBundle\Model\LeadExport;
 
@@ -53,7 +54,7 @@ class LeadExportOperationListener
                         '<a href="%s" class="%s" title="%s"%s>%s</a> ',
                         $this->router->generate('terminal42_leads.export', ['id' => (int)$config->id]),
                         $class,
-                        specialchars($title),
+                        StringUtil::specialchars($title),
                         $attributes,
                         $label
                     );

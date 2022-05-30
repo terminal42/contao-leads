@@ -18,6 +18,7 @@ use Contao\Environment;
 use Contao\FormModel;
 use Contao\Input;
 use Contao\Message;
+use Contao\StringUtil;
 use Contao\System;
 use NotificationCenter\Model\Notification;
 use Terminal42\LeadsBundle\Util\NotificationCenter;
@@ -104,7 +105,7 @@ class LeadNotificationController
 
         $return = '
 <div id="tl_buttons">
-<a href="'.System::getReferer(true).'" class="header_back" title="'.specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']).'" accesskey="b">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
+<a href="'.System::getReferer(true).'" class="header_back" title="'.StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']).'" accesskey="b">'.$GLOBALS['TL_LANG']['MSC']['backBT'].'</a>
 </div>
 
 <div class="leads-notification-center">
@@ -137,7 +138,7 @@ class LeadNotificationController
 <div class="tl_formbody_submit">
 
 <div class="tl_submit_container">
-  <input type="submit" name="save" id="save" class="tl_submit" accesskey="s" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]).'">
+  <input type="submit" name="save" id="save" class="tl_submit" accesskey="s" value="'.StringUtil::specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]).'">
 </div>
 
 </div>

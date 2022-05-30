@@ -90,7 +90,7 @@ class LeadListener
         $objData = \Database::getInstance()->prepare('SELECT * FROM tl_lead_data WHERE pid=?')->execute($row['id']);
 
         while ($objData->next()) {
-            StringUtil::flatten(deserialize($objData->value), $objData->name, $arrTokens);
+            StringUtil::flatten(\Contao\StringUtil::deserialize($objData->value), $objData->name, $arrTokens);
         }
 
         return StringUtil::recursiveReplaceTokensAndTags($objForm->leadLabel, $arrTokens);
@@ -115,7 +115,7 @@ class LeadListener
             return '';
         }
 
-        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id='.Input::get('master').'" class="'.$class.'" title="'.specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
+        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id='.Input::get('master').'" class="'.$class.'" title="'.\Contao\StringUtil::specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
     }
 
     public function onShowButtonCallback(array $row, $href, $label, $title, $icon, $attributes, $table)
@@ -168,12 +168,12 @@ class LeadListener
 
         // Generate buttons
         foreach ($arrConfigs as $config) {
-            $arrButtons['export_'.$config['id']] = '<input type="submit" name="export_'.$config['id'].'" id="export_'.$config['id'].'" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0].' "'.$config['name'].'"').'">';
+            $arrButtons['export_'.$config['id']] = '<input type="submit" name="export_'.$config['id'].'" id="export_'.$config['id'].'" class="tl_submit" value="'.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0].' "'.$config['name'].'"').'">';
         }
 
         // Notification Center integration
         if ($this->notificationCenter->isAvailable()) {
-            $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="'.specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]).'">';
+            $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="'.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]).'">';
         }
 
         return $arrButtons;

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Command;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -28,7 +28,7 @@ use Terminal42\LeadsBundle\Exporter\ExporterFactory;
 class ExportCommand extends Command
 {
     /**
-     * @var ContaoFrameworkInterface
+     * @var ContaoFramework
      */
     private $framework;
 
@@ -47,7 +47,7 @@ class ExportCommand extends Command
      */
     private $filesystem;
 
-    public function __construct(ContaoFrameworkInterface $framework, Connection $db, ExporterFactory $exportFactory, Filesystem $filesystem = null)
+    public function __construct(ContaoFramework $framework, Connection $db, ExporterFactory $exportFactory, Filesystem $filesystem = null)
     {
         $this->framework = $framework;
         $this->db = $db;
@@ -289,9 +289,9 @@ class ExportCommand extends Command
     {
         $configs = [];
         $rows = $this->db->fetchAll("
-            SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form 
-            FROM tl_lead_export 
-            WHERE cliExport='1' 
+            SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form
+            FROM tl_lead_export
+            WHERE cliExport='1'
             ORDER BY name
         ");
 
