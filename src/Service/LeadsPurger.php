@@ -124,7 +124,7 @@ class LeadsPurger
 
                 // Add custom logging
                 $purgeEvent = new LeadsPurgeEvent($masterForm, $deletedLeads, $deletedLeadsData, $deletedUploads);
-                $this->eventDispatcher->dispatch(LeadsPurgeEvent::EVENT_NAME, $purgeEvent);
+                $this->eventDispatcher->dispatch($purgeEvent, LeadsPurgeEvent::EVENT_NAME);
 
                 $purged = true;
             }

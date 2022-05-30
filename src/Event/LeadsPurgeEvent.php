@@ -2,7 +2,7 @@
 
 namespace Terminal42\LeadsBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * The terminal42_leads.purge event is triggered while 'leads:purge' after the purge is executed

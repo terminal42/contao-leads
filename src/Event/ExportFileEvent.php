@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ExportFileEvent extends Event
 {
