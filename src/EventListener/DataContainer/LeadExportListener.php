@@ -37,7 +37,7 @@ class LeadExportListener
     {
         $this->checkPermission();
         $this->updatePalette($dc);
-        $this->loadJsAndCss();
+        $this->loadJs();
     }
 
     public function onChildRecordCallback(array $row): string
@@ -196,13 +196,10 @@ class LeadExportListener
     }
 
     /**
-     * Loads JS and CSS.
+     * Loads JS.
      */
-    private function loadJsAndCss(): void
+    private function loadJs()
     {
         $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
-        if (isset($GLOBALS['BE_MOD']['leads']['lead']['stylesheet'])) {
-            $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];
-        }
     }
 }
