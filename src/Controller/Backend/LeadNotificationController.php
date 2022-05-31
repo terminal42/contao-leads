@@ -72,8 +72,20 @@ class LeadNotificationController
             if (\Input::get('id')) {
                 $ids = [(int) \Input::get('id')];
             } else {
-                $session = \Session::getInstance()->getData();
-                $ids = array_map('intval', $session['CURRENT']['IDS']);
+                $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+                if (null === $request) {
+                    $ids = array();
+                } else {
+                    $session = $request->getSession()->all();
+                    $ids = array_map('intval', $session['CURRENT']['IDS'] ?? array());
+                }
+            }
+
+            if (empty($ids)) {
+                Message::addError(
+                    sprintf($GLOBALS['TL_LANG']['tl_lead']['notification_error'], (int) Input::post('notification'))
+                );
+                Controller::reload();
             }
 
             foreach ($ids as $id) {
