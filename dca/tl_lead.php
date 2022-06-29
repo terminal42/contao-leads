@@ -360,7 +360,7 @@ class tl_lead extends Backend
             \Controller::redirect('contao/main.php?act=error');
         }
 
-        $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root']) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
+        $arrIds = is_array($GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] ?? null) ? $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] : null;
 
         $this->exportAndCatchExceptions($intConfig, $arrIds);
     }
