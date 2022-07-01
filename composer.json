@@ -12,6 +12,10 @@
     ],
     "require":{
         "php":"^7.1 || ^8.0",
+        "codefog/contao-haste": "^4.11.4",
+        "contao/core-bundle":"^4.9",
+        "doctrine/dbal": "^2.11 || ^3.0",
+        "menatwork/contao-multicolumnwizard": "^3.3",
         "symfony/config": "^4.4 || ^5.4 || ^6.0",
         "symfony/console": "^4.4 || ^5.4 || ^6.0",
         "symfony/dependency-injection": "^4.4 || ^5.4 || ^6.0",
@@ -21,10 +25,7 @@
         "symfony/http-foundation": "^4.4 || ^5.4 || ^6.0",
         "symfony/http-kernel": "^4.4 || ^5.4 || ^6.0",
         "symfony/routing": "^4.4 || ^5.4 || ^6.0",
-        "symfony/security-bundle": "^4.4 || ^5.4 || ^6.0",
-        "contao/core-bundle":"^4.9",
-        "codefog/contao-haste": "^4.11.4",
-        "menatwork/contao-multicolumnwizard": "^3.3"
+        "symfony/security-bundle": "^4.4 || ^5.4 || ^6.0"
     },
     "require-dev": {
         "phpoffice/phpexcel": "^1.8",
