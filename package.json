@@ -2,22 +2,19 @@
     "name": "@terminal42/contao-leads",
     "description": "Leads Bundle for Contao Open Source CMS",
     "author": "terminal42 gmbh <info@terminal42.ch>",
-    "licenses": [
-        "MIT"
-    ],
+    "license": "MIT",
     "scripts": {
         "dev": "node_modules/.bin/encore dev --watch",
         "prod": "node_modules/.bin/encore production"
     },
-    "license": "commercial",
     "devDependencies": {
-        "@symfony/webpack-encore": "^0.16.0",
-        "autoprefixer": "^8.5.0",
-        "image-webpack-loader": "^4.3.1",
-        "node-sass": "^4.7.2",
-        "postcss-loader": "^2.1.5",
-        "sass-loader": "^6.0.6",
-        "script-loader": "^0.7.2"
+        "@symfony/webpack-encore": "^1.5.0",
+        "autoprefixer": "^10.2.6",
+        "file-loader": "^6.0.0",
+        "image-webpack-loader": "^7.0.1",
+        "postcss-loader": "^5.0.0",
+        "sass": "^1.35.1",
+        "sass-loader": "^12.0.0"
     },
     "browserslist": [
         "last 2 versions",

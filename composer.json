@@ -1,12 +1,12 @@
 {
-    "name":"terminal42/contao-leads",
-    "description":"Leads extension for Contao Open Source CMS; Store and manage form data with ease!",
-    "keywords":["contao", "form", "data", "store", "export"],
-    "type":"contao-bundle",
-    "license":"LGPL-3.0+",
-    "authors":[
+    "name": "terminal42/contao-leads",
+    "description": "Leads extension for Contao Open Source CMS; Store and manage form data with ease!",
+    "keywords": ["contao", "form", "data", "store", "export"],
+    "type": "contao-bundle",
+    "license": "LGPL-3.0-or-later",
+    "authors": [
         {
-            "name":"terminal42 gmbh",
+            "name": "terminal42 gmbh",
             "homepage": "https://www.terminal42.ch"
         }
     ],
@@ -20,10 +20,15 @@
             "url": "https://ko-fi.com/terminal42"
         }
     ],
-    "require":{
-        "php":"^7.1 || ^8.0",
+    "support": {
+        "issues": "https://github.com/terminal42/contao-leads/issues",
+        "source": "https://github.com/terminal42/contao-leads",
+        "forum": "https://community.contao.org"
+    },
+    "require": {
+        "php": "^7.4 || ^8.0",
         "codefog/contao-haste": "^4.11.4",
-        "contao/core-bundle":"^4.9",
+        "contao/core-bundle": "^4.9",
         "doctrine/dbal": "^2.11 || ^3.0",
         "menatwork/contao-multicolumnwizard": "^3.3",
         "symfony/config": "^4.4 || ^5.4 || ^6.0",
@@ -40,7 +45,6 @@
     "require-dev": {
         "phpoffice/phpexcel": "^1.8",
         "terminal42/notification_center": "^1.3",
-        "friendsofphp/php-cs-fixer": "^2.12",
         "contao/manager-plugin": "^2.0"
     },
     "conflict": {
@@ -50,12 +54,15 @@
         "phpoffice/phpexcel": "To enable excel export of lead data.",
         "terminal42/notification_center": "Send notifications for leads."
     },
-    "autoload":{
+    "autoload": {
         "psr-4": {
-            "Terminal42\\LeadsBundle\\": "src"
+            "Terminal42\\LeadsBundle\\": "src/"
         }
     },
     "extra": {
         "contao-manager-plugin": "Terminal42\\LeadsBundle\\ContaoManager\\Plugin"
+    },
+    "scripts": {
+        "cs-fixer": "@php tools/ecs/vendor/bin/ecs check src/ --fix --ansi"
     }
 }
