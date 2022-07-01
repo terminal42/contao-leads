@@ -20,6 +20,11 @@ use Terminal42\LeadsBundle\Exporter\ExporterInterface;
 
 class Terminal42LeadsBundle extends Bundle
 {
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
+
     public function build(ContainerBuilder $container): void
     {
         parent::build($container);
