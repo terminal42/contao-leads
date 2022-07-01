@@ -2,18 +2,11 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
+use Contao\BackendUser;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\Database;
 use Contao\DataContainer;
 use Contao\StringUtil;
 
@@ -21,7 +14,7 @@ class FormListener
 {
     public function onLoadCallback(DataContainer $dc): void
     {
-        $objForm = \Database::getInstance()->execute('SELECT * FROM tl_form WHERE id='.(int) $dc->id);
+        $objForm = Database::getInstance()->execute('SELECT * FROM tl_form WHERE id='.(int) $dc->id);
 
         if (!$objForm->leadMaster) {
             $pm = PaletteManipulator::create();
@@ -43,7 +36,7 @@ class FormListener
      */
     public function onCopyCallback($id, \DataContainer $dc): void
     {
-        $db = \Database::getInstance();
+        $db = Database::getInstance();
         $exports = $db->prepare('SELECT id, fields FROM tl_lead_export WHERE pid=?')->execute($id);
 
         if (!$exports->numRows) {
@@ -72,7 +65,7 @@ class FormListener
 
     public function onLeadMasterOptions($dc)
     {
-        $user = \Contao\BackendUser::getInstance();
+        $user = BackendUser::getInstance();
         $filter = null;
 
         // Check user permissions
@@ -85,7 +78,7 @@ class FormListener
         }
 
         $arrForms = [];
-        $objForms = \Database::getInstance()->execute("SELECT id, title FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 AND id!=".(int) $dc->id.((null !== $filter) ? ' AND id IN('.implode(',', $filter).')' : ''));
+        $objForms = Database::getInstance()->execute("SELECT id, title FROM tl_form WHERE leadEnabled='1' AND leadMaster=0 AND id!=".(int) $dc->id.(null !== $filter ? ' AND id IN('.implode(',', $filter).')' : ''));
 
         while ($objForms->next()) {
             $arrForms[$objForms->id] = $objForms->title;

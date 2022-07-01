@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Contao\BackendUser;
@@ -59,7 +50,7 @@ class UserNavigationListener
     /**
      * Add leads to the backend navigation.
      *
-     * @param bool $showAll
+     * @param bool $modules
      *
      * @return array
      */
@@ -76,12 +67,12 @@ class UserNavigationListener
         $modules['leads']['modules'] = [];
 
         foreach ($forms as $form) {
-            $modules['leads']['modules']['lead_'. $form['id']] = [
-                'title'     => StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
-                'label'     => $form['leadMenuLabel'] ?: $form['title'],
-                'class'     => 'navigation leads',
-                'href'      => 'contao/main.php?do=lead&master='.$form['id'],
-                'isActive'  => 'lead' === Input::get('do') && $form['id'] === Input::get('master'),
+            $modules['leads']['modules']['lead_'.$form['id']] = [
+                'title' => StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
+                'label' => $form['leadMenuLabel'] ?: $form['title'],
+                'class' => 'navigation leads',
+                'href' => 'contao/main.php?do=lead&master='.$form['id'],
+                'isActive' => 'lead' === Input::get('do') && $form['id'] === Input::get('master'),
             ];
         }
 
@@ -124,12 +115,15 @@ class UserNavigationListener
         $forms = $qb->execute()->fetchAll();
         $forms = array_merge($forms, $this->findOrphans(array_column($forms, 'id')));
 
-        usort($forms, function ($a, $b) {
-            $labelA = $a['leadMenuLabel'] ?: $a['title'];
-            $labelB = $b['leadMenuLabel'] ?: $b['title'];
+        usort(
+            $forms,
+            static function ($a, $b) {
+                $labelA = $a['leadMenuLabel'] ?: $a['title'];
+                $labelB = $b['leadMenuLabel'] ?: $b['title'];
 
-            return $labelA > $labelB;
-        });
+                return $labelA > $labelB;
+            }
+        );
 
         return $this->forms = $forms;
     }
@@ -162,7 +156,8 @@ class UserNavigationListener
     {
         $user = ($token = $this->tokenStorage->getToken()) !== null ? $token->getUser() : null;
 
-        if (!$user instanceof BackendUser
+        if (
+            !$user instanceof BackendUser
             || !$user->hasAccess('lead', 'modules')
             || !\is_array($user->forms)
         ) {

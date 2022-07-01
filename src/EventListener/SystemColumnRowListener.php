@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Terminal42\LeadsBundle\Event\TransformRowEvent;
@@ -34,14 +25,15 @@ class SystemColumnRowListener
         $systemColumns = Lead::getSystemColumns();
         $columnConfig = $event->getColumnConfig();
 
-        if (!isset($columnConfig['field'])
+        if (
+            !isset($columnConfig['field'])
             || '_field' === $columnConfig['field']
-            || !array_key_exists($columnConfig['field'], $systemColumns)
+            || !\array_key_exists($columnConfig['field'], $systemColumns)
         ) {
             return;
         }
 
-        $firstEntry = reset($event->getData());
+        $firstEntry = array_values($event->getData())[0];
         $systemColumnConfig = $systemColumns[$columnConfig['field']];
 
         $value = (isset($systemColumnConfig['valueColRef']) ? $firstEntry[$systemColumnConfig['valueColRef']] : null);

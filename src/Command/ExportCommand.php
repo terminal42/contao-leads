@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\Command;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
@@ -65,29 +56,10 @@ class ExportCommand extends Command
         $this
             ->setName('leads:export')
             ->setDescription('Exports the leads with the chosen configuration.')
-            ->addArgument(
-                'config_id',
-                InputArgument::OPTIONAL,
-                'The export configuration ID.'
-            )
-            ->addOption(
-                'all',
-                null,
-                InputOption::VALUE_NONE,
-                'Export all configurations of all forms.'
-            )
-            ->addOption(
-                'start',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Records before this date will not be exported. You can use PHP strtotime() function.'
-            )
-            ->addOption(
-                'stop',
-                null,
-                InputOption::VALUE_REQUIRED,
-                'Records after this date will not be exported. You can use PHP strtotime() function.'
-            )
+            ->addArgument('config_id', InputArgument::OPTIONAL, 'The export configuration ID.')
+            ->addOption('all', null, InputOption::VALUE_NONE, 'Export all configurations of all forms.')
+            ->addOption('start', null, InputOption::VALUE_REQUIRED, 'Records before this date will not be exported. You can use PHP strtotime() function.')
+            ->addOption('stop', null, InputOption::VALUE_REQUIRED, 'Records after this date will not be exported. You can use PHP strtotime() function.')
         ;
     }
 
@@ -114,9 +86,7 @@ class ExportCommand extends Command
         );
 
         $question->setValidator(
-            function ($answer) {
-                return $answer;
-            }
+            static fn ($answer) => $answer
         );
 
         if (!($configId = $helper->ask($input, $output, $question))) {
@@ -131,7 +101,8 @@ class ExportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        if ((!$input->getOption('all') && !$input->getArgument('config_id'))
+        if (
+            (!$input->getOption('all') && !$input->getArgument('config_id'))
             || ($input->getOption('all') && $input->getArgument('config_id'))
         ) {
             throw new InvalidArgumentException('Must either have an export config ID or the --all flag to export.');
@@ -144,15 +115,13 @@ class ExportCommand extends Command
         if ($input->getOption('all')) {
             $success = $this->executeBatchExport($start, $stop);
         } else {
-            $config = $this->db->fetchAssoc(
+            $config = $this->db->fetchAssociative(
                 'SELECT id, targetPath, cliExport FROM tl_lead_export WHERE id=?',
                 [(int) $input->getArgument('config_id')]
             );
 
             if (empty($config) || !$config['cliExport']) {
-                throw new InvalidArgumentException(
-                    sprintf('Leads export ID %s is invalid or not enabled for CLI output.', $config['id'])
-                );
+                throw new InvalidArgumentException(sprintf('Leads export ID %s is invalid or not enabled for CLI output.', $config['id']));
             }
 
             $success = $this->export((int) $config['id'], $config['targetPath'], $start, $stop);
@@ -174,7 +143,7 @@ class ExportCommand extends Command
     private function executeBatchExport($start, $stop)
     {
         $success = false;
-        $configs = $this->db->fetchAll("SELECT id, targetPath FROM tl_lead_export WHERE cliExport='1'");
+        $configs = $this->db->fetchAllAssociative("SELECT id, targetPath FROM tl_lead_export WHERE cliExport='1'");
 
         foreach ($configs as $config) {
             if ($this->export((int) $config['id'], $config['targetPath'], $start, $stop)) {
@@ -191,10 +160,8 @@ class ExportCommand extends Command
      * @param string   $targetPath
      * @param int|null $start
      * @param int|null $stop
-     *
-     * @return true
      */
-    private function export(int $configId, $targetPath, $start, $stop)
+    private function export(int $configId, $targetPath, $start, $stop): bool
     {
         $ids = null;
 
@@ -241,7 +208,7 @@ class ExportCommand extends Command
         $config = $this->exportFactory->buildConfig($configId);
         $file = $this->exportFactory->createForType($config->type)->export($config, $ids);
 
-        if ('/' !== substr($targetPath, 0, 1)) {
+        if ('/' !== $targetPath[0]) {
             $targetPath = TL_ROOT.'/'.$targetPath;
         }
 
@@ -265,16 +232,12 @@ class ExportCommand extends Command
 
         // Validate the start option
         if (false === $start) {
-            throw new InvalidArgumentException(
-                sprintf('The "start" option is invalid: %s', $input->getOption('start'))
-            );
+            throw new InvalidArgumentException(sprintf('The "start" option is invalid: %s', $input->getOption('start')));
         }
 
         // Validate the stop option
         if (false === $stop) {
-            throw new InvalidArgumentException(
-                sprintf('The "stop" option is invalid: %s', $input->getOption('stop'))
-            );
+            throw new InvalidArgumentException(sprintf('The "stop" option is invalid: %s', $input->getOption('stop')));
         }
 
         return [$start, $stop];
@@ -288,7 +251,7 @@ class ExportCommand extends Command
     private function getAllConfigs()
     {
         $configs = [];
-        $rows = $this->db->fetchAll("
+        $rows = $this->db->fetchAllAssociative("
             SELECT id, name, (SELECT title FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS form
             FROM tl_lead_export
             WHERE cliExport='1'

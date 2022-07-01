@@ -2,18 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
 use Contao\Controller;
+use Contao\Database;
 use Contao\Environment;
 use Contao\FormModel;
 use Contao\Input;
@@ -61,7 +53,8 @@ class LeadNotificationController
              * @var \FormModel
              * @var Notification $notification
              */
-            if (!isset($notifications[Input::post('notification')])
+            if (
+                !isset($notifications[Input::post('notification')])
                 || !\is_array(\Input::post('IDS'))
                 || null === ($form = \FormModel::findByPk(\Input::get('master')))
                 || null === ($notification = Notification::findByPk(\Input::post('notification')))
@@ -73,11 +66,12 @@ class LeadNotificationController
                 $ids = [(int) \Input::get('id')];
             } else {
                 $request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
                 if (null === $request) {
-                    $ids = array();
+                    $ids = [];
                 } else {
                     $session = $request->getSession()->all();
-                    $ids = array_map('intval', $session['CURRENT']['IDS'] ?? array());
+                    $ids = array_map('intval', $session['CURRENT']['IDS'] ?? []);
                 }
             }
 
@@ -103,8 +97,8 @@ class LeadNotificationController
     }
 
     /**
-     * @param Notification[] $notifications
-     * @param int[]          $ids
+     * @param array<Notification> $notifications
+     * @param array<int>          $ids
      *
      * @return string
      */
@@ -185,7 +179,7 @@ class LeadNotificationController
         $data = [];
         $labels = [];
 
-        $leadDataCollection = \Database::getInstance()->prepare('
+        $leadDataCollection = Database::getInstance()->prepare('
             SELECT
                 name,
                 value,

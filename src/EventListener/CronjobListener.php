@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Terminal42\LeadsBundle\EventListener;
 
 use Contao\CoreBundle\Monolog\ContaoContext;
@@ -8,7 +10,6 @@ use Terminal42\LeadsBundle\Service\LeadsPurger;
 
 class CronjobListener
 {
-
     /**
      * @var LeadsPurger
      */
@@ -21,8 +22,6 @@ class CronjobListener
 
     /**
      * CronjobListener constructor.
-     * @param LeadsPurger $purger
-     * @param LoggerInterface $logger
      */
     public function __construct(LeadsPurger $purger, LoggerInterface $logger)
     {
@@ -30,7 +29,7 @@ class CronjobListener
         $this->logger = $logger;
     }
 
-    function onDaily()
+    public function onDaily(): void
     {
         try {
             $this->purger->execute();
@@ -40,6 +39,5 @@ class CronjobListener
                 ['contao' => new ContaoContext(__METHOD__, ContaoContext::ERROR)]
             );
         }
-
     }
 }

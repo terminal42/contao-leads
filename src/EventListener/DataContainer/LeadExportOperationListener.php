@@ -2,15 +2,6 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\Input;
@@ -33,8 +24,9 @@ class LeadExportOperationListener
     public function onLoadCallback(): void
     {
         $configs = null;
-        if (($formId = (int)Input::get('master')) > 0) {
-            /** @var LeadExport[] $configs */
+
+        if (($formId = (int) Input::get('master')) > 0) {
+            /** @var array<LeadExport> $configs */
             $configs = LeadExport::findByPid($formId);
         }
 
@@ -52,13 +44,13 @@ class LeadExportOperationListener
                 'button_callback' => function ($href, $label, $title, $class, $attributes) use ($config) {
                     return sprintf(
                         '<a href="%s" class="%s" title="%s"%s>%s</a> ',
-                        $this->router->generate('terminal42_leads.export', ['id' => (int)$config->id]),
+                        $this->router->generate('terminal42_leads.export', ['id' => (int) $config->id]),
                         $class,
                         StringUtil::specialchars($title),
                         $attributes,
                         $label
                     );
-                }
+                },
             ];
         }
 

@@ -2,19 +2,16 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\EventListener;
 
+use Contao\Database;
+use Contao\Date;
+use Contao\FilesModel;
+use Contao\FrontendUser;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Validator;
+use Database\Result;
 
 class FormDataListener
 {
@@ -30,7 +27,7 @@ class FormDataListener
         if ($arrForm['leadEnabled']) {
             $time = time();
 
-            $intLead = \Database::getInstance()->prepare('
+            $intLead = Database::getInstance()->prepare('
                 INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id,post_data) VALUES (?,?,?,?,?,?,?)
             ')->execute(
                 $time,
@@ -38,20 +35,20 @@ class FormDataListener
                 $GLOBALS['TL_LANGUAGE'],
                 $arrForm['id'],
                 ($arrForm['leadMaster'] ?: $arrForm['id']),
-                (FE_USER_LOGGED_IN === true ? (int) \FrontendUser::getInstance()->id : 0),
+                (FE_USER_LOGGED_IN === true ? (int) FrontendUser::getInstance()->id : 0),
                 serialize($arrPost)
             )->insertId;
 
             // Fetch master form fields
             if ($arrForm['leadMaster'] > 0) {
-                $objFields = \Database::getInstance()
-                                      ->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' AND f1.invisible='' ORDER BY f2.sorting")
-                                      ->execute($arrForm['id'])
+                $objFields = Database::getInstance()
+                    ->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' AND f1.invisible='' ORDER BY f2.sorting")
+                    ->execute($arrForm['id'])
                 ;
             } else {
-                $objFields = \Database::getInstance()
-                                      ->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' AND invisible='' ORDER BY sorting")
-                                      ->execute($arrForm['id'])
+                $objFields = Database::getInstance()
+                    ->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' AND invisible='' ORDER BY sorting")
+                    ->execute($arrForm['id'])
                 ;
             }
 
@@ -64,14 +61,14 @@ class FormDataListener
                     $varLabel = $this->prepareLabel($varValue, $objFields);
 
                     $arrSet = [
-                        'pid'       => $intLead,
-                        'sorting'   => $objFields->sorting,
-                        'tstamp'    => $time,
+                        'pid' => $intLead,
+                        'sorting' => $objFields->sorting,
+                        'tstamp' => $time,
                         'master_id' => $objFields->master_id,
-                        'field_id'  => $objFields->id,
-                        'name'      => $objFields->name,
-                        'value'     => $varValue,
-                        'label'     => $varLabel,
+                        'field_id' => $objFields->id,
+                        'name' => $objFields->name,
+                        'value' => $varValue,
+                        'label' => $varLabel,
                     ];
                 }
 
@@ -81,14 +78,14 @@ class FormDataListener
                     $varLabel = $this->prepareLabel($varValue, $objFields);
 
                     $arrSet = [
-                        'pid'       => $intLead,
-                        'sorting'   => $objFields->sorting,
-                        'tstamp'    => $time,
+                        'pid' => $intLead,
+                        'sorting' => $objFields->sorting,
+                        'tstamp' => $time,
                         'master_id' => $objFields->master_id,
-                        'field_id'  => $objFields->id,
-                        'name'      => $objFields->name,
-                        'value'     => $varValue,
-                        'label'     => $varLabel,
+                        'field_id' => $objFields->id,
+                        'name' => $objFields->name,
+                        'value' => $varValue,
+                        'label' => $varLabel,
                     ];
                 }
 
@@ -101,7 +98,7 @@ class FormDataListener
                         }
                     }
 
-                    \Database::getInstance()->prepare('INSERT INTO tl_lead_data %s')->set($arrSet)->execute();
+                    Database::getInstance()->prepare('INSERT INTO tl_lead_data %s')->set($arrSet)->execute();
                 }
             }
 
@@ -118,7 +115,7 @@ class FormDataListener
     /**
      * Prepare a form value for storage in lead table.
      *
-     * @param \Database\Result|object $objField
+     * @param Result|object $objField
      *
      * @return array|int
      */
@@ -144,7 +141,7 @@ class FormDataListener
     /**
      * Get the label for a form value to store in lead table.
      *
-     * @param \Database\Result|object $objField
+     * @param Result|object $objField
      */
     private function prepareLabel($varValue, $objField)
     {
@@ -159,7 +156,7 @@ class FormDataListener
 
         // File upload
         if ('upload' === $objField->type) {
-            $objFile = \FilesModel::findByUuid($varValue);
+            $objFile = FilesModel::findByUuid($varValue);
 
             if (null !== $objFile) {
                 return $objFile->path;
@@ -190,12 +187,13 @@ class FormDataListener
     private function convertRgxp($value, $rgxp)
     {
         // Convert date formats into timestamps
-        if (!empty($value)
+        if (
+            !empty($value)
             && \in_array($rgxp, ['date', 'time', 'datim'], true)
-            && \Validator::{'is'.ucfirst($rgxp)}($value)
+            && Validator::{'is'.ucfirst($rgxp)}($value)
         ) {
-            $format = \Date::{'getNumeric'.ucfirst($rgxp).'Format'}();
-            $date = new \Date($value, $format);
+            $format = Date::{'getNumeric'.ucfirst($rgxp).'Format'}();
+            $date = new Date($value, $format);
 
             return (string) $date->tstamp;
         }

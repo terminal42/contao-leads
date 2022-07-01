@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Command;
@@ -18,11 +19,9 @@ class PurgeCommand extends Command
 
     /**
      * PurgeCommand constructor.
-     * @param LeadsPurger $purger
      */
-    public function __construct(
-        LeadsPurger $purger
-    ) {
+    public function __construct(LeadsPurger $purger)
+    {
         $this->purger = $purger;
 
         parent::__construct();
@@ -31,18 +30,18 @@ class PurgeCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('leads:purge')
-            ->setDescription('Purge the leads that are older than the configured storage period.');
+            ->setDescription('Purge the leads that are older than the configured storage period.')
+        ;
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|void
      * @throws Exception
+     *
+     * @return int|void
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

@@ -2,16 +2,10 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\DataTransformer;
+
+use Contao\FilesModel;
+use Contao\Validator;
 
 class UuidToFilePathTransformer extends AbstractTransformer
 {
@@ -27,11 +21,11 @@ class UuidToFilePathTransformer extends AbstractTransformer
      */
     public function transform($value)
     {
-        if (!\Validator::isUuid($value)) {
+        if (!Validator::isUuid($value)) {
             return $value;
         }
 
-        $filesModel = \FilesModel::findByUUid($value);
+        $filesModel = FilesModel::findByUUid($value);
 
         if (null === $filesModel) {
             return $value;
@@ -53,7 +47,7 @@ class UuidToFilePathTransformer extends AbstractTransformer
      */
     public function reverseTransform($value)
     {
-        $filesModel = \FilesModel::findByPath($value);
+        $filesModel = FilesModel::findByPath($value);
 
         if (null === $filesModel) {
             return $value;

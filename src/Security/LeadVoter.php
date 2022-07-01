@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Terminal42\LeadsBundle\Security;
 
 use Contao\BackendUser;
@@ -14,7 +16,7 @@ class LeadVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        return 'lead_form' === $attribute && \is_numeric($subject);
+        return 'lead_form' === $attribute && is_numeric($subject);
     }
 
     /**

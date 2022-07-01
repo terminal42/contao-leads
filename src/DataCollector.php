@@ -2,17 +2,9 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle;
 
+use Contao\Database;
 use Contao\StringUtil;
 
 class DataCollector
@@ -192,7 +184,7 @@ class DataCollector
     {
         $cacheKey = $this->getCacheKey();
 
-        if (array_key_exists($cacheKey, $this->getFieldsDataCache)) {
+        if (\array_key_exists($cacheKey, $this->getFieldsDataCache)) {
             return $this->getFieldsDataCache[$cacheKey];
         }
 
@@ -203,7 +195,8 @@ class DataCollector
         }
 
         $data = [];
-        $db = \Database::getInstance()->prepare("
+        $db = Database::getInstance()->prepare(
+            "
             SELECT
                 id,
                 MAX(name) AS name,
@@ -230,7 +223,7 @@ class DataCollector
                 ORDER BY tl_lead.master_id!=tl_lead.form_id
             ) result_set
             GROUP BY field_id
-            ORDER BY '.(!empty($this->fieldIds) ? \Database::getInstance()->findInSet('field_id', $this->fieldIds) : 'sorting')
+            ORDER BY '.(!empty($this->fieldIds) ? Database::getInstance()->findInSet('field_id', $this->fieldIds) : 'sorting')
         )->execute($this->formId);
 
         while ($db->next()) {
@@ -252,7 +245,7 @@ class DataCollector
     {
         $cacheKey = $this->getCacheKey();
 
-        if (array_key_exists($cacheKey, $this->getExportDataCache)) {
+        if (\array_key_exists($cacheKey, $this->getExportDataCache)) {
             return $this->getExportDataCache[$cacheKey];
         }
 
@@ -271,7 +264,7 @@ class DataCollector
         }
 
         $data = [];
-        $db = \Database::getInstance()->prepare("
+        $db = Database::getInstance()->prepare("
             SELECT
                 tl_lead_data.*,
                 tl_lead.created,
@@ -305,7 +298,8 @@ class DataCollector
 
         foreach ($this->getFieldsData() as $fieldId => $row) {
             // Show single checkbox label as field label
-            if ($row['label'] === $row['name']
+            if (
+                $row['label'] === $row['name']
                 && 'checkbox' === $row['type']
                 && '' !== $row['options']
             ) {

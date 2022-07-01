@@ -2,18 +2,14 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
+use Contao\Backend;
+use Contao\BackendUser;
 use Contao\Controller;
+use Contao\Database;
+use Contao\Date;
+use Contao\Image;
 use Contao\Input;
 use Contao\System;
 use Haste\Util\StringUtil;
@@ -69,14 +65,14 @@ class LeadListener
     /**
      * Generate label for this record.
      *
-     * @param array
-     * @param string
+     * @param array  $row
+     * @param string $label
      *
      * @return string
      */
     public function onLabelCallback($row, $label)
     {
-        $objForm = \Database::getInstance()->prepare('SELECT * FROM tl_form WHERE id=?')->execute($row['master_id']);
+        $objForm = Database::getInstance()->prepare('SELECT * FROM tl_form WHERE id=?')->execute($row['master_id']);
 
         // No form found, we can't format the label
         if (!$objForm->numRows) {
@@ -84,10 +80,10 @@ class LeadListener
         }
 
         $arrTokens = [
-            'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']),
+            'created' => Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $row['created']),
         ];
 
-        $objData = \Database::getInstance()->prepare('SELECT * FROM tl_lead_data WHERE pid=?')->execute($row['id']);
+        $objData = Database::getInstance()->prepare('SELECT * FROM tl_lead_data WHERE pid=?')->execute($row['id']);
 
         while ($objData->next()) {
             StringUtil::flatten(\Contao\StringUtil::deserialize($objData->value), $objData->name, $arrTokens);
@@ -109,7 +105,7 @@ class LeadListener
      */
     public function onExportButtonCallback($href, $label, $title, $class, $attributes)
     {
-        $user = \BackendUser::getInstance();
+        $user = BackendUser::getInstance();
 
         if (!$user->isAdmin && !$user->canEditFieldsOf('tl_lead_export')) {
             return '';
@@ -123,10 +119,10 @@ class LeadListener
         return sprintf(
             '<a href="%s" title="%s" onclick="Backend.openModalIframe({\'title\':\'%s\',\'url\':this.href});return false"%s>%s</a> ',
             $this->router->generate('terminal42_leads.details', ['id' => $row['id'], 'popup' => 1]),
-            \StringUtil::specialchars($title),
-            \StringUtil::specialchars(str_replace("'", "\\'", sprintf($GLOBALS['TL_LANG'][$table]['show'][1], $row['id']))),
+            \Contao\StringUtil::specialchars($title),
+            \Contao\StringUtil::specialchars(str_replace("'", "\\'", sprintf($GLOBALS['TL_LANG'][$table]['show'][1], $row['id']))),
             $attributes,
-            \Image::getHtml($icon, $label)
+            Image::getHtml($icon, $label)
         );
     }
 
@@ -137,26 +133,26 @@ class LeadListener
      */
     public function onSelectButtonsCallback($arrButtons)
     {
-        $arrConfigs = \Database::getInstance()
-                               ->prepare('SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name')
-                               ->execute(\Input::get('master'))
-                               ->fetchAllAssoc()
+        $arrConfigs = Database::getInstance()
+            ->prepare('SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name')
+            ->execute(\Input::get('master'))
+            ->fetchAllAssoc()
         ;
 
         // Run the export
-        if ('tl_select' === \Input::post('FORM_SUBMIT')) {
-            $arrIds = \Input::post('IDS');
+        if ('tl_select' === Input::post('FORM_SUBMIT')) {
+            $arrIds = Input::post('IDS');
 
             if (empty($arrIds)) {
                 Controller::reload();
             }
 
             if (\Input::post('notification')) {
-                Controller::redirect(\Backend::addToUrl('key=notification'));
+                Controller::redirect(Backend::addToUrl('key=notification'));
             }
 
             foreach ($arrConfigs as $config) {
-                if (\Input::post('export_'.$config['id'])) {
+                if (Input::post('export_'.$config['id'])) {
                     $config = $this->exportFactory->buildConfig((int) $config['id']);
                     $file = $this->exportFactory->createForType($config->type)->export($config['id'], $arrIds);
                     $file->sendToBrowser();

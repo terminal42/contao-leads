@@ -2,17 +2,9 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\Util;
 
+use Contao\Date;
 use Contao\StringUtil;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Terminal42\LeadsBundle\Event\ExportFileEvent;
@@ -50,13 +42,15 @@ class ExportFile
         $event = new ExportFileEvent(
             $config,
             [
-                'time' => \Date::parse($GLOBALS['TL_CONFIG']['timeFormat']),
-                'date' => \Date::parse($GLOBALS['TL_CONFIG']['dateFormat']),
-                'datim' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat']),
+                'time' => Date::parse($GLOBALS['TL_CONFIG']['timeFormat']),
+                'date' => Date::parse($GLOBALS['TL_CONFIG']['dateFormat']),
+                'datim' => Date::parse($GLOBALS['TL_CONFIG']['datimFormat']),
             ]
         );
 
-        return $this->eventDispatcher->dispatch($event, 'terminal42_leads.export_file');
+        $this->eventDispatcher->dispatch($event, 'terminal42_leads.export_file');
+
+        return $event;
     }
 
     private function getUniqueFilename(\stdClass $config)

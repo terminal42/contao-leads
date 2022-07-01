@@ -6,19 +6,11 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Contao\Database;
+use Contao\Date;
 use Contao\StringUtil;
 use Contao\System;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,7 +42,7 @@ class LeadDetailsController
      */
     private $systemAdapter;
 
-    public function __construct(ContaoFramework $framework , Environment $twig, AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(ContaoFramework $framework, Environment $twig, AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->framework = $framework;
         $this->twig = $twig;
@@ -83,7 +75,7 @@ class LeadDetailsController
             '@Terminal42Leads/Backend/lead_details.html.twig',
             [
                 'recordId' => $id,
-                'created' => \Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $formData->created),
+                'created' => Date::parse($GLOBALS['TL_CONFIG']['datimFormat'], $formData->created),
                 'form' => [
                     'title' => $formData->form_title,
                     'id' => $formData->form_id,
@@ -130,7 +122,6 @@ class LeadDetailsController
         $rows = [];
 
         while ($rowData->next()) {
-
             $rows[] = [
                 'name' => $rowData->name,
                 'label' => $this->formatLabel($rowData),

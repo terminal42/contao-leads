@@ -2,17 +2,9 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
+use Contao\BackendUser;
 use Contao\Controller;
 use Contao\Database;
 use Contao\DataContainer;
@@ -134,8 +126,8 @@ class LeadExportListener
         }
 
         $objFields = \Database::getInstance()
-                              ->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
-                              ->execute(Input::get('id'))
+            ->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
+            ->execute(Input::get('id'))
         ;
 
         while ($objFields->next()) {
@@ -168,7 +160,7 @@ class LeadExportListener
      */
     private function checkPermission(): void
     {
-        $user = \BackendUser::getInstance();
+        $user = BackendUser::getInstance();
 
         if (!$user->isAdmin && !$user->canEditFieldsOf('tl_lead_export')) {
             System::log('Not enough permissions to access leads export ID "'.\Input::get('id').'"', __METHOD__, TL_ERROR);
@@ -179,7 +171,7 @@ class LeadExportListener
     /**
      * Update the palette depending on the export type.
      *
-     * @param \Contao\DataContainer $dc
+     * @param DataContainer $dc
      */
     private function updatePalette($dc = null): void
     {
@@ -206,7 +198,7 @@ class LeadExportListener
     /**
      * Loads JS and CSS.
      */
-    private function loadJsAndCss()
+    private function loadJsAndCss(): void
     {
         $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
         $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];

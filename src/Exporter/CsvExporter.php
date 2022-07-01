@@ -2,17 +2,9 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\Exporter;
 
+use Contao\File;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\CsvFileWriter;
 
@@ -26,7 +18,7 @@ class CsvExporter extends AbstractExporter
         return true;
     }
 
-    public function export(\stdClass $config, $ids = null): \Contao\File
+    public function export(\stdClass $config, $ids = null): File
     {
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
 
@@ -41,14 +33,12 @@ class CsvExporter extends AbstractExporter
 
         $columnConfig = $this->prepareDefaultExportConfig($config, $dataCollector);
 
-        $writer->setRowCallback(function ($data) use ($config, $columnConfig) {
-            return $this->dataTransformer->compileRow($data, $config, $columnConfig);
-        });
+        $writer->setRowCallback(fn ($data) => $this->dataTransformer->compileRow($data, $config, $columnConfig));
 
         $this->handleDefaultExportResult($writer->writeFrom($reader));
 
         $this->updateLastRun($config);
 
-        return new \Contao\File($writer->getFilename());
+        return new File($writer->getFilename());
     }
 }

@@ -2,18 +2,13 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\Exporter;
 
+use Contao\Database;
+use Contao\Date;
 use Contao\FormFieldModel;
+use Contao\StringUtil;
+use Database\Result;
 use Terminal42\LeadsBundle\DataCollector;
 use Terminal42\LeadsBundle\Model\Lead;
 use Terminal42\LeadsBundle\Util\DataTransformer;
@@ -46,7 +41,7 @@ abstract class AbstractExporter implements ExporterInterface
 
     public function getType(): string
     {
-        $className = \get_called_class();
+        $className = static::class;
         $className = substr($className, strrpos($className, '\\') + 1);
 
         if ('Exporter' === substr($className, -8)) {
@@ -88,7 +83,7 @@ abstract class AbstractExporter implements ExporterInterface
             $dataCollector->setLeadDataIds($ids);
         }
 
-        $this->newLastRun = \Date::floorToMinute();
+        $this->newLastRun = Date::floorToMinute();
 
         if ($config->skipLastRun) {
             $dataCollector->setFrom($config->lastRun);
@@ -101,7 +96,7 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the header fields according to the configuration.
      *
-     * @param \Database\Result|object $config
+     * @param Result|object $config
      *
      * @return array
      */
@@ -116,7 +111,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field'.$systemColumn['field']];
             }
 
-            foreach ($dataCollector->getHeaderFields() as $fieldId => $label) {
+            foreach ($dataCollector->getHeaderFields() as $label) {
                 $headerFields[] = $label;
             }
 
@@ -141,7 +136,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $headerFields[] = $column['name'];
             } else {
                 // System column
-                if (array_key_exists($column['field'], $systemColumns)) {
+                if (\array_key_exists($column['field'], $systemColumns)) {
                     $headerFields[] = $GLOBALS['TL_LANG']['tl_lead_export']['field'.$column['field']];
                 } else {
                     if (isset($dataHeaderFields[$column['field']])) {
@@ -161,7 +156,7 @@ abstract class AbstractExporter implements ExporterInterface
     /**
      * Prepares the default export configuration according to the configuration.
      *
-     * @param \Database\Result|object $config
+     * @param Result|object $config
      *
      * @return array
      */
@@ -177,7 +172,7 @@ abstract class AbstractExporter implements ExporterInterface
             }
 
             // Add export data column config.
-            foreach ($dataCollector->getFieldsData() as $fieldId => $fieldConfig) {
+            foreach ($dataCollector->getFieldsData() as $fieldConfig) {
                 $fieldConfig = $this->handleContaoSpecificConfig($fieldConfig);
 
                 $fieldConfig['value'] = 'all';
@@ -212,7 +207,7 @@ abstract class AbstractExporter implements ExporterInterface
 
         foreach ($config->fields as $column) {
             // System column
-            if (array_key_exists($column['field'], $systemColumns)) {
+            if (\array_key_exists($column['field'], $systemColumns)) {
                 $columnConfig[] = $systemColumns[$column['field']];
             } else {
                 // Field does not have any data. Field seems got added later
@@ -244,11 +239,12 @@ abstract class AbstractExporter implements ExporterInterface
     protected function handleContaoSpecificConfig(array $fieldConfig)
     {
         // Yes and No transformer for checkboxes with only one option
-        if ($fieldConfig['label'] === $fieldConfig['name']
+        if (
+            $fieldConfig['label'] === $fieldConfig['name']
             && 'checkbox' === $fieldConfig['type']
             && '' !== $fieldConfig['options']
         ) {
-            $options = \Contao\StringUtil::deserialize($fieldConfig['options'], true);
+            $options = StringUtil::deserialize($fieldConfig['options'], true);
 
             if (1 === \count($options)) {
                 $fieldConfig['transformers'] = array_merge(
@@ -269,9 +265,9 @@ abstract class AbstractExporter implements ExporterInterface
     protected function updateLastRun($config): void
     {
         if (null !== $this->newLastRun) {
-            \Database::getInstance()
-               ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
-               ->execute($this->newLastRun, $config->id)
+            Database::getInstance()
+                ->prepare('UPDATE tl_lead_export SET lastRun=? WHERE id=?')
+                ->execute($this->newLastRun, $config->id)
             ;
         }
     }

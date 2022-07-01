@@ -2,17 +2,9 @@
 
 declare(strict_types=1);
 
-/*
- * leads Extension for Contao Open Source CMS
- *
- * @copyright  Copyright (c) 2011-2018, terminal42 gmbh
- * @author     terminal42 gmbh <info@terminal42.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
- * @link       http://github.com/terminal42/contao-leads
- */
-
 namespace Terminal42\LeadsBundle\Exporter;
 
+use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 
 class ExporterFactory
@@ -23,7 +15,7 @@ class ExporterFactory
     private $services;
 
     /**
-     * @var ExporterInterface[]
+     * @var array<ExporterInterface>
      */
     private $instances;
 
@@ -39,7 +31,7 @@ class ExporterFactory
     }
 
     /**
-     * @return ExporterInterface[]
+     * @return array<ExporterInterface>
      */
     public function getServices(): array
     {
@@ -81,8 +73,8 @@ class ExporterFactory
         $config = (object) $result->fetchAssociative();
 
         $config->master = $config->master ?: $config->pid;
-        $config->fields = \Contao\StringUtil::deserialize($config->fields, true);
-        $config->tokenFields = \Contao\StringUtil::deserialize($config->tokenFields, true);
+        $config->fields = StringUtil::deserialize($config->fields, true);
+        $config->tokenFields = StringUtil::deserialize($config->tokenFields, true);
 
         return $config;
     }
