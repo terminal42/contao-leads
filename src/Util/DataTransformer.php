@@ -58,13 +58,13 @@ class DataTransformer
 
             // Regular form field
             if (isset($columnConfig['id'])) {
-                $value = $data[$columnConfig['id']]['value'];
+                $value = isset($columnConfig['id'], $data[$columnConfig['id']]['value']) ? $data[$columnConfig['id']]['value'] : null;
                 $label = $columnConfig['label'];
             } else {
                 // Internal field
                 $row = current($data);
-                $value = $row[$columnConfig['valueColRef']];
-                $label = $row[$columnConfig['labelColRef']];
+                $value = isset($columnConfig['valueColRef'], $row[$columnConfig['valueColRef']]) ? $row[$columnConfig['valueColRef']] : null;
+                $label = isset($columnConfig['labelColRef'], $row[$columnConfig['labelColRef']]) ? $row[$columnConfig['labelColRef']] : null;
             }
 
             $value = $this->transformValue($value, $columnConfig);
@@ -88,14 +88,14 @@ class DataTransformer
 
         // Merge transformers chosen by user (format) with an array of arbitrary ones
         // defined by any developer.
-        if ($columnConfig['format']) {
+        if ($columnConfig['format'] ?? false) {
             $columnConfig['transformers'] = array_merge(
-                (array) $columnConfig['format'],
-                (array) $columnConfig['transformers']
+                (array) ($columnConfig['format'] ?? []),
+                (array) ($columnConfig['transformers'] ?? [])
             );
         }
 
-        $transformers = (array) $columnConfig['transformers'];
+        $transformers = (array) ($columnConfig['transformers'] ?? []);
 
         foreach ($transformers as $transformerKey) {
             $value = $this->transformerFactory->createForType($transformerKey)->transform($value);

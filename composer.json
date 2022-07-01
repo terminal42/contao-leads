@@ -7,7 +7,17 @@
     "authors":[
         {
             "name":"terminal42 gmbh",
-            "homepage":"http://terminal42.ch"
+            "homepage": "https://www.terminal42.ch"
+        }
+    ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/terminal42"
+        },
+        {
+            "type": "other",
+            "url": "https://ko-fi.com/terminal42"
         }
     ],
     "require":{

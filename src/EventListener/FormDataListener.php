@@ -38,7 +38,7 @@ class FormDataListener
                 $GLOBALS['TL_LANGUAGE'],
                 $arrForm['id'],
                 ($arrForm['leadMaster'] ?: $arrForm['id']),
-                (FE_USER_LOGGED_IN === true ? \FrontendUser::getInstance()->id : 0),
+                (FE_USER_LOGGED_IN === true ? (int) \FrontendUser::getInstance()->id : 0),
                 serialize($arrPost)
             )->insertId;
 
@@ -76,7 +76,7 @@ class FormDataListener
                 }
 
                 // Files
-                if (isset($arrFiles[$objFields->postName]) && $arrFiles[$objFields->postName]['uploaded']) {
+                if (isset($arrFiles[$objFields->postName]) && ($arrFiles[$objFields->postName]['uploaded'] ?? false)) {
                     $varValue = $this->prepareValue($arrFiles[$objFields->postName], $objFields);
                     $varLabel = $this->prepareLabel($varValue, $objFields);
 
