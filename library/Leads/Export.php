@@ -11,518 +11,305 @@
 
 namespace Leads;
 
-use Haste\Util\Format;
-use Leads\Exporter\ExporterInterface;
-use Leads\Exporter\Utils\Row;
-use Leads\Exporter\Utils\Tokens;
+use Haste\IO\Reader\ArrayReader;
+use Leads\Exporter\Csv;
+use Leads\Exporter\Utils\File;
+use Leads\Exporter\Xls;
+use Leads\Exporter\Xlsx;
 
-class Leads extends \Controller
+/**
+ * Class Export
+ * @deprecated This class will be removed in 2.0.
+ */
+class Export
 {
     /**
-     * Prepare a form value for storage in lead table.
-     *
-     * @param mixed
-     * @param \Database\Result
-     */
-    public static function prepareValue($varValue, $objField)
-    {
-        // File upload
-        if ($objField->type == 'upload') {
-            return $varValue['uuid'];
-        }
-
-        // Run for all values in an array
-        if (is_array($varValue)) {
-            foreach ($varValue as $k => $v) {
-                $varValue[$k] = self::prepareValue($v, $objField);
-            }
-
-            return $varValue;
-        }
-
-        $varValue = static::convertRgxp($varValue, $objField->rgxp);
-
-        return $varValue;
-    }
-
-
-    /**
-     * Get the label for a form value to store in lead table.
-     *
-     * @param mixed $varValue
-     * @param \Database\Result $objField
-     *
-     * @return mixed
-     */
-    public static function prepareLabel($varValue, $objField)
-    {
-        // Run for all values in an array
-        if (is_array($varValue)) {
-            foreach ($varValue as $k => $v) {
-                $varValue[$k] = self::prepareLabel($v, $objField);
-            }
-
-            return $varValue;
-        }
-
-        // File upload
-        if ($objField->type == 'upload') {
-            $objFile = \FilesModel::findByUuid($varValue);
-
-            if ($objFile !== null) {
-                return $objFile->path;
-            }
-        }
-
-        $varValue = static::convertRgxp($varValue, $objField->rgxp);
-
-        if ($objField->options != '') {
-            $arrOptions = deserialize($objField->options, true);
-
-            foreach ($arrOptions as $arrOption) {
-                if ($arrOption['value'] == $varValue && $arrOption['label'] != '') {
-                    $varValue = $arrOption['label'];
-                }
-            }
-        }
-
-        return $varValue;
-    }
-
-
-    /**
-     * Format a lead field for list view.
-     *
+     * Export data to CSV
      * @param object
-     *
+     * @param array
+     * @deprecated Use the Csv class instead. To be removed in 2.0.
+     */
+    public function exportCsv($objConfig, $arrIds=null)
+    {
+        $csvExporter = new Csv();
+        $csvExporter->export($objConfig, $arrIds);
+    }
+
+    /**
+     * Export data to XLS
+     * @param object
+     * @deprecated Use the Xls class instead. To be removed in 2.0.
+     */
+    public function exportXls($objConfig, $arrIds=null)
+    {
+        $xlsExporter = new Xls();
+        $xlsExporter->export($objConfig, $arrIds);
+    }
+
+    /**
+     * Export data to XLSX
+     * @param object
+     * @deprecated Use the Xlsx class instead. To be removed in 2.0.
+     */
+    public function exportXlsx($objConfig, $arrIds=null)
+    {
+        $xlsxExporter = new Xlsx();
+        $xlsxExporter->export($objConfig, $arrIds);
+    }
+
+    /**
+     * Get the filename from config
+     * @param object
      * @return string
+     * @deprecated Use File::getName() instead. To be removed in 2.0.
      */
-    public static function formatValue($objData)
+    public function getFilename($objConfig)
     {
-        $fieldModel = \FormFieldModel::findByPk($objData->field_id);
-
-        if (null !== $fieldModel) {
-            $data = $fieldModel->row();
-            $data['eval'] = $fieldModel->row();
-            $strValue = Format::dcaValueFromArray($data, $objData->value);
-        } else {
-            $strValue = implode(', ', deserialize($objData->value, true));
-        }
-
-        if ($objData->label != '') {
-            $strLabel = $objData->label;
-            $arrLabel = deserialize($objData->label, true);
-
-            if (!empty($arrLabel)) {
-                $strLabel = implode(', ', $arrLabel);
-            }
-
-            if ($strLabel !== $strValue) {
-                $strValue = $strLabel.' <span style="color:#b3b3b3; padding-left:3px;">['.$strValue.']</span>';
-            }
-        }
-
-        return $strValue;
+        return File::getName($objConfig);
     }
 
-
     /**
-     * Dynamically load the name for the current lead view.
-     *
-     * @param string
-     * @param string
-     */
-    public function loadLeadName($strName, $strLanguage)
-    {
-        if ($strName == 'modules' && $this->Input->get('do') == 'lead') {
-            $objForm = \Database::getInstance()->prepare("SELECT * FROM tl_form WHERE id=?")->execute(\Input::get('master'));
-
-            $GLOBALS['TL_LANG']['MOD']['lead'][0] = $objForm->leadMenuLabel ? $objForm->leadMenuLabel : $objForm->title;
-        }
-    }
-
-
-    /**
-     * Add leads to the backend navigation.
-     *
+     * Generate the export row
      * @param array
-     * @param bool
-     *
+     * @param object
      * @return array
+     * @deprecated Use the Row class instead. To be removed in 2.0.
      */
-    public function loadBackendModules($arrModules, $blnShowAll)
+    public static function generateExportRow($arrData, $objConfig)
     {
-        if (!\Database::getInstance()->tableExists('tl_lead')) {
-            unset($arrModules['leads']);
-            return $arrModules;
-        }
-
-        $arrIds = array();
-        $objUser = \BackendUser::getInstance();
-
-        // Check permissions
-        if (!$objUser->isAdmin) {
-            if (!$objUser->hasAccess('lead', 'modules') || !is_array($objUser->forms) || empty($objUser->forms)) {
-                unset($arrModules['leads']);
-                return $arrModules;
-            }
-
-            $arrIds = $objUser->forms;
-        }
-
-        // Master forms
-        $forms = \Database::getInstance()->execute("SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMaster=0" . (!empty($arrIds) ? ' AND id IN (' . implode(',', array_map('intval', $arrIds)) . ')' : ''))
-            ->fetchAllAssoc();
-
-        $ids = array();
-        foreach ($forms as $k => $form) {
-            // Fallback label
-            $forms[$k]['leadMenuLabel'] =  $form['leadMenuLabel'] ?: $form['title'];
-            $ids[] = $form['id'];
-        }
-
-        // Check for orphan data sets that have no associated form anymore
-        $orphans = \Database::getInstance()->execute("SELECT DISTINCT master_id AS id, CONCAT('ID ', master_id) AS title, CONCAT('ID ', master_id) AS leadMenuLabel FROM tl_lead" . (!empty($ids) ? ' WHERE master_id NOT IN (' . implode(',', array_map('intval', $ids)) . ')' : ''))
-            ->fetchAllAssoc();
-
-        // Only show orphans to admins
-        if ($objUser->isAdmin) {
-            foreach ($orphans as $orphan) {
-                $forms[] = $orphan;
-            }
-        }
-
-        if (empty($forms)) {
-            unset($arrModules['leads']);
-
-            return $arrModules;
-        }
-
-        $arrSession = \Session::getInstance()->get('backend_modules');
-        $blnOpen = ($arrSession['leads'] ?? false) || $blnShowAll || version_compare(VERSION, '4.4', '>=');
-        $arrModules['leads']['modules'] = array();
-
-        if ($blnOpen) {
-
-            // Order by leadMenuLabel
-            usort($forms, function($a, $b) {
-                return $a['leadMenuLabel'] > $b['leadMenuLabel'];
-            });
-
-            foreach ($forms as $form) {
-                $arrModules['leads']['modules']['lead_' . $form['id']] = array(
-                    'tables'    => array('tl_lead'),
-                    'title'     => specialchars(sprintf($GLOBALS['TL_LANG']['MOD']['leads'][1], $form['title'])),
-                    'label'     => html_entity_decode($form['leadMenuLabel']),
-                    'icon'      => ' style="background-image:url(\'system/modules/leads/assets/icon.png\')"',
-                    'class'     => 'navigation leads',
-                    'href'      => 'contao/main.php?do=lead&master=' . $form['id'],
-                    'isActive'  => ('lead' === \Input::get('do') && $form['id'] === \Input::get('master')),
-                );
-            }
-        } else {
-            $arrModules['leads']['modules'] = false;
-            $arrModules['leads']['icon'] = 'modPlus.gif';
-            $arrModules['leads']['title'] = specialchars($GLOBALS['TL_LANG']['MSC']['expandNode']);
-        }
-
-        return $arrModules;
-    }
-
-
-    /**
-     * Process data submitted through the form generator.
-     *
-     * @param array
-     * @param array
-     * @param array
-     */
-    public function processFormData(&$arrPost, &$arrForm, &$arrFiles)
-    {
-        if ($arrForm['leadEnabled']) {
-            $time = time();
-
-            $intLead = \Database::getInstance()
-                ->prepare(
-                    "INSERT INTO tl_lead (tstamp,created,language,form_id,master_id,member_id,post_data) VALUES (?, UNIX_TIMESTAMP(), ?,?,?,?,?)"
-                )
-                ->execute(
-                    $time,
-                    $GLOBALS['TL_LANGUAGE'],
-                    $arrForm['id'],
-                    ($arrForm['leadMaster'] ? $arrForm['leadMaster'] : $arrForm['id']),
-                    (FE_USER_LOGGED_IN === true ? (int) \FrontendUser::getInstance()->id : 0),
-                    serialize($arrPost)
-                )
-                ->insertId
-            ;
-
-            // Fetch master form fields
-            if ($arrForm['leadMaster'] > 0) {
-                $objFields = \Database::getInstance()
-                    ->prepare("SELECT f2.*, f1.id AS master_id, f1.name AS postName FROM tl_form_field f1 LEFT JOIN tl_form_field f2 ON f1.leadStore=f2.id WHERE f1.pid=? AND f1.leadStore>0 AND f2.leadStore='1' AND f1.invisible='' ORDER BY f2.sorting")
-                    ->execute($arrForm['id'])
-                ;
-            } else {
-                $objFields = \Database::getInstance()
-                    ->prepare("SELECT *, id AS master_id, name AS postName FROM tl_form_field WHERE pid=? AND leadStore='1' AND invisible='' ORDER BY sorting")
-                    ->execute($arrForm['id'])
-                ;
-            }
-
-            while ($objFields->next()) {
-                $arrSet = array();
-
-                // Regular data
-                if (isset($arrPost[$objFields->postName])) {
-                    $varValue = Leads::prepareValue($arrPost[$objFields->postName], $objFields);
-                    $varLabel = Leads::prepareLabel($varValue, $objFields);
-
-                    $arrSet = array(
-                        'pid'       => $intLead,
-                        'sorting'   => $objFields->sorting,
-                        'tstamp'    => $time,
-                        'master_id' => $objFields->master_id,
-                        'field_id'  => $objFields->id,
-                        'name'      => $objFields->name,
-                        'value'     => $varValue,
-                        'label'     => $varLabel,
-                    );
-                }
-
-                // Files
-                if (isset($arrFiles[$objFields->postName]) && ($arrFiles[$objFields->postName]['uploaded'] ?? false)) {
-                    $varValue = Leads::prepareValue($arrFiles[$objFields->postName], $objFields);
-                    $varLabel = Leads::prepareLabel($varValue, $objFields);
-
-                    $arrSet = array(
-                        'pid'       => $intLead,
-                        'sorting'   => $objFields->sorting,
-                        'tstamp'    => $time,
-                        'master_id' => $objFields->master_id,
-                        'field_id'  => $objFields->id,
-                        'name'      => $objFields->name,
-                        'value'     => $varValue,
-                        'label'     => $varLabel,
-                    );
-                }
-
-                if (!empty($arrSet)) {
-                    // HOOK: add custom logic
-                    if (isset($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore']) && is_array($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'])) {
-                        foreach ($GLOBALS['TL_HOOKS']['modifyLeadsDataOnStore'] as $callback) {
-                            $this->import($callback[0]);
-                            $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields, $arrSet);
-                        }
-                    }
-
-                    \Database::getInstance()->prepare("INSERT INTO tl_lead_data %s")->set($arrSet)->executeUncached();
-                }
-            }
-
-            // HOOK: add custom logic
-            if (isset($GLOBALS['TL_HOOKS']['storeLeadsData']) && is_array($GLOBALS['TL_HOOKS']['storeLeadsData'])) {
-                foreach ($GLOBALS['TL_HOOKS']['storeLeadsData'] as $callback) {
-                    $this->import($callback[0]);
-                    $this->{$callback[0]}->{$callback[1]}($arrPost, $arrForm, $arrFiles, $intLead, $objFields);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Export the data.
-     *
-     * @param integer $intConfig
-     * @param array
-     */
-    public static function export($intConfig, $arrIds=null)
-    {
-        $objConfig = \Database::getInstance()->prepare("SELECT *, (SELECT leadMaster FROM tl_form WHERE tl_form.id=tl_lead_export.pid) AS master FROM tl_lead_export WHERE id=?")
-                                            ->limit(1)
-                                            ->execute($intConfig);
-
-        if (!$objConfig->numRows || !isset($GLOBALS['LEADS_EXPORT'][$objConfig->type])) {
-            return;
-        }
-
-        $objConfig->master = $objConfig->master ?: $objConfig->pid;
+        $arrRow = array();
+        $arrFirst = reset($arrData);
         $arrFields = array();
 
-        $exporterDefinition = $GLOBALS['LEADS_EXPORT'][$objConfig->type];
-
-        // Backwards compatibility
-        if (is_array($exporterDefinition)) {
-            // Prepare the fields
-            foreach (deserialize($objConfig->fields, true) as $arrField) {
-                $arrFields[$arrField['field']] = $arrField;
-            }
-
-            $objConfig->fields = $arrFields;
-
-            $objExport = $exporterDefinition[0]();
-            $objExport->$exporterDefinition[1]($objConfig, $arrIds);
-        } else {
-
-            // Note the difference here: Fields are not touched and thus every field can be exported multiple times
-            $exporter = new $exporterDefinition();
-
-            $objConfig->fields      = deserialize($objConfig->fields, true);
-            $objConfig->tokenFields = deserialize($objConfig->tokenFields, true);
-
-            if ($exporter instanceof ExporterInterface) {
-                $exporter->export($objConfig, $arrIds);
-            }
-        }
-    }
-
-    /**
-     * Handles the system columns when exporting.
-     *
-     * @param $columnConfig
-     * @param $data
-     * @param $config
-     * @param $value
-     */
-    public function handleSystemColumnExports($columnConfig, $data, $config, $value)
-    {
-        $systemColumns = static::getSystemColumns();
-
-        if (isset($columnConfig['field'])
-            && in_array($columnConfig['field'], array_keys($systemColumns))
-        ) {
-
-            if ($columnConfig['field'] === '_field') {
-
-                return null;
-            }
-
-            $firstEntry = reset($data);
-            $systemColumnConfig = $systemColumns[$columnConfig['field']];
-
-            $value = (isset($systemColumnConfig['valueColRef']) ? $firstEntry[$systemColumnConfig['valueColRef']] : null);
-            $value =  Row::transformValue($value, $systemColumnConfig);
-
-            return Row::getValueForOutput(
-                $systemColumnConfig['value'],
-                $value,
-                (isset($systemColumnConfig['labelColRef']) ? $firstEntry[$systemColumnConfig['labelColRef']] : null)
+        // Add base information columns
+        if ($objConfig->export == 'all') {
+            $arrFields[] = array
+            (
+                'field' => 'pid',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'],
+                'value' => 'all',
+                'format' => 'raw'
             );
+            $arrFields[] = array
+            (
+                'field' => '_form',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+
+            $arrFields[] = array
+            (
+                'field' => '_created',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
+                'value' => 'all',
+                'format' => 'datim'
+            );
+
+            $arrFields[] = array
+            (
+                'field' => '_member',
+                'name' => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
+                'value' => 'all',
+                'format' => 'raw'
+            );
+        } else {
+            if ($objConfig->fields['pid']) {
+                $arrFields[] = $objConfig->fields['pid'];
+            }
+            if ($objConfig->fields['_form']) {
+                $arrFields[] = $objConfig->fields['_form'];
+            }
+            if ($objConfig->fields['_created']) {
+                $arrFields[] = $objConfig->fields['_created'];
+            }
+            if ($objConfig->fields['_member']) {
+                $arrFields[] = $objConfig->fields['_member'];
+            }
         }
-    }
 
-    /**
-     * Handles the Simple Tokens and Insert Tags when exporting.
-     *
-     * @param $columnConfig
-     * @param $data
-     * @param $config
-     * @param $value
-     */
-    public function handleTokenExports($columnConfig, $data, $config, $value)
-    {
+        $arrFields = array_merge($arrFields, static::$arrFields);
 
-        if ($config->export != 'tokens') {
+        foreach ($arrFields as $arrField) {
 
-            return null;
-        }
+            // Add custom logic
+            if (isset($GLOBALS['TL_HOOKS']['getLeadsExportRow']) && is_array($GLOBALS['TL_HOOKS']['getLeadsExportRow'])) {
+                $varValue = null;
 
-        $tokens = array();
-
-        foreach ($columnConfig['allFieldsConfig'] as $fieldConfig) {
-
-            $value = '';
-
-            if (isset($data[$fieldConfig['id']])) {
-
-                $value = $data[$fieldConfig['id']]['value'];
-                $value = deserialize($value);
-
-                // Add multiple tokens (<fieldname>_<option_name>) for multi-choice fields
-                if (is_array($value)) {
-                    foreach ($value as $choice) {
-                        $tokens[$fieldConfig['name'] . '_' . $choice] = 1;
+                foreach ($GLOBALS['TL_HOOKS']['getLeadsExportRow'] as $callback) {
+                    if (is_array($callback)) {
+                        $varValue = \System::importStatic($callback[0])->{$callback[1]}($arrField, $arrData, $objConfig, $varValue);
+                    } elseif (is_callable($callback)) {
+                        $varValue = $callback($arrField, $arrData, $objConfig, $varValue);
                     }
                 }
 
-                $value = Row::transformValue($data[$fieldConfig['id']]['value'], $fieldConfig);
+                // Store the value
+                if ($varValue !== null) {
+                    $arrRow[] = $varValue;
+                    continue;
+                }
             }
 
-            $tokens[$fieldConfig['name']] = $value;
+            // Show yes/no for single checkbox value
+            if ($arrField['label'] == $arrField['name'] && $arrField['type'] == 'checkbox' && $arrField['options'] != '') {
+                $arrOptions = deserialize($arrField['options']);
+
+                if (is_array($arrOptions) && count($arrOptions) == 1) {
+                    if ($arrData[$arrField['id']]['value'] == '') {
+                        $arrRow[] = $GLOBALS['TL_LANG']['MSC']['no'];
+                        continue;
+                    } elseif ($arrData[$arrField['id']]['value'] == '1') {
+                        $arrRow[] = $GLOBALS['TL_LANG']['MSC']['yes'];
+                        continue;
+                    }
+                }
+            }
+
+            $varValue = '';
+            $strLabel = '';
+            $strFormat = $objConfig->fields[$arrField['id']]['format'];
+
+            // Get the special field value and label
+            if (isset($arrField['field'])) {
+                switch ($arrField['field']) {
+                    case 'pid':
+                        $varValue = $arrFirst['pid'];
+                        break;
+
+                    case '_form':
+                        $varValue = $arrFirst['form_id'];
+                        $strLabel = $arrFirst['form_name'];
+                        break;
+
+                    case '_created':
+                        $varValue = $arrFirst['created'];
+                        break;
+
+                    case '_member':
+                        $varValue = $arrFirst['member_id'];
+                        $strLabel = $arrFirst['member_name'];
+                        break;
+                }
+
+                $strFormat = $arrField['format'];
+            } else {
+                $varValue = implode(', ', deserialize($arrData[$arrField['id']]['value'], true));
+
+                // Prepare the label
+                if ($arrData[$arrField['id']]['label'] != '') {
+                    $strLabel = $arrData[$arrField['id']]['label'];
+                    $arrLabel = deserialize($arrData[$arrField['id']]['label']);
+
+                    if (is_array($arrLabel) && !empty($arrLabel)) {
+                        $strLabel = implode(', ', $arrLabel);
+                    }
+                }
+            }
+
+            // Apply special formatting
+            switch ($strFormat) {
+                case 'date':
+                case 'datim':
+                case 'time':
+                    $arrRow[] = \Date::parse($GLOBALS['TL_CONFIG'][$strFormat . 'Format'], $varValue);
+                    continue 2; break;
+            }
+
+            switch ($objConfig->fields[$arrField['id']]['value']) {
+                case 'value':
+                    $arrRow[] = $varValue;
+                    break;
+
+                case 'label':
+                    $arrRow[] = $strLabel ? $strLabel : $varValue;
+                    break;
+
+                default:
+                    if ($strLabel === '' && $varValue === '') {
+                        $arrRow[] = ''; // No label, no value
+                    } elseif ($strLabel === '' && $varValue !== '') {
+                        $arrRow[] = $varValue; // No label, but value
+                    } elseif ($strLabel !== '' && $varValue === '') {
+                        $arrRow[] = $strLabel; // Label, no value
+                    } elseif ($strLabel == $varValue) {
+                        $arrRow[] = $varValue; // Label the same as value
+                    } else {
+                        $arrRow[] = $strLabel . ' [' . $varValue . ']'; // Different label and value
+                    }
+                    break;
+            }
         }
 
-        return Tokens::recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens);
+        return $arrRow;
     }
 
     /**
-     * @param string $value
-     * @param string $rgxp
+     * Get the export fields
      *
-     * @return string
+     * @param object
+     * @param array
+     * @return ArrayReader
+     *
+     * @deprecated Use the DataCollector class instead.
      */
-    private static function convertRgxp($value, $rgxp)
+    protected function getExportData($objConfig, $arrIds=null)
     {
-        // Convert date formats into timestamps
-        if (!empty($value)
-            && in_array($rgxp, array('date', 'time', 'datim'))
-            && \Validator::{'is'.ucfirst($rgxp)}($value)
-        ) {
-            $format = \Date::{'getNumeric'.ucfirst($rgxp).'Format'}();
-            $date = new \Date($value, $format);
+        $dataCollector = new DataCollector($objConfig->master);
 
-            return (string) $date->tstamp;
+        // Limit the fields
+        if ($objConfig->export != 'all') {
+            $arrLimitFields = array_keys($objConfig->fields);
+            $dataCollector->setFieldIds(array_map('intval', $arrLimitFields));
         }
 
-        return $value;
-    }
+        if (null !== $arrIds) {
+            $dataCollector->setLeadDataIds($arrIds);
+        }
 
-    /**
-     * Default system columns.
-     *
-     * @return array
-     */
-    public static function getSystemColumns()
-    {
-        \System::loadLanguageFile('tl_lead_export');
+        $objReader = new ArrayReader($dataCollector->getExportData());
 
-        return array(
-            '_pid' => array(
-                'field'         => '_pid',
-                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'],
-                'value'         => 'value',
-                'format'        => 'raw',
-                'valueColRef'   => 'pid'
-            ),
-            '_form' => array(
-                'field'         => '_form',
-                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_form'],
-                'value'         => 'all',
-                'format'        => 'raw',
-                'valueColRef'   => 'form_id',
-                'labelColRef'   => 'form_name'
-            ),
-            '_created' => array(
-                'field'         => '_created',
-                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_created'],
-                'value'         => 'value',
-                'format'        => 'datim',
-                'valueColRef'   => 'created'
-            ),
-            '_member' => array(
-                'field'         => '_member',
-                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_member'],
-                'value'         => 'all',
-                'format'        => 'raw',
-                'valueColRef'   => 'member_id',
-                'labelColRef'   => 'member_name'
-            ),
-            '_skip' => array(
-                'field'         => '_skip',
-                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_skip'],
-                'value'         => 'value',
-                'format'        => 'raw'
-            )
-        );
+        // Add header fields
+        if ($objConfig->headerFields) {
+            $arrHeader = array();
+
+            // Add base information columns
+            if ($objConfig->export == 'all') {
+                \System::loadLanguageFile('tl_lead_export');
+
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'];
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_form'];
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_created'];
+                $arrHeader[] = $GLOBALS['TL_LANG']['tl_lead_export']['field_member'];
+            } else {
+                if ($objConfig->fields['pid']) {
+                    $arrHeader[] = $objConfig->fields['pid']['pid'];
+                }
+                if ($objConfig->fields['_form']) {
+                    $arrHeader[] = $objConfig->fields['_form']['name'];
+                }
+                if ($objConfig->fields['_created']) {
+                    $arrHeader[] = $objConfig->fields['_created']['name'];
+                }
+                if ($objConfig->fields['_member']) {
+                    $arrHeader[] = $objConfig->fields['_member']['name'];
+                }
+            }
+
+            // Add export data header fields
+            foreach ($dataCollector->getHeaderFields() as $fieldId => $label) {
+
+                // Use a custom header field
+                if ($objConfig->fields[$fieldId]['name'] != '') {
+                    $arrHeader[] = $objConfig->fields[$fieldId]['name'];
+                } else {
+                    $arrHeader[] = $label;
+                }
+            }
+
+            $objReader->setHeaderFields($arrHeader);
+        }
+
+        return $objReader;
     }
 }
