@@ -67,7 +67,7 @@ $GLOBALS['TL_LANG']['tl_lead_export']['field_form']                         = 'F
 $GLOBALS['TL_LANG']['tl_lead_export']['field_created']                      = 'Erstellungsdatum';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_member']                       = 'Mitglied';
 $GLOBALS['TL_LANG']['tl_lead_export']['field_skip']                         = 'Spalte überspringen';
-
+$GLOBALS['TL_LANG']['tl_lead_export']['field_pid']                          = 'Eltern ID';
 
 
 /**
