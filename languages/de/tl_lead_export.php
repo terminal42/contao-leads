@@ -20,7 +20,7 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_lead_export']['pid']                      = array('ID');
+
 $GLOBALS['TL_LANG']['tl_lead_export']['name']                     = array('Konfigurationsname', 'Bitte geben Sie hier einen Konfigurationsnamen ein.');
 $GLOBALS['TL_LANG']['tl_lead_export']['type']                     = array('Datentyp', 'Bitte wählen Sie einen Datentyp für den Export.');
 $GLOBALS['TL_LANG']['tl_lead_export']['filename']                 = array('Individueller Dateiname', 'Hier können Sie einen individuellen Dateinamen vergeben. Sie können Platzhalter verwenden (z.B. ##date##). Siehe Help-Wizard für Details.');

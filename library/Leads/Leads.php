@@ -489,7 +489,7 @@ class Leads extends \Controller
         return array(
             '_pid' => array(
                 'field'         => '_pid',
-                'name'          => 'ID',
+                'name'          => $GLOBALS['TL_LANG']['tl_lead_export']['field_pid'],
                 'value'         => 'value',
                 'format'        => 'raw',
                 'valueColRef'   => 'pid'
