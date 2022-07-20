@@ -112,7 +112,7 @@ class UserNavigationListener
             $qb->andWhere('id IN (:ids)')->setParameter('ids', $allowedIds, Connection::PARAM_INT_ARRAY);
         }
 
-        $forms = $qb->execute()->fetchAll();
+        $forms = $qb->fetchAllAssociative();
         $forms = array_merge($forms, $this->findOrphans(array_column($forms, 'id')));
 
         usort(
@@ -121,7 +121,7 @@ class UserNavigationListener
                 $labelA = $a['leadMenuLabel'] ?: $a['title'];
                 $labelB = $b['leadMenuLabel'] ?: $b['title'];
 
-                return $labelA > $labelB;
+                return $labelA <=> $labelB;
             }
         );
 
