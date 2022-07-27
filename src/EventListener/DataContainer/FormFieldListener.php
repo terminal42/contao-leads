@@ -21,7 +21,7 @@ class FormFieldListener
     {
         global $objLeadForm;
 
-        switch ($_GET['act']) {
+        switch ($_GET['act'] ?? null) {
             case 'edit':
                 $objLeadForm = \Database::getInstance()->prepare(
                     'SELECT leadEnabled, leadMaster FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id=?)'
