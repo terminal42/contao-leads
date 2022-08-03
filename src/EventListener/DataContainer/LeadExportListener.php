@@ -37,7 +37,7 @@ class LeadExportListener
     {
         $this->checkPermission();
         $this->updatePalette($dc);
-        $this->loadJsAndCss();
+        $this->loadJs();
     }
 
     public function onChildRecordCallback(array $row): string
@@ -190,17 +190,16 @@ class LeadExportListener
         $strPalette = $objRecord->type ?: 'default';
         $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette] = str_replace(
             'export',
-            'export,'.$GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'],
+            'export,'.($GLOBALS['TL_DCA']['tl_lead_export']['subpalettes']['export'] ?? ''),
             $GLOBALS['TL_DCA']['tl_lead_export']['palettes'][$strPalette]
         );
     }
 
     /**
-     * Loads JS and CSS.
+     * Loads JS.
      */
-    private function loadJsAndCss(): void
+    private function loadJs()
     {
         $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
-        $GLOBALS['TL_CSS'][] = $GLOBALS['BE_MOD']['leads']['lead']['stylesheet'];
     }
 }
