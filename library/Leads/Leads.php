@@ -105,6 +105,12 @@ class Leads extends \Controller
             $data = $fieldModel->row();
             $data['eval'] = $fieldModel->row();
             $strValue = Format::dcaValueFromArray($data, $objData->value);
+
+            // Store the formatted date/time as a label and timestamp as a value for better UI experience
+            if (in_array($data['eval']['rgxp'] ?? null, ['date', 'time', 'datim'], true)) {
+                $objData->label = $strValue;
+                $strValue = $objData->value;
+            }
         } else {
             $strValue = implode(', ', deserialize($objData->value, true));
         }
