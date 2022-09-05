@@ -47,7 +47,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'fields'            => array('created DESC', 'member_id'),
             'flag'              => 8,
             'panelLayout'       => 'filter;sort,limit',
-            'filter'            => array(array('master_id=?', $this->Input->get('master'))),
+            'filter'            => array(array('master_id=?', \Contao\Input::get('master'))),
         ),
         'label' => array
         (
@@ -137,7 +137,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = array
             'label'             => &$GLOBALS['TL_LANG']['tl_lead']['language'],
             'filter'            => true,
             'sorting'           => true,
-            'options'           => \System::getLanguages(),
+            'options_callback'  => static fn () => \Contao\System::getContainer()->get('contao.intl.locales')->getLocales(null, true),
             'sql'               => ['type' => 'string', 'length' => 5, 'default' => ''],
         ),
         'created' => array
