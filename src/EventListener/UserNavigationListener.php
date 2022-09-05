@@ -35,8 +35,8 @@ class UserNavigationListener
 
     public function onLoadLanguageFile(string $name): void
     {
-        if ('modules' === $name && 'lead' === \Input::get('do')) {
-            $formId = \Input::get('master');
+        if ('modules' === $name && 'lead' === Input::get('do')) {
+            $formId = Input::get('master');
 
             foreach ($this->getForms() as $form) {
                 if ($form['id'] === $formId) {
