@@ -14,7 +14,7 @@ class LeadVoter extends Voter
     /**
      * {@inheritdoc}
      */
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
         return 'lead_form' === $attribute && is_numeric($subject);
     }
@@ -22,18 +22,18 @@ class LeadVoter extends Voter
     /**
      * {@inheritdoc}
      */
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
 
         if (!$user instanceof BackendUser || !$this->supports($attribute, $subject)) {
-            return VoterInterface::ACCESS_ABSTAIN;
+            return false;
         }
 
         if ($user->hasAccess($subject, 'forms')) {
-            return VoterInterface::ACCESS_GRANTED;
+            return true;
         }
 
-        return VoterInterface::ACCESS_DENIED;
+        return false;
     }
 }
