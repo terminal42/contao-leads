@@ -17,20 +17,20 @@ $GLOBALS['BE_MOD']['content']['form']['tables'][] = 'tl_lead_export';
 /**
  * Fake back end module
  */
-array_insert($GLOBALS['BE_MOD'], 1, array('leads'=> array
+\Contao\ArrayUtil::arrayInsert($GLOBALS['BE_MOD'], 1, array('leads'=> array
 (
     'lead' => array
     (
         'tables'        => array('tl_lead', 'tl_lead_data'),
-        'javascript'    => \System::getContainer()->get('assets.packages')->getUrl('leads.js', 'terminal42_leads'),
+        'javascript'    => \Contao\System::getContainer()->get('assets.packages')->getUrl('leads.js', 'terminal42_leads'),
         'export'        => array(Terminal42\LeadsBundle\Controller\Backend\LeadExportController::class, '__invoke'),
         'notification'  => array(Terminal42\LeadsBundle\Controller\Backend\LeadNotificationController::class, '__invoke'),
     ),
 )));
 
 // Load icon in Contao 4.2+ backend
-if ('BE' === TL_MODE) {
-    $GLOBALS['TL_CSS'][] = \System::getContainer()->get('assets.packages')->getUrl('leads.css', 'terminal42_leads');
+if (defined('TL_MODE') && 'BE' === TL_MODE) {
+    $GLOBALS['TL_CSS'][] = \Contao\System::getContainer()->get('assets.packages')->getUrl('leads.css', 'terminal42_leads');
 }
 
 $GLOBALS['TL_MODELS']['tl_lead'] = \Terminal42\LeadsBundle\Model\Lead::class;
