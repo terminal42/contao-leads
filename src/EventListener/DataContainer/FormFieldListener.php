@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
+use Contao\Database;
 use Contao\DataContainer;
 
 class FormFieldListener
@@ -23,14 +24,14 @@ class FormFieldListener
 
         switch ($_GET['act'] ?? null) {
             case 'edit':
-                $objLeadForm = \Database::getInstance()->prepare(
+                $objLeadForm = Database::getInstance()->prepare(
                     'SELECT leadEnabled, leadMaster FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id=?)'
                 )->execute($dc->id);
                 break;
 
             case 'editAll':
             case 'overrideAll':
-                $objLeadForm = \Database::getInstance()->prepare('SELECT leadEnabled, leadMaster FROM tl_form WHERE id=?')->execute($dc->id);
+                $objLeadForm = Database::getInstance()->prepare('SELECT leadEnabled, leadMaster FROM tl_form WHERE id=?')->execute($dc->id);
                 break;
 
             default:
@@ -71,7 +72,7 @@ class FormFieldListener
         global $objLeadForm;
 
         $arrFields = [];
-        $objFields = \Database::getInstance()->prepare("
+        $objFields = Database::getInstance()->prepare("
             SELECT *
             FROM tl_form_field
             WHERE

@@ -125,7 +125,7 @@ class LeadExportListener
             $arrFields[$k] = $column['name'];
         }
 
-        $objFields = \Database::getInstance()
+        $objFields = Database::getInstance()
             ->prepare("SELECT * FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?)")
             ->execute(Input::get('id'))
         ;
@@ -179,7 +179,7 @@ class LeadExportListener
             return;
         }
 
-        $objRecord = \Database::getInstance()->prepare(
+        $objRecord = Database::getInstance()->prepare(
             'SELECT * FROM tl_lead_export WHERE id=?'
         )->execute($dc->id);
 
