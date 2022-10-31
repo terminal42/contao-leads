@@ -1,0 +1,4 @@
+/node_modules/
+/tools/*/vendor
+/vendor/
+/composer.lock
