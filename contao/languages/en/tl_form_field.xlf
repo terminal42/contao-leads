@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_form_field" source-language="en">
+        <body>
+            <trans-unit id="tl_form_field.leadStore.0">
+                <source>Save in leads</source>
+            </trans-unit>
+            <trans-unit id="tl_form_field.leadStore.1">
+                <source>Select if/where the field value should be saved. For linked forms, you must select the matching main form field.</source>
+            </trans-unit>
+            <trans-unit id="tl_form_field.leadStore.2">
+                <source>Do not save</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

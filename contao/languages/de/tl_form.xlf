@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_form" source-language="en" target-language="de">
+        <body>
+            <trans-unit id="tl_form.leadEnabled.0">
+                <source>Store leads</source>
+                <target>Anfragen speichern</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadEnabled.1">
+                <source>Store submitted data from this form as leads.</source>
+                <target>Daten aus diesem Formular als Anfragen speichern.</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadMain.0">
+                <source>Main form</source>
+                <target>Hauptformular</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadMain.1">
+                <source>Select if this is a main form or leads data should be stored to another form.</source>
+                <target>Wählen Sie ob dies ein Hauptformular oder ein Zweitformular ist.</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadMain.2">
+                <source>This is a main form</source>
+                <target>Dies ist ein Hauptformular</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadMenuLabel.0">
+                <source>Navigation label</source>
+                <target>Navigations-Bezeichnung</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadMenuLabel.1">
+                <source>Enter a custom label for the backend navigation. If you leave this field blank, the form name will be used.</source>
+                <target>Geben Sie eine eigene Bezeichnung für den Navigationspunkt im Backend ein. Wenn Sie dieses Feld leer lassen, wir der Formulartitel verwendet.</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadLabel.0">
+                <source>Record label</source>
+                <target>Datensatz-Bezeichnung</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadLabel.1">
+                <source>Enter the names of the fields to be displayed in the back end list, surrounded by double hashes (##fieldname##). You can also use plain text. Use ##created## to output the date and time of creation.</source>
+                <target>Geben Sie die Namen der Felder ein, die in der Backend-Liste angezeigt werden sollen, umgeben von Doppelhashes (##feldname##). Sie können auch normalen Text verwenden. Verwenden Sie ##created## für die Ausgabe des Datums und die Uhrzeit der Erstellung.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
