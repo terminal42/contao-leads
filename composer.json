@@ -32,7 +32,7 @@
         "codefog/contao-haste": "^5.0",
         "contao/core-bundle": "^4.13 || ^5.0",
         "doctrine/dbal": "^2.11 || ^3.0",
-        "menatwork/contao-multicolumnwizard": "^3.3",
+        "menatwork/contao-multicolumnwizard-bundle": "^3.5",
         "symfony/config": "^4.4 || ^5.4 || ^6.0",
         "symfony/console": "^4.4 || ^5.4 || ^6.0",
         "symfony/dependency-injection": "^4.4 || ^5.4 || ^6.0",
