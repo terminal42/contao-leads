@@ -15,11 +15,11 @@ namespace Terminal42\LeadsBundle\Exporter;
 
 use Contao\Files;
 use Contao\FilesModel;
-use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
 use PHPExcel_Cell;
 use PHPExcel_IOFactory;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractExcelExporter extends AbstractExporter
 {
