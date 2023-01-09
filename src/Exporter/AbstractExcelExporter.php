@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Exporter;
 
+use Contao\Files;
+use Contao\FilesModel;
 use Haste\Http\Response\Response;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
@@ -32,7 +34,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
     /**
      * Exports based on Excel format.
      *
-     * @param \Database\Result|object $config
+     * @param \Contao\Database\Result|object $config
      * @param array|null              $ids
      * @param string                  $format
      *
@@ -107,7 +109,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         $format
     ) {
         // Fetch the template and make a copy of it
-        $template = \FilesModel::findByPk($config->template);
+        $template = FilesModel::findByPk($config->template);
 
         if (null === $template) {
             $objResponse = new Response('Could not find template.', 500);
@@ -115,7 +117,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
         }
 
         $tmpPath = 'system/tmp/'.$this->exportFile->getFilenameForConfig($config);
-        \Files::getInstance()->copy($template->path, $tmpPath);
+        Files::getInstance()->copy($template->path, $tmpPath);
 
         $excelReader = PHPExcel_IOFactory::createReader($format);
         $excel = $excelReader->load(TL_ROOT.'/'.$tmpPath);

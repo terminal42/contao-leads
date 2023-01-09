@@ -29,7 +29,7 @@ class LeadNotificationController
 
     public function __invoke()
     {
-        if (\Input::get('master') || !$this->notificationCenter->isAvailable()) {
+        if (Input::get('master') || !$this->notificationCenter->isAvailable()) {
             // TODO show exception message in the backend
             Controller::redirect('contao/main.php?act=error');
         }
@@ -50,20 +50,20 @@ class LeadNotificationController
         // Process the form
         if ('tl_leads_notification' === Input::post('FORM_SUBMIT')) {
             /**
-             * @var \FormModel
+             * @var FormModel
              * @var Notification $notification
              */
             if (
                 !isset($notifications[Input::post('notification')])
-                || !\is_array(\Input::post('IDS'))
-                || null === ($form = \FormModel::findByPk(\Input::get('master')))
-                || null === ($notification = Notification::findByPk(\Input::post('notification')))
+                || !\is_array(Input::post('IDS'))
+                || null === ($form = FormModel::findByPk(Input::get('master')))
+                || null === ($notification = Notification::findByPk(Input::post('notification')))
             ) {
                 Controller::reload();
             }
 
-            if (\Input::get('id')) {
-                $ids = [(int) \Input::get('id')];
+            if (Input::get('id')) {
+                $ids = [(int) Input::get('id')];
             } else {
                 $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
@@ -90,10 +90,10 @@ class LeadNotificationController
                 }
             }
 
-            Controller::redirect(\System::getReferer());
+            Controller::redirect(System::getReferer());
         }
 
-        return $this->generateForm($notifications, [\Input::get('id')]);
+        return $this->generateForm($notifications, [Input::get('id')]);
     }
 
     /**
@@ -116,8 +116,8 @@ class LeadNotificationController
 
 <div class="leads-notification-center">
 <h2 class="sub_headline">'.$GLOBALS['TL_LANG']['tl_lead']['notification'][0].'</h2>
-'.\Message::generate().'
-<form action="'.ampersand(Environment::get('request'), true).'" id="tl_leads_notification" class="tl_form" method="post">
+'.Message::generate().'
+<form action="'.StringUtil::ampersand(Environment::get('request'), true).'" id="tl_leads_notification" class="tl_form" method="post">
 <div class="tl_formbody_edit">
 <input type="hidden" name="FORM_SUBMIT" value="tl_leads_notification">
 <input type="hidden" name="REQUEST_TOKEN" value="'.REQUEST_TOKEN.'">

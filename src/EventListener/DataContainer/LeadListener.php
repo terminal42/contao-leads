@@ -135,7 +135,7 @@ class LeadListener
     {
         $arrConfigs = Database::getInstance()
             ->prepare('SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name')
-            ->execute(\Input::get('master'))
+            ->execute(Input::get('master'))
             ->fetchAllAssoc()
         ;
 
@@ -147,7 +147,7 @@ class LeadListener
                 Controller::reload();
             }
 
-            if (\Input::post('notification')) {
+            if (Input::post('notification')) {
                 Controller::redirect(Backend::addToUrl('key=notification'));
             }
 
