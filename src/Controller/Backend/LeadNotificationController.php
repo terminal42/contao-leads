@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
+use Codefog\HasteBundle\StringParser;
 use Contao\Controller;
 use Contao\Database;
 use Contao\Environment;
@@ -17,14 +18,13 @@ use Terminal42\LeadsBundle\Util\NotificationCenter;
 
 class LeadNotificationController
 {
-    /**
-     * @var NotificationCenter
-     */
-    private $notificationCenter;
+    private NotificationCenter $notificationCenter;
+    private StringParser $stringParser;
 
-    public function __construct(NotificationCenter $notificationCenter)
+    public function __construct(NotificationCenter $notificationCenter, StringParser $stringParser)
     {
         $this->notificationCenter = $notificationCenter;
+        $this->stringParser = $stringParser;
     }
 
     public function __invoke()
@@ -203,13 +203,13 @@ class LeadNotificationController
         $arrTokens['raw_data'] = '';
 
         foreach ($arrData as $k => $v) {
-            \Haste\Util\StringUtil::flatten($v, 'form_'.$k, $arrTokens);
+            $this->stringParser->flatten($v, 'form_'.$k, $arrTokens);
             $arrTokens['formlabel_'.$k] = $arrLabels[$k] ?? ucfirst($k);
             $arrTokens['raw_data'] .= ($arrLabels[$k] ?? ucfirst($k)).': '.(\is_array($v) ? implode(', ', $v) : $v)."\n";
         }
 
         foreach ($arrForm as $k => $v) {
-            \Haste\Util\StringUtil::flatten($v, 'formconfig_'.$k, $arrTokens);
+            $this->stringParser->flatten($v, 'formconfig_'.$k, $arrTokens);
         }
 
         // Administrator e-mail

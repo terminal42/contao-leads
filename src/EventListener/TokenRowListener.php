@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener;
 
-use Haste\Util\StringUtil;
+use Codefog\HasteBundle\StringParser;
+use Contao\StringUtil;
 use Terminal42\LeadsBundle\Event\TransformRowEvent;
 use Terminal42\LeadsBundle\Util\DataTransformer;
 
 class TokenRowListener
 {
-    /**
-     * @var DataTransformer
-     */
-    private $dataTransformer;
+    private DataTransformer $dataTransformer;
+    private StringParser $stringParser;
 
-    public function __construct(DataTransformer $dataTransformer)
+    public function __construct(DataTransformer $dataTransformer, StringParser $stringParser)
     {
         $this->dataTransformer = $dataTransformer;
+        $this->stringParser = $stringParser;
     }
 
     public function onTransformRow(TransformRowEvent $event): void
@@ -37,7 +37,7 @@ class TokenRowListener
 
             if (isset($data[$fieldConfig['id']])) {
                 $value = $data[$fieldConfig['id']]['value'];
-                $value = \Contao\StringUtil::deserialize($value);
+                $value = StringUtil::deserialize($value);
 
                 // Add multiple tokens (<fieldname>_<option_name>) for multi-choice fields
                 if (\is_array($value)) {
@@ -52,6 +52,6 @@ class TokenRowListener
             $tokens[$fieldConfig['name']] = $value;
         }
 
-        $event->setValue(StringUtil::recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens));
+        $event->setValue($this->stringParser->recursiveReplaceTokensAndTags($columnConfig['tokensValue'], $tokens));
     }
 }
