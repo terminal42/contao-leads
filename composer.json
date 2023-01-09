@@ -66,5 +66,12 @@
     },
     "scripts": {
         "cs-fixer": "@php tools/ecs/vendor/bin/ecs check src/ --fix --ansi"
+    },
+    "config": {
+        "allow-plugins": {
+            "contao-components/installer": true,
+            "contao/manager-plugin": true,
+            "contao-community-alliance/composer-plugin": true
+        }
     }
 }
