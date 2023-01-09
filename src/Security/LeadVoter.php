@@ -7,7 +7,6 @@ namespace Terminal42\LeadsBundle\Security;
 use Contao\BackendUser;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 
 class LeadVoter extends Voter
 {
