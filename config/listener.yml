@@ -14,7 +14,7 @@ services:
         tags: [{ name: kernel.event_listener, event: terminal42_leads.transform_row, method: onTransformRow, priority: 100 }]
 
     Terminal42\LeadsBundle\EventListener\TokenRowListener:
-        arguments: ['@Terminal42\LeadsBundle\Util\DataTransformer']
+        arguments: ['@Terminal42\LeadsBundle\Util\DataTransformer', '@Codefog\HasteBundle\StringParser']
         tags: [{ name: kernel.event_listener, event: terminal42_leads.transform_row, method: onTransformRow }]
 
     Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener:
@@ -24,6 +24,7 @@ services:
             - '@Terminal42\LeadsBundle\Exporter\ExporterFactory'
             - '@router'
             - '@security.authorization_checker'
+            - '@Codefog\HasteBundle\StringParser'
 
     Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener:
         public: true

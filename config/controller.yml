@@ -8,7 +8,7 @@ services:
 
     Terminal42\LeadsBundle\Controller\Backend\LeadNotificationController:
         public: true
-        arguments: ['@Terminal42\LeadsBundle\Util\NotificationCenter']
+        arguments: ['@Terminal42\LeadsBundle\Util\NotificationCenter', '@Codefog\HasteBundle\StringParser']
 
     Terminal42\LeadsBundle\Controller\Backend\LeadDetailsController:
         public: true
