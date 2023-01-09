@@ -46,7 +46,7 @@
     },
     "require-dev": {
         "phpoffice/phpexcel": "^1.8",
-        "terminal42/notification_center": "dev-haste-5@dev",
+        "terminal42/notification_center": "^1.7",
         "contao/manager-plugin": "^2.0"
     },
     "conflict": {
