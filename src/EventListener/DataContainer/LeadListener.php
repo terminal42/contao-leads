@@ -187,7 +187,7 @@ class LeadListener
         $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['notification'] = [
             'label' => &$GLOBALS['TL_LANG']['tl_lead']['notification'],
             'href' => 'key=notification',
-            'icon' => 'system/modules/notification_center/assets/notification.png',
+            'icon' => 'system/modules/leads/assets/notification.png',
         ];
     }
 }
