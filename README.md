@@ -12,8 +12,8 @@ and define the listing of the form data using simple tags.
 
 The leads extension additionally offers an export function for each Lead in the backend. You can 
 configure it as you wish! Export options for CSV and Excel are available. _However_ you need to 
-install `phpoffice/phpspreadsheet` package for Excel support, 
-otherwise the Excel export option will not be available. 
+install `phpoffice/phpspreadsheet` package for CSV and Excel support, 
+otherwise the CSV and Excel export option will not be available. 
 
 Simple Tokens
 -------------
