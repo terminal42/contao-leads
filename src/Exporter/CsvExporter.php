@@ -18,6 +18,9 @@ class CsvExporter extends AbstractExporter
         return true;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function export(\stdClass $config, $ids = null): File
     {
         $dataCollector = $this->prepareDefaultDataCollector($config, $ids);

@@ -13,12 +13,15 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Exporter;
 
+use Contao\Database\Result;
+use Contao\File;
 use Contao\Files;
 use Contao\FilesModel;
 use Haste\IO\Reader\ArrayReader;
 use Haste\IO\Writer\ExcelFileWriter;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,11 +39,12 @@ abstract class AbstractExcelExporter extends AbstractExporter
     /**
      * Exports based on Excel format.
      *
-     * @param \Contao\Database\Result|object $config
-     * @param array|null              $ids
-     * @param string                  $format
+     * @param Result|object $config
+     * @param array|null $ids
+     * @param string $format
      *
-     * @return \Contao\File
+     * @return File
+     * @throws \Exception
      */
     protected function exportWithFormat($config, $ids, $format)
     {
@@ -67,9 +71,9 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param $config
      * @param $format
      *
-     * @throws ExportFailedException
+     * @return File
+     * @throws ExportFailedException|\Exception
      *
-     * @return \Contao\File
      */
     protected function exportWithoutTemplate(
         $config,
@@ -93,7 +97,7 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $this->updateLastRun($config);
 
-        return new \Contao\File($writer->getFilename());
+        return new File($writer->getFilename());
     }
 
     /**
@@ -102,7 +106,8 @@ abstract class AbstractExcelExporter extends AbstractExporter
      * @param $config
      * @param $format
      *
-     * @return \Contao\File
+     * @return File
+     * @throws Exception|\Exception
      */
     protected function exportWithTemplate(
         $config,
@@ -163,6 +168,6 @@ abstract class AbstractExcelExporter extends AbstractExporter
 
         $this->updateLastRun($config);
 
-        return new \Contao\File($tmpPath);
+        return new File($tmpPath);
     }
 }
