@@ -45,7 +45,7 @@
         "symfony/security-bundle": "^4.4 || ^5.4 || ^6.0"
     },
     "require-dev": {
-        "phpoffice/phpexcel": "^1.8",
+        "phpoffice/phpspreadsheet": "^1.26",
         "terminal42/notification_center": "^1.7",
         "contao/manager-plugin": "^2.0"
     },
@@ -53,7 +53,7 @@
         "contao/manager-plugin": "<2.0 || >=3.0"
     },
     "suggest": {
-        "phpoffice/phpexcel": "To enable excel export of lead data.",
+        "phpoffice/phpspreadsheet": "To enable excel export of lead data.",
         "terminal42/notification_center": "Send notifications for leads."
     },
     "autoload": {
