@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_form" source-language="en">
+        <body>
+            <trans-unit id="tl_lead.form_id.0">
+                <source>Source form</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.main_id.0">
+                <source>Main form</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.language.0">
+                <source>Language</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.created.0">
+                <source>Received</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.member_id.0">
+                <source>Member</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.label_format">
+                <source>Request from %s</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

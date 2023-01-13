@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_form" source-language="en" target-language="de">
+        <body>
+            <trans-unit id="tl_lead_data.main_id.0">
+                <source>Main field</source>
+                <target>Hauptfeld</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_data.field_id.0">
+                <source>Source field</source>
+                <target>Quellfeld</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_data.name.0">
+                <source>Source field name</source>
+                <target>Quellfeld-Name</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_data.value.0">
+                <source>Value</source>
+                <target>Wert</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_data.label.0">
+                <source>Label</source>
+                <target>Bezeichnung</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

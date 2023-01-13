@@ -8,7 +8,7 @@ use Contao\CoreBundle\Migration\AbstractMigration;
 use Contao\CoreBundle\Migration\MigrationResult;
 use Doctrine\DBAL\Connection;
 
-class MainFormMigration extends AbstractMigration
+class FormConfigMigration extends AbstractMigration
 {
     public function __construct(private readonly Connection $connection)
     {
