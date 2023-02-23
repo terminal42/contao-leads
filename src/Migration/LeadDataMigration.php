@@ -23,7 +23,9 @@ class LeadDataMigration extends AbstractMigration
             || $this->shouldMigrateField('tl_lead_data', 'master_id', 'main_id', $schemaManager);
     }
 
-    /** @noinspection SqlWithoutWhere */
+    /**
+     * @noinspection SqlWithoutWhere
+     */
     public function run(): MigrationResult
     {
         $schemaManager = $this->connection->createSchemaManager();

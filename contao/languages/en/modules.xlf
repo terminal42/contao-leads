@@ -8,6 +8,9 @@
             <trans-unit id="MOD.leads.1">
                 <source>Manage incoming leads from form "%s".</source>
             </trans-unit>
+            <trans-unit id="MOD.lead.0">
+                <source>Leads</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

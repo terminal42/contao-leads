@@ -28,10 +28,17 @@
     "require": {
         "php": "^8.1",
         "contao/core-bundle": "^4.13 || ^5.0",
-        "codefog/contao-haste": "^5.0"
+        "codefog/contao-haste": "^5.0",
+        "menatwork/contao-multicolumnwizard-bundle": "dev-feature/contao-5-support",
+        "phpoffice/phpspreadsheet": "^1.26"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.0"
+    },
+    "suggest": {
+        "tecnickcom/tcpdf": "Export leads to PDF document (using TCPDF)",
+        "dompdf/dompdf": "Export leads to PDF document (using Dompdf)",
+        "mpdf/mpdf": "Export leads to PDF document (using mPDF)"
     },
     "conflict": {
         "contao/manager-plugin": "<2.0 || >=3.0"

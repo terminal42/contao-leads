@@ -17,7 +17,8 @@ class LeadLabelListener
     public function __construct(
         private readonly Connection $connection,
         private readonly StringParser $stringParser,
-    ) {}
+    ) {
+    }
 
     public function __invoke(array $row, string $label): string
     {

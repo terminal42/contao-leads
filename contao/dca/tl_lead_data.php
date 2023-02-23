@@ -1,8 +1,6 @@
 <?php
 
 $GLOBALS['TL_DCA']['tl_lead_data'] = [
-
-    // Config
     'config' => [
         'dataContainer' => \Contao\DC_Table::class,
         'ptable' => 'tl_lead',
@@ -18,8 +16,6 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = [
             ],
         ],
     ],
-
-    // List
     'list' => [
         'sorting' => [
             'mode' => 4,
@@ -30,7 +26,7 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = [
         ],
         'label' => [
             'fields' => ['name', 'value', 'label'],
-            'format' => '<div style="display:inline-block;width:20%%;margin-right:10px;font-weight:500">%s</div><div style="display:inline-block;width:50%%;margin-right:10px">%s</div><div style="display:inline-block;width:20%%;color:#b3b3b3;">%s</div>'
+            'format' => '<div style="display:flex"><div style="width:20%%;margin-right:10px;font-weight:500">%s</div><div style="width:50%%;margin-right:10px">%s</div><div style="width:20%%;color:#b3b3b3;">%s</div></div>',
         ],
         'operations' => [
             'edit' => [
@@ -43,12 +39,9 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = [
             ],
         ],
     ],
-
     'palettes' => [
         'default' => 'value,label',
     ],
-
-    // Fields
     'fields' => [
         'id' => [
             'sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true],

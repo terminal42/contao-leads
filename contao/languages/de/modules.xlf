@@ -10,6 +10,10 @@
                 <source>Manage incoming leads from form "%s".</source>
                 <target>Anfragen für Formular "%s" verwalten.</target>
             </trans-unit>
+            <trans-unit id="MOD.lead.0">
+                <source>Leads</source>
+                <target>Anfragen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

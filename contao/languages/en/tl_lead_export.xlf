@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_form" source-language="en">
+        <body>
+            <trans-unit id="tl_lead_export.name.0">
+                <source>Config name</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.name.1">
+                <source>Please enter the config name.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.0">
+                <source>File type</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.1">
+                <source>Please choose the file type here.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.filename.0">
+                <source>Custom file name</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.filename.1">
+                <source>Here you can enter a custom file name. You can use simple tokens (e.g. ##date##).</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.headerFields.0">
+                <source>Include header fields</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.headerFields.1">
+                <source>Check here if header fields should be added as first row in the export file.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.export.0">
+                <source>Export type</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.export.1">
+                <source>Please choose what data should be exported.</source>
+            </trans-unit>
+
+            <trans-unit id="tl_lead_export.export.all">
+                <source>Export all data</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.export.fields">
+                <source>Custom export</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.export.tokens">
+                <source>Custom export with simple tokens</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.0">
+                <source>Fields</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.1">
+                <source>Please choose the fields you want to export.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.field.0">
+                <source>Field</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.name.0">
+                <source>Header name</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.output.0">
+                <source>Output</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.output.both">
+                <source>Label and value</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.output.label">
+                <source>Label only (if available, fallback to value)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.output.value">
+                <source>Value only</source>
+            </trans-unit>
+
+            <trans-unit id="tl_lead_export.fields.format.0">
+                <source>Format</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.fields.format.2">
+                <source>Raw data</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.tokenFields.0">
+                <source>Export configuration</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.tokenFields.1">
+                <source>Please specify your export configuration.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.tokenFields.headerField.0">
+                <source>Header name</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.tokenFields.targetColumn.0">
+                <source>Column</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.tokenFields.tokensValue.0">
+                <source>Simple Tokens (and Insert Tags)</source>
+            </trans-unit>
+
+
+            <trans-unit id="tl_lead_export.csvSeparator.0">
+                <source>Separator character</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.csvEnclosure.0">
+                <source>Enclosure character</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.csvEscape.0">
+                <source>Escape character</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.eol.0">
+                <source>End of line character</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.eol.1">
+                <source>Select the end of line character.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.eol.n">
+                <source>UNIX/Mac OS X format (\n)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.eol.rn">
+                <source>Windows format (\r\n)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.eol.r">
+                <source>Old Mac OS format (\r)</source>
+            </trans-unit>
+
+            <trans-unit id="tl_lead_export.useTemplate.0">
+                <source>Use a template</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.useTemplate.1">
+                <source>Enable this checkbox if you want to export your data into a given template.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.startIndex.0">
+                <source>Start index</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.startIndex.1">
+                <source>Here you can enter on what row you want leads to start "pasting" your data. Start counting at 1 (not 0)!</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.sheetIndex.0">
+                <source>Sheet index</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.sheetIndex.1">
+                <source>Here you can enter on which sheet you want leads to start "pasting" your data. Start counting at 0!</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.template.0">
+                <source>Template</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.template.1">
+                <source>Choose your template here.</source>
+            </trans-unit>
+
+            <trans-unit id="tl_lead_export.lastRun.0">
+                <source>Last export date</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.lastRun.1">
+                <source>Automatically updated when an export was performed.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.skipLastRun.0">
+                <source>Only export new leads since last export date</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.skipLastRun.1">
+                <source>Please select if only new lead data since last export date should be exportet.</source>
+            </trans-unit>
+
+
+            <trans-unit id="tl_lead_export.name_legend">
+                <source>Name and type</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.data_legend">
+                <source>Data selection</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.csv_legend">
+                <source>CSV format</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.excel_legend">
+                <source>Excel configuration</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.date_legend">
+                <source>Export date</source>
+            </trans-unit>
+
+            <trans-unit id="tl_lead_export.type.csv">
+                <source>CSV</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.xlsx">
+                <source>Microsoft Excel (.xlsx)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.xls">
+                <source>Old Microsoft Excel (.xls)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.excel_csv">
+                <source>CSV (Microsoft Excel-compatible)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.ods">
+                <source>OpenDocument Spreadsheet</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.html">
+                <source>HTML</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.tcpdf">
+                <source>PDF (TCPDF)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.dompdf">
+                <source>PDF (Dompdf)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.type.mpdf">
+                <source>PDF (mPDF)</source>
+            </trans-unit>
+
+            <trans-unit id="tl_lead_export.format.date">
+                <source>Date</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.format.time">
+                <source>Time</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.format.datim">
+                <source>Date &amp; Time</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.format.uuidToFilePath">
+                <source>File UUID -> File path</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.format.yesno">
+                <source>Yes/No</source>
+            </trans-unit>
+
+            <trans-unit id="tl_lead_export._form">
+                <source>Form</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export._created">
+                <source>Date created</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export._member">
+                <source>Member</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export._skip">
+                <source>Skip one column</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

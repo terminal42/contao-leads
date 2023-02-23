@@ -1,8 +1,6 @@
 <?php
 
 $GLOBALS['TL_DCA']['tl_lead'] = [
-
-    // Config
     'config' => [
         'dataContainer' => \Contao\DC_Table::class,
         'enableVersioning' => true,
@@ -17,8 +15,6 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             ],
         ],
     ],
-
-    // List
     'list' => [
         'sorting' => [
             'mode' => 2,
@@ -49,16 +45,12 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             ],
         ],
     ],
-
-    // Select
     'select' => [
         'buttons_callback' => [
             // Add export buttons
             //[Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener::class, 'onSelectButtonsCallback'],
         ],
     ],
-
-    // Fields
     'fields' => [
         'id' => [
             'sql' => ['type' => 'integer', 'unsigned' => true, 'autoincrement' => true],
@@ -81,9 +73,6 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
         'language' => [
             'filter' => true,
             'sorting' => true,
-            //'options_callback' => static fn() => \Contao\System::getContainer()
-            //    ->get('contao.intl.locales')
-            //    ->getLocales(null, true),
             'sql' => ['type' => 'string', 'length' => 5, 'default' => ''],
         ],
         'created' => [

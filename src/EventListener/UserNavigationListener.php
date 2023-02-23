@@ -11,6 +11,7 @@ use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,9 +27,11 @@ class UserNavigationListener
         private readonly RequestStack $requestStack,
         private readonly ScopeMatcher $scopeMatcher,
         private readonly Security $security,
+        private readonly UrlGeneratorInterface $urlGenerator,
         private readonly TranslatorInterface $translator,
         private readonly Packages $packages,
-    ) {}
+    ) {
+    }
 
     /**
      * Load the CSS file for the back end navigation group icon.
@@ -41,6 +44,7 @@ class UserNavigationListener
             return;
         }
 
+        $GLOBALS['TL_JAVASCRIPT'][] = $this->packages->getUrl('leads.js', 'terminal42_leads');
         $GLOBALS['TL_CSS'][] = $this->packages->getUrl('leads.css', 'terminal42_leads');
     }
 
@@ -91,7 +95,7 @@ class UserNavigationListener
                 'title' => StringUtil::specialchars($this->translator->trans('MOD.leads.1', [$form['title']], 'contao_modules')),
                 'label' => $form['leadMenuLabel'] ?: $form['title'],
                 'class' => 'navigation leads',
-                'href' => 'contao/main.php?do=lead&form='.$form['id'],
+                'href' => $this->urlGenerator->generate('contao_backend', ['do' => 'lead', 'form' => $form['id']]),
                 'isActive' => $request && 'lead' === $request->query->get('do') && (int) $form['id'] === $request->query->getInt('form'),
             ];
         }
@@ -118,15 +122,15 @@ class UserNavigationListener
             // Find lead records where the related form has been deleted
             $forms += $this->connection->fetchAllAssociative(
                 <<<'SQL'
-                    SELECT
-                        l.main_id AS id,
-                        CONCAT('ID ', l.main_id) AS title,
-                        CONCAT('ID ', l.main_id) AS leadMenuLabel
-                    FROM tl_lead l
-                        LEFT JOIN tl_form f ON l.main_id=f.id
-                    WHERE f.id IS NULL
-                    GROUP BY l.main_id
-                SQL
+                        SELECT
+                            l.main_id AS id,
+                            CONCAT('ID ', l.main_id) AS title,
+                            CONCAT('ID ', l.main_id) AS leadMenuLabel
+                        FROM tl_lead l
+                            LEFT JOIN tl_form f ON l.main_id=f.id
+                        WHERE f.id IS NULL
+                        GROUP BY l.main_id
+                    SQL
             );
         } else {
             // Remove forms the user does not have access to

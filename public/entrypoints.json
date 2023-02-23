@@ -2,10 +2,10 @@
   "entrypoints": {
     "leads": {
       "css": [
-        "/bundles/terminal42leads/leads.dab6f3a8.css"
+        "/bundles/terminal42leads/leads.fbde8e56.css"
       ],
       "js": [
-        "/bundles/terminal42leads/leads.0243ebf7.js"
+        "/bundles/terminal42leads/leads.89f1d6a9.js"
       ]
     }
   }

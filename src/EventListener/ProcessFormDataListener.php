@@ -20,8 +20,9 @@ class ProcessFormDataListener
     public function __construct(
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
-        private readonly Security $security
-    ) {}
+        private readonly Security $security,
+    ) {
+    }
 
     public function __invoke(array $postData, array $formConfig, $files): void
     {
@@ -60,36 +61,36 @@ class ProcessFormDataListener
         if ($mainId > 0) {
             return $this->connection->fetchAllAssociative(
                 <<<'SQL'
-                    SELECT
-                        main_field.*,
-                        form_field.id AS field_id,
-                        form_field.name AS postName
-                    FROM tl_form_field form_field
-                        LEFT JOIN tl_form_field main_field ON form_field.leadStore=main_field.id
-                    WHERE
-                        form_field.pid=?
-                      AND main_field.pid=?
-                      AND form_field.leadStore>0
-                      AND main_field.leadStore='1'
-                      AND form_field.invisible=''
-                    ORDER BY main_field.sorting;
-                SQL,
+                        SELECT
+                            main_field.*,
+                            form_field.id AS field_id,
+                            form_field.name AS postName
+                        FROM tl_form_field form_field
+                            LEFT JOIN tl_form_field main_field ON form_field.leadStore=main_field.id
+                        WHERE
+                            form_field.pid=?
+                          AND main_field.pid=?
+                          AND form_field.leadStore>0
+                          AND main_field.leadStore='1'
+                          AND form_field.invisible=''
+                        ORDER BY main_field.sorting;
+                    SQL,
                 [$formId, $mainId]
             );
         }
 
         return $this->connection->fetchAllAssociative(
             <<<'SQL'
-                SELECT
-                    *,
-                    id AS field_id,
-                    name AS postName
-                FROM tl_form_field
-                WHERE pid=?
-                  AND leadStore='1'
-                  AND invisible=''
-                ORDER BY sorting
-            SQL,
+                    SELECT
+                        *,
+                        id AS field_id,
+                        name AS postName
+                    FROM tl_form_field
+                    WHERE pid=?
+                      AND leadStore='1'
+                      AND invisible=''
+                    ORDER BY sorting
+                SQL,
             [$formId]
         );
     }
@@ -132,7 +133,7 @@ class ProcessFormDataListener
             return array_map(fn ($v) => $this->prepareValue($v, $field), $value);
         }
 
-        if ($value && \in_array($field['rgxp'], array('date', 'time', 'datim'))) {
+        if ($value && \in_array($field['rgxp'], ['date', 'time', 'datim'], true)) {
             $objDate = new Date($value, Date::getFormatFromRgxp($field['rgxp']));
             $value = $objDate->tstamp;
         }

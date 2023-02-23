@@ -2,6 +2,17 @@ services:
     _defaults:
         autoconfigure: true
         autowire: true
+        bind:
+            $exporters: '@terminal42_leads.exporters'
+            $formatters: '@terminal42_leads.formatters'
 
     Terminal42\LeadsBundle\:
         resource: ../src/*
+
+    terminal42_leads.exporters:
+        class: Symfony\Component\DependencyInjection\ServiceLocator
+        arguments: [!tagged_iterator { tag: 'terminal42_leads.exporter', index_by: 'type' }]
+
+    terminal42_leads.formatters:
+        class: Symfony\Component\DependencyInjection\ServiceLocator
+        arguments: [!tagged_iterator { tag: 'terminal42_leads.formatter', index_by: 'type' }]

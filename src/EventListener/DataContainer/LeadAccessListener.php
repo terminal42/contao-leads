@@ -24,7 +24,8 @@ class LeadAccessListener
         private readonly ScopeMatcher $scopeMatcher,
         private readonly Security $security,
         private readonly Packages $packages,
-    ) {}
+    ) {
+    }
 
     public function __invoke(DataContainer $dc): void
     {

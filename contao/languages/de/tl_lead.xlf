@@ -26,6 +26,14 @@
                 <source>Request from %s</source>
                 <target>Anfrage vom %s</target>
             </trans-unit>
+            <trans-unit id="tl_lead.export_config.0">
+                <source>Configuration</source>
+                <target>Konfiguration</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.export_config.1">
+                <source>Define export configuration</source>
+                <target>Definieren Sie Export-Konfigurationen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

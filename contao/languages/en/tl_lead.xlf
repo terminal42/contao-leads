@@ -20,6 +20,12 @@
             <trans-unit id="tl_lead.label_format">
                 <source>Request from %s</source>
             </trans-unit>
+            <trans-unit id="tl_lead.export_config.0">
+                <source>Configuration</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.export_config.1">
+                <source>Define export configuration</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
