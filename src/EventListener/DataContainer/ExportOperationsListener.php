@@ -36,7 +36,7 @@ class ExportOperationsListener
         }
 
         $operations = [];
-        $exports = $this->connection->iterateAssociative('SELECT * FROM tl_lead_export WHERE pid=? AND tstamp!=0', [$formId]);
+        $exports = $this->connection->iterateAssociative('SELECT * FROM tl_lead_export WHERE pid=? AND tstamp!=0 ORDER BY name', [$formId]);
 
         foreach ($exports as $config) {
             $operations[] = [
