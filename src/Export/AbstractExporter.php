@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\Export;
 
 use Codefog\HasteBundle\StringParser;
+use Contao\Config;
+use Contao\Date;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -242,15 +244,29 @@ abstract class AbstractExporter implements ExporterInterface
 
     protected function getFilename(): string
     {
-        if (!empty($config['filename'])) {
-            if (!str_contains($config['filename'], '.')) {
-                return $config['filename'].$this->getFileExtension();
-            }
-
-            return $config['filename'];
+        if (empty($this->config['filename'])) {
+            return 'export_'.md5(uniqid('', false)).$this->getFileExtension();
         }
 
-        return 'export_'.md5(uniqid('', false)).$this->getFileExtension();
+        $filename = $this->config['filename'];
+
+        $tokens = [
+            'time' => Date::parse(Config::get('timeFormat')),
+            'date' => Date::parse(Config::get('dateFormat')),
+            'datim' => Date::parse(Config::get('datimFormat')),
+        ];
+
+        $filename = $this->parser->recursiveReplaceTokensAndTags(
+            $filename,
+            $tokens,
+            StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES
+        );
+
+        if (!str_contains($filename, '.')) {
+            return $filename.$this->getFileExtension();
+        }
+
+        return $filename;
     }
 
     protected function getFileExtension(): string
