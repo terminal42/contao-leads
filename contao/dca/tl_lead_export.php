@@ -23,7 +23,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         ],
         'label' => [
             'fields' => ['name', 'export', 'filename'],
-            'format' => '<div style="display:flex"><div style="width:50%%;margin-right:10px;font-weight:500">%s</div><div style="width:30%%;margin-right:10px">%s</div><div style="width:20%%;">%s</div></div>'
+            'format' => '<div style="display:flex"><span style="width:50%%;margin-right:10px;font-weight:500">%s</span><span style="width:30%%;margin-right:10px">%s</span><span style="width:20%%;">%s</span></div>'
         ],
         'global_operations' => [
             'all' => [
