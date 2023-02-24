@@ -41,8 +41,8 @@ class LeadDataMigration extends AbstractMigration
                 'ALTER TABLE tl_lead_data ADD COLUMN `main_id` int(10) UNSIGNED NOT NULL DEFAULT 0'
             );
 
-            $this->connection->executeStatement('UPDATE tl_lead_data SET main_id = form_id');
-            $this->connection->executeStatement('UPDATE tl_lead_data SET form_id = master_id');
+            $this->connection->executeStatement('UPDATE tl_lead_data SET main_id = field_id');
+            $this->connection->executeStatement('UPDATE tl_lead_data SET field_id = master_id');
             $this->connection->executeStatement('ALTER TABLE tl_lead_data DROP COLUMN `master_id`');
         }
 
