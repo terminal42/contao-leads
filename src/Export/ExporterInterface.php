@@ -22,7 +22,7 @@ interface ExporterInterface
         'rn' => "\r\n",
     ];
 
-    public function getResponse(array $config): Response;
+    public function getResponse(array $config, array $ids = null): Response;
 
-    public function writeToFile(array $config, string $filename): void;
+    public function writeToFile(array $config, string $filename, array $ids = null): void;
 }

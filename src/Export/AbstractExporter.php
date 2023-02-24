@@ -20,6 +20,7 @@ abstract class AbstractExporter implements ExporterInterface
     private const CHUNK_SIZE = 100;
 
     private array $config;
+    private array|null $ids;
     private array|null $columns = null;
 
     public function __construct(
@@ -30,9 +31,9 @@ abstract class AbstractExporter implements ExporterInterface
     ) {
     }
 
-    public function getResponse(array $config): Response
+    public function getResponse(array $config, array $ids = null): Response
     {
-        $this->init($config);
+        $this->init($config, $ids);
 
         $response = new StreamedResponse(
             function (): void {
@@ -52,9 +53,9 @@ abstract class AbstractExporter implements ExporterInterface
         return $response;
     }
 
-    public function writeToFile(array $config, string $filename): void
+    public function writeToFile(array $config, string $filename, array $ids = null): void
     {
-        $this->init($config);
+        $this->init($config, $ids);
 
         $fp = fopen($filename, 'w');
         $this->doExport($fp);
@@ -108,13 +109,16 @@ abstract class AbstractExporter implements ExporterInterface
     {
         $mainFormId = (int) $this->config['pid'];
 
-        $total = (int) $this->connection->fetchOne(
-            'SELECT COUNT(*) FROM tl_lead WHERE main_id=?',
-            [$mainFormId]
-        );
+        $countQuery = $this->connection->createQueryBuilder();
+        $countQuery
+            ->select('COUNT(*)')
+            ->from('tl_lead', 'l')
+            ->where('l.main_id=:mainId')
+            ->setParameter('mainId', $mainFormId)
+        ;
 
-        $qb = $this->connection->createQueryBuilder();
-        $qb
+        $selectQuery = $this->connection->createQueryBuilder();
+        $selectQuery
             ->select([
                 'l.*',
                 "IF(m.id IS NULL, '', CONCAT(m.lastname, ' ', m.firstname)) AS member_name",
@@ -131,14 +135,20 @@ abstract class AbstractExporter implements ExporterInterface
             ->setMaxResults(self::CHUNK_SIZE)
         ;
 
-        if ($this->config['skipLastRun'] && $this->config['lastRun']) {
-            $qb->andWhere('l.created > :lastRun')->setParameter('lastRun', $this->config['lastRun']);
+        if (null !== $this->ids) {
+            $countQuery->andWhere('l.id IN (:leadIds)')->setParameter('leadIds', $this->ids, Connection::PARAM_INT_ARRAY);
+            $selectQuery->andWhere('l.id IN (:leadIds)')->setParameter('leadIds', $this->ids, Connection::PARAM_INT_ARRAY);
+        } elseif ($this->config['skipLastRun'] && $this->config['lastRun']) {
+            $countQuery->andWhere('l.created > :lastRun')->setParameter('lastRun', $this->config['lastRun']);
+            $selectQuery->andWhere('l.created > :lastRun')->setParameter('lastRun', $this->config['lastRun']);
         }
+
+        $total = (int) $countQuery->fetchOne();
 
         // Split leads fetching into chunks to prevent memory issues. We cannot use
         // Connection::iterateAssociative because it would lock the connection for additional queries.
         do {
-            foreach ($qb->fetchAllAssociative() as $lead) {
+            foreach ($selectQuery->fetchAllAssociative() as $lead) {
                 $cols = $this->connection->fetchAllAssociative(
                     'SELECT * FROM tl_lead_data WHERE pid=? ORDER BY sorting',
                     [$lead['id']]
@@ -149,8 +159,8 @@ abstract class AbstractExporter implements ExporterInterface
                 yield $data;
             }
 
-            $qb->setFirstResult($qb->getFirstResult() + self::CHUNK_SIZE);
-        } while ($qb->getFirstResult() < $total);
+            $selectQuery->setFirstResult($selectQuery->getFirstResult() + self::CHUNK_SIZE);
+        } while ($selectQuery->getFirstResult() < $total);
     }
 
     /**
@@ -314,9 +324,10 @@ abstract class AbstractExporter implements ExporterInterface
         return $this->parser->recursiveReplaceTokensAndTags($text, $tokens);
     }
 
-    private function init(array $config): void
+    private function init(array $config, array|null $ids): void
     {
         $this->config = $config;
+        $this->ids = $ids;
         $this->columns = null;
     }
 
