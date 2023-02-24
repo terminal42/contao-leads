@@ -7,10 +7,6 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         'dataContainer' => \Contao\DC_Table::class,
         'ptable' => 'tl_form',
         'enableVersioning' => true,
-        //'onload_callback' => array
-        //(
-        //    array(Terminal42\LeadsBundle\EventListener\DataContainer\LeadExportListener::class, 'onLoadCallback'),
-        //),
         'sql' => [
             'keys' => [
                 'id' => 'primary',
