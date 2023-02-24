@@ -22,7 +22,7 @@ class ExportFieldsMigration extends AbstractMigration
 
         if (
             !$schemaManager->tablesExist('tl_lead_export')
-            || !\in_array('fields', $schemaManager->listTableColumns('tl_lead_export'), true)
+            || !\array_key_exists('fields', $schemaManager->listTableColumns('tl_lead_export'))
         ) {
             return false;
         }
@@ -35,28 +35,31 @@ class ExportFieldsMigration extends AbstractMigration
     public function run(): MigrationResult
     {
         $configs = $this->connection->fetchAllKeyValue(
-            "SELECT id, fields FROM tl_lead_export WHERE export='fields'"
+            "SELECT id, fields FROM tl_lead_export WHERE export='fields' AND (fields LIKE '%s:5:\"value\";%' OR fields LIKE '%\"raw\"%')"
         );
 
         foreach ($configs as $id => $fields) {
-            $value = StringUtil::deserialize($fields);
+            $fields = StringUtil::deserialize($fields);
 
-            if (!\is_array($value)) {
+            if (!\is_array($fields)) {
                 continue;
             }
 
-            if (isset($fields['value'])) {
-                $fields['output'] = $fields['value'];
-                unset($fields['value']);
-            }
+            foreach ($fields as &$field) {
+                if (isset($field['value'])) {
+                    $field['output'] = $field['value'];
+                    unset($field['value']);
+                }
 
-            if ('all' === ($fields['output'] ?? null)) {
-                $fields['output'] = ExporterInterface::OUTPUT_BOTH;
-            }
+                if ('all' === ($field['output'] ?? null)) {
+                    $field['output'] = ExporterInterface::OUTPUT_BOTH;
+                }
 
-            if ('raw' === ($fields['format'] ?? null)) {
-                $fields['format'] = '';
+                if ('raw' === ($field['format'] ?? null)) {
+                    $field['format'] = '';
+                }
             }
+            unset($field);
 
             $this->connection->update('tl_lead_export', ['fields' => serialize($fields)], ['id' => $id]);
         }
