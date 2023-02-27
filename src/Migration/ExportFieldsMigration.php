@@ -28,14 +28,14 @@ class ExportFieldsMigration extends AbstractMigration
         }
 
         return $this->connection->fetchOne(
-            "SELECT COUNT(*) FROM tl_lead_export WHERE export='fields' AND (fields LIKE '%s:5:\"value\";%' OR fields LIKE '%\"raw\"%')"
+            "SELECT COUNT(*) FROM tl_lead_export WHERE export='fields' AND ((fields LIKE '%s:5:\"value\";%' AND fields NOT LIKE '%\"output\";s:5:\"value\";%') OR fields LIKE '%\"raw\"%')"
         ) > 0;
     }
 
     public function run(): MigrationResult
     {
         $configs = $this->connection->fetchAllKeyValue(
-            "SELECT id, fields FROM tl_lead_export WHERE export='fields' AND (fields LIKE '%s:5:\"value\";%' OR fields LIKE '%\"raw\"%')"
+            "SELECT id, fields FROM tl_lead_export WHERE export='fields' AND ((fields LIKE '%s:5:\"value\";%' AND fields NOT LIKE '%\"output\";s:5:\"value\";%') OR fields LIKE '%\"raw\"%')"
         );
 
         foreach ($configs as $id => $fields) {
@@ -59,7 +59,6 @@ class ExportFieldsMigration extends AbstractMigration
                     $field['format'] = '';
                 }
             }
-            unset($field);
 
             $this->connection->update('tl_lead_export', ['fields' => serialize($fields)], ['id' => $id]);
         }
