@@ -111,7 +111,7 @@ class FormFieldConfigListener
                 return null;
         }
 
-        if (!$form['leadEnabled']) {
+        if ($form === false || !$form['leadEnabled']) {
             return null;
         }
 
