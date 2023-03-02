@@ -42,9 +42,14 @@ class FormFieldConfigListener
 
         $pm = PaletteManipulator::create()->addField('leadStore', 'type');
 
-        foreach ($types as $type) {
-            if (isset($GLOBALS['TL_DCA']['tl_form_field']['palettes'][$type])) {
-                $pm->applyToPalette($type, 'tl_form_field');
+        // We have to check a prefix as the palette name can also refer to the subpalette,
+        // for example "rgxp" field of text field could make it "text" but also "textdigit" or "textcustom".
+        foreach ($GLOBALS['TL_DCA']['tl_form_field']['palettes'] as $k => $v) {
+            foreach ($types as $type) {
+                if (str_starts_with($k, $type)) {
+                    $pm->applyToPalette($k, 'tl_form_field');
+                    break;
+                }
             }
         }
 
