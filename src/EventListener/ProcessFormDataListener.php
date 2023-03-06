@@ -13,6 +13,9 @@ use Contao\Validator;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Terminal42\LeadsBundle\Event\FormDataLabelEvent;
+use Terminal42\LeadsBundle\Event\FormDataValueEvent;
 
 #[AsHook('processFormData')]
 class ProcessFormDataListener
@@ -21,6 +24,7 @@ class ProcessFormDataListener
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
         private readonly Security $security,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -125,6 +129,12 @@ class ProcessFormDataListener
 
     private function prepareValue(mixed $value, array $field): mixed
     {
+        $event = $this->eventDispatcher->dispatch(new FormDataValueEvent($value, $field));
+
+        if ($event->isPropagationStopped()) {
+            return $event->getValue();
+        }
+
         if (isset($value['uuid']) && Validator::isUuid($value['uuid'])) {
             return $value['uuid'];
         }
@@ -143,6 +153,12 @@ class ProcessFormDataListener
 
     private function prepareLabel(mixed $value, array $field): mixed
     {
+        $event = $this->eventDispatcher->dispatch(new FormDataLabelEvent($value, $field));
+
+        if ($event->isPropagationStopped()) {
+            return $event->getLabel();
+        }
+
         if (\is_array($value)) {
             return array_map(fn ($v) => $this->prepareLabel($v, $field), $value);
         }
