@@ -120,7 +120,7 @@ class UserNavigationListener
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
             // Find lead records where the related form has been deleted
-            $forms += $this->connection->fetchAllAssociative(
+            $forms = array_merge($forms, $this->connection->fetchAllAssociative(
                 <<<'SQL'
                         SELECT
                             l.main_id AS id,
@@ -131,7 +131,7 @@ class UserNavigationListener
                         WHERE f.id IS NULL
                         GROUP BY l.main_id
                     SQL
-            );
+            ));
         } else {
             // Remove forms the user does not have access to
             $forms = array_filter(
