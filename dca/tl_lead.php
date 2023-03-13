@@ -14,6 +14,7 @@
  * Table tl_lead
  */
 
+use Contao\CoreBundle\Util\LocaleUtil;
 use Contao\System;
 
 $GLOBALS['TL_DCA']['tl_lead'] = array
@@ -323,7 +324,7 @@ class tl_lead extends Backend
         $template->masterId         = $objForm->master_id;
 
         $template->languageLabel    = $GLOBALS['TL_LANG']['tl_lead']['language'][0];
-        $template->languageTrans    = $arrLanguages[$objForm->language];
+        $template->languageTrans    = class_exists(LocaleUtil::class) ? $arrLanguages[LocaleUtil::formatAsLocale($objForm->language)] : $arrLanguages[str_replace('-', '_', $objForm->language)];
         $template->languageValue    = $objForm->language;
 
         $template->hasMember        = $objForm->member_id > 0;
