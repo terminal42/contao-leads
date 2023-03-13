@@ -17,6 +17,6 @@ class XlsxExporter extends AbstractExcelExporter
      */
     public function export(\stdClass $config, $ids = null): File
     {
-        return $this->exportWithFormat($config, $ids, 'Excel2007');
+        return $this->exportWithFormat($config, $ids, 'Xlsx');
     }
 }

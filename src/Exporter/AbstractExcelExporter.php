@@ -13,11 +13,17 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Exporter;
 
-use Haste\Http\Response\Response;
-use Haste\IO\Reader\ArrayReader;
-use Haste\IO\Writer\ExcelFileWriter;
-use PHPExcel_Cell;
-use PHPExcel_IOFactory;
+use Contao\File;
+use Contao\Files;
+use Contao\FilesModel;
+use Contao\System;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Exception;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\IWriter;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractExcelExporter extends AbstractExporter
 {
@@ -26,88 +32,49 @@ abstract class AbstractExcelExporter extends AbstractExporter
      */
     public function isAvailable(): bool
     {
-        return class_exists('PhpOffice\PhpSpreadsheet\Spreadsheet') || (class_exists('PHPExcel') && class_exists('PHPExcel_IOFactory'));
+        return class_exists(Spreadsheet::class);
     }
 
     /**
      * Exports based on Excel format.
      *
-     * @param \Database\Result|object $config
-     * @param array|null              $ids
-     * @param string                  $format
-     *
-     * @return \Contao\File
+     * @throws \Exception
      */
-    protected function exportWithFormat($config, $ids, $format)
+    protected function exportWithFormat(\stdClass $config, ?array $ids, string $format): File
     {
-        $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
-
-        $reader = new ArrayReader($dataCollector->getExportData());
-
-        if ($config->headerFields) {
-            $reader->setHeaderFields($this->prepareDefaultHeaderFields($config, $dataCollector));
-        }
-
-        $columnConfig = $this->prepareDefaultExportConfig($config, $dataCollector);
-
         if ($config->useTemplate) {
-            return $this->exportWithTemplate($config, $columnConfig, $reader, $format);
+            $sheet = $this->getSheetTemplate($config, $format);
+        } else {
+            $sheet = new Spreadsheet();
         }
 
-        return $this->exportWithoutTemplate($config, $columnConfig, $reader, $format);
+        $sheet = $this->writeDataToSheet($sheet, $config, $ids);
+        $writer = IOFactory::createWriter($sheet, $format);
+
+        return $this->exportWriter($writer, $config);
     }
 
     /**
-     * Default export without template.
-     *
-     * @param $config
-     * @param $format
-     *
-     * @throws ExportFailedException
-     *
-     * @return \Contao\File
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception|\Exception
      */
-    protected function exportWithoutTemplate(
-        $config,
-        array $columnConfig,
-        ArrayReader $reader,
-        $format
-    ) {
-        $writer = new ExcelFileWriter('system/tmp/'.$this->exportFile->getFilenameForConfig($config));
-        $writer->setFormat($format);
-
-        // Add header fields
-        if ($config->headerFields) {
-            $writer->enableHeaderFields();
-        }
-
-        $writer->setRowCallback(function ($data) use ($config, $columnConfig) {
-            return $this->dataTransformer->compileRow($data, $config, $columnConfig);
-        });
-
-        $this->handleDefaultExportResult($writer->writeFrom($reader));
+    protected function exportWriter(IWriter $writer, \stdClass $config): File
+    {
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+        $fileName = 'system/tmp/'.$this->exportFile->getFilenameForConfig($config);
+        $writer->save($projectDir.'/'.$fileName);
 
         $this->updateLastRun($config);
 
-        return new \Contao\File($writer->getFilename());
+        return new File($fileName);
     }
 
     /**
-     * Export with template.
-     *
-     * @param $config
-     * @param $format
-     *
-     * @return \Contao\File
+     * @throws Exception|\Exception
      */
-    protected function exportWithTemplate(
-        $config,
-        array $columnConfig,
-        ArrayReader $reader,
-        $format
-    ) {
+    protected function getSheetTemplate(\stdClass $config, string $format): Spreadsheet
+    {
         // Fetch the template and make a copy of it
-        $template = \FilesModel::findByPk($config->template);
+        $template = FilesModel::findByPk($config->template);
 
         if (null === $template) {
             $objResponse = new Response('Could not find template.', 500);
@@ -115,50 +82,66 @@ abstract class AbstractExcelExporter extends AbstractExporter
         }
 
         $tmpPath = 'system/tmp/'.$this->exportFile->getFilenameForConfig($config);
-        \Files::getInstance()->copy($template->path, $tmpPath);
+        Files::getInstance()->copy($template->path, $tmpPath);
 
-        $excelReader = PHPExcel_IOFactory::createReader($format);
-        $excel = $excelReader->load(TL_ROOT.'/'.$tmpPath);
+        $reader = IOFactory::createReader($format);
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+        $sheet = $reader->load($projectDir.'/'.$tmpPath);
 
-        $excel->setActiveSheetIndex((int) $config->sheetIndex);
-        $sheet = $excel->getActiveSheet();
+        $sheet->setActiveSheetIndex((int)$config->sheetIndex);
 
-        $currentRow = (int) $config->startIndex ?: 1;
-        $currentColumn = 0;
+        return $sheet;
+    }
 
-        foreach ($reader as $readerRow) {
-            $compiledRow = $this->dataTransformer->compileRow($readerRow, $config, $columnConfig);
+    /**
+     * @throws Exception
+     */
+    protected function writeDataToSheet(Spreadsheet $sheet, \stdClass $config, $ids = null): Spreadsheet
+    {
+        $currentRow = (int)$config->startIndex ?: 1;
+        $dataCollector = $this->prepareDefaultDataCollector($config, $ids);
+        $columnConfigs = $this->prepareDefaultExportConfig($config, $dataCollector);
 
-            foreach ($compiledRow as $k => $value) {
-                // Support explicit target column
-                if ('tokens' === $config->export && isset($config->tokenFields[$k]['targetColumn'])) {
-                    $column = $config->tokenFields[$k]['targetColumn'];
-
-                    if (!is_numeric($column)) {
-                        $column = PHPExcel_Cell::columnIndexFromString($column) - 1;
-                    }
-                } else {
-                    // Use next column, ignoring explicit target columns in the counter
-                    $column = $currentColumn++;
-                }
-
-                $sheet->setCellValueExplicitByColumnAndRow(
-                    $column,
-                    $currentRow,
-                    (string) $value,
-                    \PHPExcel_Cell_DataType::TYPE_STRING2
-                );
-            }
-
-            $currentColumn = 0;
-            ++$currentRow;
+        // Add header fields
+        if ($config->headerFields) {
+            $headerRow = $this->prepareDefaultHeaderFields($config, $dataCollector);
+            $currentRow = $this->writeRowToSheet($sheet, $currentRow, $headerRow, $config);
         }
 
-        $excelWriter = \PHPExcel_IOFactory::createWriter($excel, $format);
-        $excelWriter->save(TL_ROOT.'/'.$tmpPath);
+        foreach ($dataCollector->getExportData() as $row) {
+            $compiledRow = $this->dataTransformer->compileRow($row, $config, $columnConfigs);
+            $currentRow = $this->writeRowToSheet($sheet, $currentRow, $compiledRow, $config);
+        }
 
-        $this->updateLastRun($config);
+        $this->handleDefaultExportResult($currentRow);
 
-        return new \Contao\File($tmpPath);
+        return $sheet;
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function writeRowToSheet(Spreadsheet $sheet, int $currentRow, array $row, \stdClass $config): int
+    {
+        $currentColumn = 0;
+        foreach ($row as $k => $value) {
+            // Support explicit target column
+            if ('tokens' === $config->export && isset($config->tokenFields[$k]['targetColumn'])) {
+                $column = $config->tokenFields[$k]['targetColumn'];
+
+                if (!is_numeric($column)) {
+                    $column = Coordinate::columnIndexFromString($column) - 1;
+                }
+            } else {
+                // Use next column, ignoring explicit target columns in the counter
+                $column = ++$currentColumn;
+            }
+            $sheet->getActiveSheet()->getCell(
+                Coordinate::stringFromColumnIndex($column).$currentRow
+            )->setValueExplicit((string)$value, DataType::TYPE_STRING2);
+        }
+        ++$currentRow;
+
+        return $currentRow;
     }
 }

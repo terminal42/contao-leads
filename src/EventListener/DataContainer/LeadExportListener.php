@@ -198,7 +198,7 @@ class LeadExportListener
     /**
      * Loads JS.
      */
-    private function loadJs()
+    private function loadJs(): void
     {
         $GLOBALS['TL_JAVASCRIPT'][] = $GLOBALS['BE_MOD']['leads']['lead']['javascript'];
     }

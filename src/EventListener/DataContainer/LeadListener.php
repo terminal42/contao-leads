@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
+use Codefog\HasteBundle\StringParser;
 use Contao\Backend;
 use Contao\BackendUser;
 use Contao\Controller;
@@ -11,8 +12,8 @@ use Contao\Database;
 use Contao\Date;
 use Contao\Image;
 use Contao\Input;
+use Contao\StringUtil;
 use Contao\System;
-use Haste\Util\StringUtil;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -21,32 +22,19 @@ use Terminal42\LeadsBundle\Util\NotificationCenter;
 
 class LeadListener
 {
-    /**
-     * @var NotificationCenter
-     */
-    private $notificationCenter;
+    private NotificationCenter $notificationCenter;
+    private ExporterFactory $exportFactory;
+    private RouterInterface $router;
+    private AuthorizationCheckerInterface $authorizationChecker;
+    private StringParser $stringParser;
 
-    /**
-     * @var ExporterFactory
-     */
-    private $exportFactory;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
-
-    public function __construct(NotificationCenter $notificationCenter, ExporterFactory $exportFactory, RouterInterface $router, AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(NotificationCenter $notificationCenter, ExporterFactory $exportFactory, RouterInterface $router, AuthorizationCheckerInterface $authorizationChecker, StringParser $stringParser)
     {
         $this->notificationCenter = $notificationCenter;
         $this->exportFactory = $exportFactory;
         $this->router = $router;
         $this->authorizationChecker = $authorizationChecker;
+        $this->stringParser = $stringParser;
     }
 
     public function onLoadCallback(): void
@@ -86,10 +74,10 @@ class LeadListener
         $objData = Database::getInstance()->prepare('SELECT * FROM tl_lead_data WHERE pid=?')->execute($row['id']);
 
         while ($objData->next()) {
-            StringUtil::flatten(\Contao\StringUtil::deserialize($objData->value), $objData->name, $arrTokens);
+            $this->stringParser->flatten(StringUtil::deserialize($objData->value), $objData->name, $arrTokens);
         }
 
-        return StringUtil::recursiveReplaceTokensAndTags($objForm->leadLabel, $arrTokens);
+        return $this->stringParser->recursiveReplaceTokensAndTags($objForm->leadLabel, $arrTokens);
     }
 
     /**
@@ -111,7 +99,7 @@ class LeadListener
             return '';
         }
 
-        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id='.Input::get('master').'" class="'.$class.'" title="'.\Contao\StringUtil::specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
+        return '<a href="contao/main.php?do=form&amp;table=tl_lead_export&amp;id='.Input::get('master').'" class="'.$class.'" title="'.StringUtil::specialchars($title).'"'.$attributes.'>'.$label.'</a> ';
     }
 
     public function onShowButtonCallback(array $row, $href, $label, $title, $icon, $attributes, $table)
@@ -119,8 +107,8 @@ class LeadListener
         return sprintf(
             '<a href="%s" title="%s" onclick="Backend.openModalIframe({\'title\':\'%s\',\'url\':this.href});return false"%s>%s</a> ',
             $this->router->generate('terminal42_leads.details', ['id' => $row['id'], 'popup' => 1]),
-            \Contao\StringUtil::specialchars($title),
-            \Contao\StringUtil::specialchars(str_replace("'", "\\'", sprintf($GLOBALS['TL_LANG'][$table]['show'][1], $row['id']))),
+            StringUtil::specialchars($title),
+            StringUtil::specialchars(str_replace("'", "\\'", sprintf($GLOBALS['TL_LANG'][$table]['show'][1], $row['id']))),
             $attributes,
             Image::getHtml($icon, $label)
         );
@@ -135,7 +123,7 @@ class LeadListener
     {
         $arrConfigs = Database::getInstance()
             ->prepare('SELECT id, name FROM tl_lead_export WHERE pid=? ORDER BY name')
-            ->execute(\Input::get('master'))
+            ->execute(Input::get('master'))
             ->fetchAllAssoc()
         ;
 
@@ -147,7 +135,7 @@ class LeadListener
                 Controller::reload();
             }
 
-            if (\Input::post('notification')) {
+            if (Input::post('notification')) {
                 Controller::redirect(Backend::addToUrl('key=notification'));
             }
 
@@ -164,12 +152,12 @@ class LeadListener
 
         // Generate buttons
         foreach ($arrConfigs as $config) {
-            $arrButtons['export_'.$config['id']] = '<input type="submit" name="export_'.$config['id'].'" id="export_'.$config['id'].'" class="tl_submit" value="'.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0].' "'.$config['name'].'"').'">';
+            $arrButtons['export_'.$config['id']] = '<input type="submit" name="export_'.$config['id'].'" id="export_'.$config['id'].'" class="tl_submit" value="'.StringUtil::specialchars($GLOBALS['TL_LANG']['tl_lead']['export'][0].' "'.$config['name'].'"').'">';
         }
 
         // Notification Center integration
         if ($this->notificationCenter->isAvailable()) {
-            $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="'.\Contao\StringUtil::specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]).'">';
+            $arrButtons['notification'] = '<input type="submit" name="notification" id="notification" class="tl_submit" value="'.StringUtil::specialchars($GLOBALS['TL_LANG']['tl_lead']['notification'][0]).'">';
         }
 
         return $arrButtons;

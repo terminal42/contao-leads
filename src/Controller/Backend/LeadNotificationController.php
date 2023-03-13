@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Controller\Backend;
 
+use Codefog\HasteBundle\StringParser;
 use Contao\Controller;
 use Contao\Database;
 use Contao\Environment;
@@ -17,19 +18,18 @@ use Terminal42\LeadsBundle\Util\NotificationCenter;
 
 class LeadNotificationController
 {
-    /**
-     * @var NotificationCenter
-     */
-    private $notificationCenter;
+    private NotificationCenter $notificationCenter;
+    private StringParser $stringParser;
 
-    public function __construct(NotificationCenter $notificationCenter)
+    public function __construct(NotificationCenter $notificationCenter, StringParser $stringParser)
     {
         $this->notificationCenter = $notificationCenter;
+        $this->stringParser = $stringParser;
     }
 
     public function __invoke()
     {
-        if (\Input::get('master') || !$this->notificationCenter->isAvailable()) {
+        if (Input::get('master') || !$this->notificationCenter->isAvailable()) {
             // TODO show exception message in the backend
             Controller::redirect('contao/main.php?act=error');
         }
@@ -50,20 +50,20 @@ class LeadNotificationController
         // Process the form
         if ('tl_leads_notification' === Input::post('FORM_SUBMIT')) {
             /**
-             * @var \FormModel
+             * @var FormModel
              * @var Notification $notification
              */
             if (
                 !isset($notifications[Input::post('notification')])
-                || !\is_array(\Input::post('IDS'))
-                || null === ($form = \FormModel::findByPk(\Input::get('master')))
-                || null === ($notification = Notification::findByPk(\Input::post('notification')))
+                || !\is_array(Input::post('IDS'))
+                || null === ($form = FormModel::findByPk(Input::get('master')))
+                || null === ($notification = Notification::findByPk(Input::post('notification')))
             ) {
                 Controller::reload();
             }
 
-            if (\Input::get('id')) {
-                $ids = [(int) \Input::get('id')];
+            if (Input::get('id')) {
+                $ids = [(int) Input::get('id')];
             } else {
                 $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
@@ -90,10 +90,10 @@ class LeadNotificationController
                 }
             }
 
-            Controller::redirect(\System::getReferer());
+            Controller::redirect(System::getReferer());
         }
 
-        return $this->generateForm($notifications, [\Input::get('id')]);
+        return $this->generateForm($notifications, [Input::get('id')]);
     }
 
     /**
@@ -116,8 +116,8 @@ class LeadNotificationController
 
 <div class="leads-notification-center">
 <h2 class="sub_headline">'.$GLOBALS['TL_LANG']['tl_lead']['notification'][0].'</h2>
-'.\Message::generate().'
-<form action="'.ampersand(Environment::get('request'), true).'" id="tl_leads_notification" class="tl_form" method="post">
+'.Message::generate().'
+<form action="'.StringUtil::ampersand(Environment::get('request'), true).'" id="tl_leads_notification" class="tl_form" method="post">
 <div class="tl_formbody_edit">
 <input type="hidden" name="FORM_SUBMIT" value="tl_leads_notification">
 <input type="hidden" name="REQUEST_TOKEN" value="'.REQUEST_TOKEN.'">
@@ -203,13 +203,13 @@ class LeadNotificationController
         $arrTokens['raw_data'] = '';
 
         foreach ($arrData as $k => $v) {
-            \Haste\Util\StringUtil::flatten($v, 'form_'.$k, $arrTokens);
+            $this->stringParser->flatten($v, 'form_'.$k, $arrTokens);
             $arrTokens['formlabel_'.$k] = $arrLabels[$k] ?? ucfirst($k);
             $arrTokens['raw_data'] .= ($arrLabels[$k] ?? ucfirst($k)).': '.(\is_array($v) ? implode(', ', $v) : $v)."\n";
         }
 
         foreach ($arrForm as $k => $v) {
-            \Haste\Util\StringUtil::flatten($v, 'formconfig_'.$k, $arrTokens);
+            $this->stringParser->flatten($v, 'formconfig_'.$k, $arrTokens);
         }
 
         // Administrator e-mail
