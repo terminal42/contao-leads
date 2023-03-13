@@ -49,3 +49,21 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = [
     ],
     'sql' => 'text NULL',
 ];
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['leadPeriod'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_form']['leadPeriod'],
+    'exclude' => true,
+    'inputType' => 'timePeriod',
+    'options' => ['days', 'weeks', 'months', 'years'],
+    'reference' => &$GLOBALS['TL_LANG']['tl_form']['leadPeriod'],
+    'eval' => ['rgxp' => 'natural', 'nospace' => true, 'tl_class' => 'w50'],
+    'sql' => "varchar(64) NOT NULL default ''",
+];
+
+$GLOBALS['TL_DCA']['tl_form']['fields']['leadPurgeUploads'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_form']['leadPurgeUploads'],
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'eval' => ['tl_class' => 'w50 m12'],
+    'sql' => "char(1) NOT NULL default ''",
+];

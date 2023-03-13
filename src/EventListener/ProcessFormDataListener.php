@@ -136,7 +136,7 @@ class ProcessFormDataListener
         }
 
         if (isset($value['uuid']) && Validator::isUuid($value['uuid'])) {
-            return $value['uuid'];
+            return Validator::isBinaryUuid($value['uuid']) ? StringUtil::binToUuid($value['uuid']) : $value['uuid'];
         }
 
         if (\is_array($value)) {

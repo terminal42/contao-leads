@@ -29,6 +29,30 @@
             <trans-unit id="tl_form.leadLabel.1">
                 <source>Enter the names of the fields to be displayed in the back end list, surrounded by double hashes (##fieldname##). You can also use plain text. Use ##created## to output the date and time of creation.</source>
             </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.0">
+                <source>Storage time for leads</source>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.1">
+                <source>Here you can enter the storage time for lead records. 0 deactivates the automatic deletion.</source>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.days">
+                <source>day(s)</source>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.weeks">
+                <source>week(s)</source>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.months">
+                <source>month(s)</source>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.years">
+                <source>year(s)</source>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPurgeUploads.0">
+                <source>Delete uploads of leads</source>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPurgeUploads.1">
+                <source>When automatically deleting requests, the uploads should also be deleted.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

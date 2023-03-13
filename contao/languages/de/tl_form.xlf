@@ -38,6 +38,38 @@
                 <source>Enter the names of the fields to be displayed in the back end list, surrounded by double hashes (##fieldname##). You can also use plain text. Use ##created## to output the date and time of creation.</source>
                 <target>Geben Sie die Namen der Felder ein, die in der Backend-Liste angezeigt werden sollen, umgeben von Doppelhashes (##feldname##). Sie können auch normalen Text verwenden. Verwenden Sie ##created## für die Ausgabe des Datums und die Uhrzeit der Erstellung.</target>
             </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.0">
+                <source>Storage time for leads</source>
+                <target>Speicherzeit für Anfragen</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.1">
+                <source>Here you can enter the storage time for lead records. 0 deactivates the automatic deletion.</source>
+                <target>Hier können Sie die Speicherzeit für Anfragen eingeben. 0 deaktiviert die automatische Löschung.</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.days">
+                <source>day(s)</source>
+                <target>Tag(e)</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.weeks">
+                <source>week(s)</source>
+                <target>Woche(n)</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.months">
+                <source>month(s)</source>
+                <target>Monat(e)</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPeriod.years">
+                <source>year(s)</source>
+                <target>Jahr(e)</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPurgeUploads.0">
+                <source>Delete uploads of leads</source>
+                <target>Uploads von Anfragen löschen</target>
+            </trans-unit>
+            <trans-unit id="tl_form.leadPurgeUploads.1">
+                <source>When automatically deleting requests, the uploads should also be deleted.</source>
+                <target>Beim automatischen Löschen von Anfragen sollen auch die Uploads gelöscht werden.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
