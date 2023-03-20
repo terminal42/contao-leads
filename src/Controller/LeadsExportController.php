@@ -33,7 +33,7 @@ class LeadsExportController extends AbstractController
             throw $this->createNotFoundException('Leads export ID "'.$id.'" not found.');
         }
 
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'leads');
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $config['pid']);
 
         if (!$this->exporters->has($config['type'])) {

@@ -55,7 +55,7 @@ class ExportButtonsListener
 
     private function export(array $config, array $ids): never
     {
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'leads');
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $config['pid']);
 
         if (!$this->exporters->has($config['type'])) {
