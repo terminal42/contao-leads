@@ -29,7 +29,7 @@
         "php": "^8.1",
         "contao/core-bundle": "^4.13 || ^5.0",
         "codefog/contao-haste": "^5.0",
-        "menatwork/contao-multicolumnwizard-bundle": "dev-feature/contao-5-support",
+        "menatwork/contao-multicolumnwizard-bundle": "^3.6",
         "phpoffice/phpspreadsheet": "^1.26"
     },
     "require-dev": {
