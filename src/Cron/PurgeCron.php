@@ -21,7 +21,8 @@ class PurgeCron
         private readonly Connection $connection,
         private readonly Filesystem $filesystem,
         private readonly LoggerInterface|null $contaoCronLogger = null,
-    ) {}
+    ) {
+    }
 
     public function __invoke(): void
     {
@@ -76,7 +77,7 @@ class PurgeCron
     {
         $range = StringUtil::deserialize($timePeriod);
 
-        if (isset($range['unit'], $range['value']) && is_array($range) && !empty($range['value']) && false !== ($timestamp = strtotime('- ' . $range['value'] . ' ' . $range['unit']))) {
+        if (isset($range['unit'], $range['value']) && \is_array($range) && !empty($range['value']) && false !== ($timestamp = strtotime('- '.$range['value'].' '.$range['unit']))) {
             return $timestamp;
         }
 

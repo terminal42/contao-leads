@@ -22,8 +22,7 @@ class ExportAccessListener
         private readonly RequestStack $requestStack,
         private readonly ScopeMatcher $scopeMatcher,
         private readonly Security $security,
-    )
-    {
+    ) {
     }
 
     public function __invoke(DataContainer $dc): void
@@ -54,25 +53,25 @@ class ExportAccessListener
         }
     }
 
-    private function getFormId(): ?int
+    private function getFormId(): int|null
     {
-        $id = ((int) Input::get('id')) ?: null;
-        $pid = ((int) Input::get('pid')) ?: null;
+        $id = (int) Input::get('id') ?: null;
+        $pid = (int) Input::get('pid') ?: null;
         $act = Input::get('act');
         $mode = Input::get('mode');
 
         // For these actions the id parameter refers to the parent record
         if (
-            ($act === 'paste' && $mode === 'create')
-            || \in_array($act, array(null, 'select', 'editAll', 'overrideAll', 'deleteAll'), true)
+            ('paste' === $act && 'create' === $mode)
+            || \in_array($act, [null, 'select', 'editAll', 'overrideAll', 'deleteAll'], true)
         ) {
             return $id;
         }
 
         // For these actions the pid parameter refers to the insert position
-        if (\in_array($act, array('create', 'cut', 'copy', 'cutAll', 'copyAll'), true)) {
+        if (\in_array($act, ['create', 'cut', 'copy', 'cutAll', 'copyAll'], true)) {
             // Mode “paste into”
-            if ($mode === '2') {
+            if ('2' === $mode) {
                 return $pid;
             }
 
