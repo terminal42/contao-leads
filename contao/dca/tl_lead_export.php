@@ -23,7 +23,8 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         ],
         'label' => [
             'fields' => ['name', 'export', 'filename'],
-            'format' => '<div style="display:flex"><span style="width:50%%;margin-right:10px;font-weight:500">%s</span><span style="width:30%%;margin-right:10px">%s</span><span style="width:20%%;">%s</span></div>'
+            // see https://github.com/terminal42/contao-leads/issues/139 about empty span
+            'format' => '<div style="display:flex"><span style="width:50%%;margin-right:10px;font-weight:500">%s</span><span style="width:30%%;margin-right:10px">%s</span><span style="width:20%%;">%s</span><span></span></div>',
         ],
         'global_operations' => [
             'all' => [
