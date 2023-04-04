@@ -204,7 +204,7 @@ abstract class AbstractExporter implements ExporterInterface
                             JOIN tl_lead l ON l.id = d.pid
                             LEFT JOIN tl_form_field ff ON ff.id=d.main_id
                         WHERE l.main_id = ?
-                        GROUP BY d.main_id, d.name
+                        GROUP BY d.main_id, ff.label, d.name
                         ORDER BY MIN(d.sorting)
                     SQL,
                 [$this->config['pid']]
