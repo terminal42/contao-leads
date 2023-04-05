@@ -214,7 +214,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'inputType' => 'select',
             'options' => ['n', 'rn', 'r'],
             'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['eol'],
-            'eval' => ['size' => '3', 'maxlength' => 1, 'tl_class' => 'w50'],
+            'eval' => ['tl_class' => 'w50'],
             'sql' => ['type' => 'string', 'length' => 2, 'default' => ''],
         ],
 
