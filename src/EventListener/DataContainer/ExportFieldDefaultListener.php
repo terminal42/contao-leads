@@ -31,7 +31,7 @@ class ExportFieldDefaultListener
             return $value;
         }
 
-        $config = [['field' => '_form'], ['field' => '_created'], ['field' => '_member']];
+        $config = [['field' => '_id'], ['field' => '_form'], ['field' => '_created'], ['field' => '_member']];
 
         $fieldIds = $this->connection->fetchFirstColumn(
             "SELECT id FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?) ORDER BY sorting",

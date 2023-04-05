@@ -175,6 +175,13 @@ abstract class AbstractExporter implements ExporterInterface
         $columns = array_merge(
             [
                 [
+                    'id' => '_id',
+                    'name' => $this->translator->trans('tl_lead_export._id', [], 'contao_tl_lead_export'),
+                    'output' => self::OUTPUT_VALUE,
+                    'value' => static fn ($lead) => $lead['id'],
+                    'label' => static fn ($lead) => '',
+                ],
+                [
                     'id' => '_form',
                     'name' => $this->translator->trans('tl_lead_export._form', [], 'contao_tl_lead_export'),
                     'output' => self::OUTPUT_BOTH,

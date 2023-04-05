@@ -19,6 +19,7 @@ class ExportFieldOptionsListener
     public function __invoke(MultiColumnWizard $mcw): array
     {
         $options = [
+            '_id' => $this->translator->trans('tl_lead_export._id', [], 'contao_tl_lead_export'),
             '_form' => $this->translator->trans('tl_lead_export._form', [], 'contao_tl_lead_export'),
             '_created' => $this->translator->trans('tl_lead_export._created', [], 'contao_tl_lead_export'),
             '_member' => $this->translator->trans('tl_lead_export._member', [], 'contao_tl_lead_export'),

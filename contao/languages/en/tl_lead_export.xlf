@@ -223,6 +223,9 @@
                 <source>Yes/No</source>
             </trans-unit>
 
+            <trans-unit id="tl_lead_export._id">
+                <source>Lead ID</source>
+            </trans-unit>
             <trans-unit id="tl_lead_export._form">
                 <source>Form</source>
             </trans-unit>

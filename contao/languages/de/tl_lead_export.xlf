@@ -289,6 +289,10 @@
                 <target>Ja/Nein</target>
             </trans-unit>
 
+            <trans-unit id="tl_lead_export._id">
+                <source>Lead ID</source>
+                <target>Anfrage-ID</target>
+            </trans-unit>
             <trans-unit id="tl_lead_export._form">
                 <source>Form</source>
                 <target>Formular</target>
