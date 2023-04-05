@@ -90,8 +90,8 @@ abstract class AbstractExporter implements ExporterInterface
             $data = array_combine(array_column($lead['data'], 'main_id'), $lead['data']);
 
             foreach ($columns as $column) {
-                $value = (string) (isset($column['value']) ? $column['value']($lead) : $data[$column['id']]['value']);
-                $label = (string) (isset($column['label']) ? $column['label']($lead) : $data[$column['id']]['label']);
+                $value = (string) (isset($column['value']) ? $column['value']($lead) : ($data[$column['id']]['value'] ?? ''));
+                $label = (string) (isset($column['label']) ? $column['label']($lead) : ($data[$column['id']]['label'] ?? ''));
 
                 if (!empty($column['format'])) {
                     $value = $this->format($value, $column['format']);
