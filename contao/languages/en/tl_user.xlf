@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_user" source-language="en">
+        <body>
+            <trans-unit id="tl_user_group.leadp.0">
+                <source>Leads permissions</source>
+            </trans-unit>
+            <trans-unit id="tl_user_group.leadp.1">
+                <source>Here you can define the leads permissions.</source>
+            </trans-unit>
+            <trans-unit id="tl_user_group.leadp.edit">
+                <source>Edit leads data</source>
+            </trans-unit>
+            <trans-unit id="tl_user_group.leadp.delete">
+                <source>Delete leads</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_user" source-language="en" target-language="de">
+        <body>
+            <trans-unit id="tl_user_group.leadp.0">
+                <source>Leads permissions</source>
+                <target>Anfragen-Rechte</target>
+            </trans-unit>
+            <trans-unit id="tl_user_group.leadp.1">
+                <source>Here you can define the leads permissions.</source>
+                <target>Hier können Sie die Anfragenrechte festlegen.</target>
+            </trans-unit>
+            <trans-unit id="tl_user_group.leadp.edit">
+                <source>Edit leads data</source>
+                <target>Anfrage-Daten bearbeiten</target>
+            </trans-unit>
+            <trans-unit id="tl_user_group.leadp.delete">
+                <source>Delete leads</source>
+                <target>Anfragen löschen</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.1">
-    <file datatype="php" original="tl_form" source-language="en">
+    <file datatype="php" original="tl_lead_export" source-language="en" target-language="de">
         <body>
             <trans-unit id="tl_lead_export.name.0">
                 <source>Config name</source>
@@ -28,11 +28,11 @@
             </trans-unit>
             <trans-unit id="tl_lead_export.headerFields.0">
                 <source>Include header fields</source>
-                <target>Kopfzeile anzeigen</target>
+                <target>Kopfzeile exportieren</target>
             </trans-unit>
             <trans-unit id="tl_lead_export.headerFields.1">
                 <source>Check here if header fields should be added as first row in the export file.</source>
-                <target>Wählen Sie hier ob die Kopfzeile ebenfalls exportiert werden soll.</target>
+                <target>Wählen Sie ob die Kopfzeile ebenfalls exportiert werden soll.</target>
             </trans-unit>
             <trans-unit id="tl_lead_export.export.0">
                 <source>Export type</source>
