@@ -170,7 +170,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
                     'targetColumn' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['targetColumn'],
                         'inputType' => 'text',
-                        'eval' => ['mandatory' => true, 'style' => 'width:50px;'],
+                        'eval' => ['style' => 'width:50px;'],
                     ],
                     'headerField' => [
                         'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['headerField'],
