@@ -59,7 +59,7 @@ class LeadLabelListener
         return $this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
     }
 
-    private function formatToken(string $title, string|int $value): string
+    private function formatToken(string $title, int|string $value): string
     {
         if (empty($title)) {
             return (string) $value;
