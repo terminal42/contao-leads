@@ -22,11 +22,11 @@ class FormFieldConfigListener
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (!$dc->id || null === $request || null === ($action = $request->query->get('act'))) {
+        if (null === $request || !$dc->currentPid) {
             return;
         }
 
-        $mainFormId = $this->getMainFormId($action, (int) $dc->id);
+        $mainFormId = $this->getMainFormId($dc->currentPid);
 
         if (null === $mainFormId) {
             unset($GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']);
@@ -34,7 +34,7 @@ class FormFieldConfigListener
             return;
         }
 
-        $types = $this->getSubmittedFields($action, (int) $dc->id);
+        $types = $this->getSubmittedFields($dc->currentPid);
 
         if (empty($types)) {
             return;
@@ -61,13 +61,13 @@ class FormFieldConfigListener
             return;
         }
 
-        $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['options_callback'] = fn (DataContainer $dc) => $this->getMainFormFields($action, (int) $dc->id, $mainFormId);
+        $GLOBALS['TL_DCA']['tl_form_field']['fields']['leadStore']['options_callback'] = fn (DataContainer $dc) => $this->getMainFormFields($request->query->get('act', ''), (int) $dc->id, $mainFormId);
         $GLOBALS['TL_DCA']['tl_form_field']['fields']['type']['eval']['tl_class'] = 'w50';
     }
 
     private function getMainFormFields(string $action, int $id, int $mainFormId): array
     {
-        if ('edit' !== $action && 'editAll' !== $action) {
+        if ('overrideAll' === $action) {
             return [];
         }
 
@@ -78,10 +78,16 @@ class FormFieldConfigListener
             ->where("leadStore='1'")
             ->andWhere("name!=''")
             ->andWhere('pid=:mainId')
-            ->andWhere('id NOT IN (SELECT leadStore FROM tl_form_field WHERE pid=(SELECT pid FROM tl_form_field WHERE id=:id) AND id!=:id)')
-            ->setParameters(['mainId' => $mainFormId, 'id' => $id])
+            ->setParameter('mainId', $mainFormId)
             ->orderBy('sorting')
         ;
+
+        if ('edit' === $action || 'editAll' === $action) {
+            $qb
+                ->andWhere('id NOT IN (SELECT leadStore FROM tl_form_field WHERE pid=(SELECT pid FROM tl_form_field WHERE id=:id) AND id!=:id)')
+                ->setParameter('id', $id)
+            ;
+        }
 
         $options = [];
 
@@ -92,24 +98,9 @@ class FormFieldConfigListener
         return $options;
     }
 
-    private function getMainFormId(string $action, int $id): int|null
+    private function getMainFormId(int $id): int|null
     {
-        switch ($action) {
-            case 'edit':
-                $form = $this->connection->fetchAssociative(
-                    'SELECT leadEnabled, leadMain FROM tl_form WHERE id=(SELECT pid FROM tl_form_field WHERE id=?)',
-                    [$id]
-                );
-                break;
-
-            case 'editAll':
-            case 'overrideAll':
-                $form = $this->connection->fetchAssociative('SELECT leadEnabled, leadMain FROM tl_form WHERE id=?', [$id]);
-                break;
-
-            default:
-                return null;
-        }
+        $form = $this->connection->fetchAssociative('SELECT leadEnabled, leadMain FROM tl_form WHERE id=?', [$id]);
 
         if (false === $form || !$form['leadEnabled']) {
             return null;
@@ -118,21 +109,9 @@ class FormFieldConfigListener
         return (int) $form['leadMain'];
     }
 
-    private function getSubmittedFields(string $action, int $id): array
+    private function getSubmittedFields(int $id): array
     {
-        switch ($action) {
-            case 'edit':
-                $fields = $this->connection->fetchAllAssociative('SELECT * FROM tl_form_field WHERE id=?', [$id]);
-                break;
-
-            case 'editAll':
-            case 'overrideAll':
-                $fields = $this->connection->fetchAllAssociative('SELECT * FROM tl_form_field WHERE pid=?', [$id]);
-                break;
-
-            default:
-                return [];
-        }
+        $fields = $this->connection->fetchAllAssociative('SELECT * FROM tl_form_field WHERE pid=?', [$id]);
 
         $types = [];
 
