@@ -54,6 +54,26 @@
                 <source>Custom export with simple tokens</source>
                 <target>Individueller Export mit Simple Tokens</target>
             </trans-unit>
+            <trans-unit id="tl_lead_export.output.0">
+                <source>Output</source>
+                <target>Ausgabeformat</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.1">
+                <source>Please select the output format.</source>
+                <target>Bitte wählen Sie das Ausgabeformat.</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.both">
+                <source>Label and value</source>
+                <target>Bezeichnung und Wert</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.label">
+                <source>Label only (if available, fallback to value)</source>
+                <target>Nur die Bezeichnung (wenn vorhanden, Fallback auf Wert)</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.value">
+                <source>Value only</source>
+                <target>Nur den Wert</target>
+            </trans-unit>
             <trans-unit id="tl_lead_export.fields.0">
                 <source>Fields</source>
                 <target>Felder</target>
@@ -69,22 +89,6 @@
             <trans-unit id="tl_lead_export.fields.name.0">
                 <source>Header name</source>
                 <target>Bezeichnung für Kopfzeile</target>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.0">
-                <source>Output</source>
-                <target>Format</target>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.both">
-                <source>Label and value</source>
-                <target>Bezeichnung und Wert</target>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.label">
-                <source>Label only (if available, fallback to value)</source>
-                <target>Nur die Bezeichnung (wenn vorhanden, Fallback auf Wert)</target>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.value">
-                <source>Value only</source>
-                <target>Nur den Wert</target>
             </trans-unit>
             <trans-unit id="tl_lead_export.fields.format.0">
                 <source>Format</source>

@@ -65,6 +65,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         'xlsx' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:hide},useTemplate;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
     ],
     'subpalettes' => [
+        'export_all' => 'output',
         'export_fields' => 'fields',
         'export_tokens' => 'tokenFields',
         'useTemplate' => 'template,startIndex,sheetIndex',
@@ -123,6 +124,16 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'eval' => ['mandatory' => true, 'submitOnChange' => true, 'tl_class' => 'clr'],
             'sql' => ['type' => 'string', 'length' => 8, 'default' => ExporterInterface::EXPORT_ALL],
         ],
+        'output' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
+            'exclude' => true,
+            'inputType' => 'select',
+            'default' => ExporterInterface::OUTPUT_BOTH,
+            'options' => [ExporterInterface::OUTPUT_BOTH, ExporterInterface::OUTPUT_LABEL, ExporterInterface::OUTPUT_VALUE],
+            'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
+            'eval' => ['tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 8, 'default' => ExporterInterface::OUTPUT_BOTH],
+        ],
         'fields' => [
             'exclude' => true,
             'inputType' => 'multiColumnWizard',
@@ -145,10 +156,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
                         'eval' => ['style' => 'width:150px;'],
                     ],
                     'output' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['output'],
+                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
                         'inputType' => 'select',
-                        'options' => [ExporterInterface::OUTPUT_LABEL, ExporterInterface::OUTPUT_BOTH, ExporterInterface::OUTPUT_VALUE],
-                        'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['output'],
+                        'options' => [ExporterInterface::OUTPUT_BOTH, ExporterInterface::OUTPUT_LABEL, ExporterInterface::OUTPUT_VALUE],
+                        'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
                         'eval' => ['style' => 'width:125px;'],
                     ],
                     'format' => [

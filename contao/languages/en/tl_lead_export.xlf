@@ -32,7 +32,6 @@
             <trans-unit id="tl_lead_export.export.1">
                 <source>Please choose what data should be exported.</source>
             </trans-unit>
-
             <trans-unit id="tl_lead_export.export.all">
                 <source>Export all data</source>
             </trans-unit>
@@ -41,6 +40,21 @@
             </trans-unit>
             <trans-unit id="tl_lead_export.export.tokens">
                 <source>Custom export with simple tokens</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.0">
+                <source>Output</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.1">
+                <source>Please select the output format.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.both">
+                <source>Label and value</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.label">
+                <source>Label only (if available, fallback to value)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.output.value">
+                <source>Value only</source>
             </trans-unit>
             <trans-unit id="tl_lead_export.fields.0">
                 <source>Fields</source>
@@ -53,18 +67,6 @@
             </trans-unit>
             <trans-unit id="tl_lead_export.fields.name.0">
                 <source>Header name</source>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.0">
-                <source>Output</source>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.both">
-                <source>Label and value</source>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.label">
-                <source>Label only (if available, fallback to value)</source>
-            </trans-unit>
-            <trans-unit id="tl_lead_export.fields.output.value">
-                <source>Value only</source>
             </trans-unit>
 
             <trans-unit id="tl_lead_export.fields.format.0">

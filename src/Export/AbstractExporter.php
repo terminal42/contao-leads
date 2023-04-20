@@ -100,7 +100,7 @@ abstract class AbstractExporter implements ExporterInterface
                 }
 
                 $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
-                $row[$col] = $this->getOutput($value, $label, $column['output'] ?? self::OUTPUT_BOTH);
+                $row[$col] = $this->getOutput($value, $label, $column['output'] ?? $this->getConfig()['output'] ?? self::OUTPUT_BOTH);
                 ++$i;
             }
 
