@@ -260,7 +260,7 @@ abstract class AbstractExporter implements ExporterInterface
 
             foreach (StringUtil::deserialize($this->config['tokenFields'], true) as $config) {
                 $this->columns[] = $config + [
-                    'value' => fn ($lead) => $this->replaceTokens($config['tokensValue'], $lead),
+                    'value' => fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead)),
                     'label' => static fn () => '',
                     'output' => 'value',
                 ];
@@ -327,20 +327,14 @@ abstract class AbstractExporter implements ExporterInterface
         return $this->formatters->get($type)->format($value, $type);
     }
 
-    protected function replaceTokens(string $text, array $lead): string
-    {
-        $tokens = $this->getTokens($lead);
-
-        // TODO: should we also make the leads meta data available for tokens?
-        //unset($lead['data']);
-        //$parser->flatten($lead, 'lead', $tokens);
-
-        return $this->parser->recursiveReplaceTokensAndTags($text, $tokens);
-    }
-
     protected function getTokens(array $lead): array
     {
-        $tokens = [];
+        $tokens = [
+            '_id' => $lead['id'],
+            '_form' => $lead['form_id'],
+            '_created' => $lead['created'],
+            '_member' => $lead['member_id'],
+        ];
 
         foreach ($lead['data'] as $data) {
             $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
