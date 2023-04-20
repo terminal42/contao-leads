@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
-
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
@@ -30,12 +29,12 @@ class LeadSearchListener
         }
 
         $ids = $this->connection->fetchFirstColumn(
-            <<<SQL
-                SELECT DISTINCT l.id
-                FROM tl_lead l
-                JOIN tl_lead_data d ON l.id=d.pid
-                WHERE d.value REGEXP ? OR d.label REGEXP ?
-            SQL,
+            <<<'SQL'
+                    SELECT DISTINCT l.id
+                    FROM tl_lead l
+                    JOIN tl_lead_data d ON l.id=d.pid
+                    WHERE d.value REGEXP ? OR d.label REGEXP ?
+                SQL,
             [$session['search']['tl_lead']['value'], $session['search']['tl_lead']['value']]
         );
 
@@ -60,12 +59,12 @@ class LeadSearchListener
             $sessionBag->replace($session);
         }
 
-        $active = isset($session['search']['tl_lead']['value']) && (string) $session['search']['tl_lead']['value'] !== '';
+        $active = isset($session['search']['tl_lead']['value']) && '' !== (string) $session['search']['tl_lead']['value'];
 
         return '
 <div class="tl_search tl_subpanel">
-<strong>' . $GLOBALS['TL_LANG']['MSC']['search'] . ':</strong>
-<input type="search" name="tl_value" class="tl_text' . ($active ? ' active' : '') . '" value="' . StringUtil::specialchars($session['search']['tl_lead']['value'] ?? '') . '">
+<strong>'.$GLOBALS['TL_LANG']['MSC']['search'].':</strong>
+<input type="search" name="tl_value" class="tl_text'.($active ? ' active' : '').'" value="'.StringUtil::specialchars($session['search']['tl_lead']['value'] ?? '').'">
 </div>';
     }
 }

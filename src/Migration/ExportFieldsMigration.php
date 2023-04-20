@@ -60,6 +60,8 @@ class ExportFieldsMigration extends AbstractMigration
                 }
             }
 
+            unset($field);
+
             $this->connection->update('tl_lead_export', ['fields' => serialize($fields)], ['id' => $id]);
         }
 

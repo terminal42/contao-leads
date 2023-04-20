@@ -28,7 +28,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
         Connection $connection,
         TranslatorInterface $translator,
         StringParser $parser,
-        ExpressionLanguage|null $expressionLanguage = null
+        ExpressionLanguage|null $expressionLanguage = null,
     ) {
         parent::__construct($formatters, $connection, $translator, $parser, $expressionLanguage);
     }
@@ -65,7 +65,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
 
             $spreadsheet = IOFactory::load($this->projectDir.'/'.$template->path);
             $spreadsheet->setActiveSheetIndex((int) $config['sheetIndex']);
-            $row = ((int) $config['startIndex']) ?: 1;
+            $row = (int) $config['startIndex'] ?: 1;
         } else {
             $spreadsheet = new Spreadsheet();
             $row = 1;
