@@ -20,7 +20,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             'mode' => 2,
             'fields' => ['created DESC'],
             'flag' => 8,
-            'panelLayout' => 'filter;sort,limit',
+            'panelLayout' => 'filter;data_search,sort,limit',
         ],
         'label' => [
             'fields' => ['created'],
