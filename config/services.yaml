@@ -6,6 +6,7 @@ services:
             $exporters: '@terminal42_leads.exporters'
             $formatters: '@terminal42_leads.formatters'
             $expressionLanguage: '@terminal42_leads.expression_language'
+            $projectDir: '%kernel.project_dir%'
 
     Terminal42\LeadsBundle\:
         resource: ../src/*
