@@ -149,6 +149,13 @@
                 <source>Choose your template here.</source>
             </trans-unit>
 
+            <trans-unit id="tl_lead_export.expression.0">
+                <source>Export conditions (Expression Language)</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.expression.1">
+                <source>Use the Symfony Expression Language to formulare an export condition.</source>
+            </trans-unit>
+
             <trans-unit id="tl_lead_export.lastRun.0">
                 <source>Last export date</source>
             </trans-unit>
@@ -174,6 +181,9 @@
             </trans-unit>
             <trans-unit id="tl_lead_export.excel_legend">
                 <source>Excel configuration</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.conditions_legend">
+                <source>Conditional export</source>
             </trans-unit>
             <trans-unit id="tl_lead_export.date_legend">
                 <source>Export date</source>

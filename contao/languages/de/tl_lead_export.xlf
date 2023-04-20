@@ -193,6 +193,15 @@
                 <target>Wählen Sie hier Ihr Template.</target>
             </trans-unit>
 
+            <trans-unit id="tl_lead_export.expression.0">
+                <source>Export conditions (Expression Language)</source>
+                <target>Export-Bedingung (Expression Language)</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.expression.1">
+                <source>Use the Symfony Expression Language to formulare an export condition.</source>
+                <target>Verwenden Sie die Symfony Expression Language um die Exportdaten einzuschränken.</target>
+            </trans-unit>
+
             <trans-unit id="tl_lead_export.lastRun.0">
                 <source>Last export date</source>
                 <target>Letztes Exportdatum</target>
@@ -225,6 +234,10 @@
             <trans-unit id="tl_lead_export.excel_legend">
                 <source>Excel configuration</source>
                 <target>Excel-Format</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.conditions_legend">
+                <source>Conditional export</source>
+                <target>Export-Einschränkungen</target>
             </trans-unit>
             <trans-unit id="tl_lead_export.date_legend">
                 <source>Export date</source>

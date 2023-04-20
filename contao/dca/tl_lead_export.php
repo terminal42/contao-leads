@@ -59,10 +59,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
     ],
     'palettes' => [
         '__selector__' => ['type', 'useTemplate', 'export'],
-        'default' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{date_legend:hide},lastRun,skipLastRun',
-        'csv' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{csv_legend:hide},csvSeparator,csvEnclosure,csvEscape,eol;{date_legend:hide},lastRun,skipLastRun',
-        'xls' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:hide},useTemplate;{date_legend:hide},lastRun,skipLastRun',
-        'xlsx' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:hide},useTemplate;{date_legend:hide},lastRun,skipLastRun',
+        'default' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
+        'csv' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{csv_legend:hide},csvSeparator,csvEnclosure,csvEscape,eol;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
+        'xls' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:hide},useTemplate;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
+        'xlsx' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:hide},useTemplate;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
     ],
     'subpalettes' => [
         'export_fields' => 'fields',
@@ -158,11 +158,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
                     ],
                 ],
             ],
-            'sql' => [
-                'type' => 'blob',
-                'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_MEDIUMBLOB,
-                'notnull' => false,
-            ],
+            'sql' => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false,],
         ],
         'tokenFields' => [
             'exclude' => true,
@@ -188,7 +184,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
                     ],
                 ],
             ],
-            'sql' => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\MySqlPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
+            'sql' => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
         ],
 
         'csvSeparator' => [
@@ -245,6 +241,13 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'tl_class' => 'w50', 'rgxp' => 'digit'],
             'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+        ],
+
+        'expression' => [
+            'exclude' => true,
+            'inputType' => 'textarea',
+            'eval' => ['decodeEntities' => true],
+            'sql' => ['type' => 'text', 'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_TEXT, 'notnull' => false],
         ],
 
         'lastRun' => [

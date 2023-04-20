@@ -10,6 +10,7 @@ use Contao\Date;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\DependencyInjection\ServiceLocator;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -28,6 +29,7 @@ abstract class AbstractExporter implements ExporterInterface
         private readonly Connection $connection,
         private readonly TranslatorInterface $translator,
         private readonly StringParser $parser,
+        private readonly ExpressionLanguage|null $expressionLanguage = null,
     ) {
     }
 
@@ -155,6 +157,14 @@ abstract class AbstractExporter implements ExporterInterface
                 );
 
                 $data = $lead + ['data' => $cols];
+
+                if (
+                    null !== $this->expressionLanguage
+                    && !empty($this->config['expression'])
+                    && !$this->expressionLanguage->evaluate($this->config['expression'], $this->getTokens($data))
+                ) {
+                    continue;
+                }
 
                 yield $data;
             }
@@ -318,17 +328,24 @@ abstract class AbstractExporter implements ExporterInterface
 
     protected function replaceTokens(string $text, array $lead): string
     {
-        $tokens = [];
-
-        foreach ($lead['data'] as $data) {
-            $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
-        }
+        $tokens = $this->getTokens($lead);
 
         // TODO: should we also make the leads meta data available for tokens?
         //unset($lead['data']);
         //$parser->flatten($lead, 'lead', $tokens);
 
         return $this->parser->recursiveReplaceTokensAndTags($text, $tokens);
+    }
+
+    protected function getTokens(array $lead): array
+    {
+        $tokens = [];
+
+        foreach ($lead['data'] as $data) {
+            $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
+        }
+
+        return $tokens;
     }
 
     private function init(array $config, array|null $ids): void

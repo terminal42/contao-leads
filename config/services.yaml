@@ -5,9 +5,13 @@ services:
         bind:
             $exporters: '@terminal42_leads.exporters'
             $formatters: '@terminal42_leads.formatters'
+            $expressionLanguage: '@terminal42_leads.expression_language'
 
     Terminal42\LeadsBundle\:
         resource: ../src/*
+
+    terminal42_leads.expression_language:
+        class: Symfony\Component\ExpressionLanguage\ExpressionLanguage
 
     terminal42_leads.exporters:
         class: Symfony\Component\DependencyInjection\ServiceLocator
