@@ -234,10 +234,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         ],
         'template' => [
             'exclude' => true,
-            'filter' => true,
+            'filter' => false,
             'inputType' => 'fileTree',
             'eval' => ['filesOnly' => true, 'fieldType' => 'radio', 'mandatory' => true, 'tl_class' => 'clr'],
-            'sql' => ['type' => 'binary_string', 'length' => 16, 'fixed' => true, 'notnull' => false],
+            'sql' => "binary(16) NULL"
         ],
         'startIndex' => [
             'exclude' => true,

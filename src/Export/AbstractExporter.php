@@ -214,6 +214,13 @@ abstract class AbstractExporter implements ExporterInterface
                     'value' => static fn ($lead) => $lead['member_id'],
                     'label' => static fn ($lead) => $lead['member_name'],
                 ],
+                [
+                    'id' => '_skip',
+                    'name' => $this->translator->trans('tl_lead_export._skip', [], 'contao_tl_lead_export'),
+                    'output' => self::OUTPUT_VALUE,
+                    'value' => static fn ($lead) => '',
+                    'label' => static fn ($lead) => '',
+                ]
             ],
             $this->connection->fetchAllAssociative(
                 <<<'SQL'
