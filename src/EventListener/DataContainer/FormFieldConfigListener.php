@@ -7,6 +7,7 @@ namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
+use Contao\UploadableWidgetInterface;
 use Contao\Widget;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -136,6 +137,6 @@ class FormFieldConfigListener
         $widget = new $className($field);
         $widget->required = (bool) $field['mandatory'];
 
-        return $widget->submitInput();
+        return $widget->submitInput() || $widget instanceof UploadableWidgetInterface;
     }
 }
