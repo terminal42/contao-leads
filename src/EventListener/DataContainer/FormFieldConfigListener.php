@@ -129,7 +129,7 @@ class FormFieldConfigListener
     {
         $className = $GLOBALS['TL_FFL'][$field['type']] ?? null;
 
-        if (!class_exists($className)) {
+        if ($className === null || !class_exists($className)) {
             return false;
         }
 
