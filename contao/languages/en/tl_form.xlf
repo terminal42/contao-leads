@@ -27,7 +27,7 @@
                 <source>Record label</source>
             </trans-unit>
             <trans-unit id="tl_form.leadLabel.1">
-                <source>Enter the names of the fields to be displayed in the back end list, surrounded by double hashes (##fieldname##). You can also use plain text. Use ##created## to output the date and time of creation.</source>
+                <source>Enter the names of the fields to be displayed in the back end list, surrounded by double hashes (##fieldname##). You can also use plain text. Use ##_created## to output the date and time of creation.</source>
             </trans-unit>
             <trans-unit id="tl_form.leadPeriod.0">
                 <source>Storage time for leads</source>
