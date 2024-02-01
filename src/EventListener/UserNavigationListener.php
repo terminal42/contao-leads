@@ -68,7 +68,7 @@ class UserNavigationListener
 
         foreach ($this->getForms() as $form) {
             if ($form['id'] === $formId) {
-                $GLOBALS['TL_LANG']['MOD']['lead'][0] = $form['leadMenuLabel'] ?: $form['title'];
+                $GLOBALS['TL_LANG']['MOD']['lead'][0] = $form['leadMenuLabel'] ?: StringUtil::decodeEntities($form['title']);
                 break;
             }
         }
@@ -91,9 +91,11 @@ class UserNavigationListener
         $modules['leads']['modules'] = [];
 
         foreach ($forms as $form) {
+            $formTitle = StringUtil::decodeEntities($form['title']);
+
             $modules['leads']['modules']['lead_'.$form['id']] = [
-                'title' => StringUtil::specialchars($this->translator->trans('MOD.leads.1', [$form['title']], 'contao_modules')),
-                'label' => $form['leadMenuLabel'] ?: $form['title'],
+                'title' => StringUtil::specialchars($this->translator->trans('MOD.leads.1', [$formTitle], 'contao_modules')),
+                'label' => $form['leadMenuLabel'] ?: $formTitle,
                 'class' => 'navigation leads',
                 'href' => $this->urlGenerator->generate('contao_backend', ['do' => 'lead', 'form' => $form['id']]),
                 'isActive' => $request && 'lead' === $request->query->get('do') && (int) $form['id'] === $request->query->getInt('form'),
