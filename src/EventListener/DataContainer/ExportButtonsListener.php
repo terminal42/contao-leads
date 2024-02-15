@@ -77,6 +77,6 @@ class ExportButtonsListener
             throw new NotFoundHttpException('Leads export type "'.$config['type'].'" not found.');
         }
 
-        throw new ResponseException($this->exporters->get($config['type'])->getResponse($config));
+        throw new ResponseException($this->exporters->get($config['type'])->getResponse($config, $ids));
     }
 }
