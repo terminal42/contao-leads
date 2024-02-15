@@ -35,7 +35,7 @@ class ExportFieldDefaultListener
 
         $fieldIds = $this->connection->fetchFirstColumn(
             "SELECT id FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?) ORDER BY sorting",
-            [(int) $dc->id]
+            [(int) $dc->id],
         );
 
         foreach ($fieldIds as $id) {

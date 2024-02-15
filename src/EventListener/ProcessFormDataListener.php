@@ -28,7 +28,7 @@ class ProcessFormDataListener
     ) {
     }
 
-    public function __invoke(array $postData, array $formConfig, $files): void
+    public function __invoke(array $postData, array $formConfig, array|null $files): void
     {
         if (!$formConfig['leadEnabled']) {
             return;
@@ -79,7 +79,7 @@ class ProcessFormDataListener
                           AND form_field.invisible=''
                         ORDER BY main_field.sorting;
                     SQL,
-                [$formId, $mainId]
+                [$formId, $mainId],
             );
         }
 
@@ -95,7 +95,7 @@ class ProcessFormDataListener
                       AND invisible=''
                     ORDER BY sorting
                 SQL,
-            [$formId]
+            [$formId],
         );
     }
 

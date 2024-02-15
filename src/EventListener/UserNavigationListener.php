@@ -130,13 +130,13 @@ class UserNavigationListener
                             LEFT JOIN tl_form f ON l.main_id=f.id
                         WHERE f.id IS NULL
                         GROUP BY l.main_id
-                    SQL
+                    SQL,
             ));
         } else {
             // Remove forms the user does not have access to
             $forms = array_filter(
                 $forms,
-                fn (array $form) => $this->security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id'])
+                fn (array $form) => $this->security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id']),
             );
         }
 

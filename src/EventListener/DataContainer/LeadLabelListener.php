@@ -24,12 +24,7 @@ class LeadLabelListener
     {
         $lead = $this->connection
             ->createQueryBuilder()
-            ->select([
-                'l.*',
-                'mf.leadLabel',
-                "IF(m.id IS NULL, '', CONCAT(m.lastname, ' ', m.firstname)) AS member_name",
-                "IFNULL(f.title, '') AS form_title",
-            ])
+            ->select('l.*', 'mf.leadLabel', "IF(m.id IS NULL, '', CONCAT(m.lastname, ' ', m.firstname)) AS member_name", "IFNULL(f.title, '') AS form_title")
             ->from('tl_lead', 'l')
             ->join('l', 'tl_form', 'mf', 'l.main_id=mf.id')
             ->leftJoin('l', 'tl_member', 'm', 'l.member_id=m.id')

@@ -44,12 +44,12 @@ class LeadAccessListener
             if (!($act = $request->query->get('act')) || 'select' === $act) {
                 $formId = (int) $this->connection->fetchOne(
                     'SELECT main_id FROM tl_lead WHERE id=?',
-                    [$dc->id]
+                    [$dc->id],
                 );
             } else {
                 $formId = (int) $this->connection->fetchOne(
                     'SELECT main_id FROM tl_lead WHERE id=(SELECT pid FROM tl_lead_data WHERE id=?)',
-                    [$dc->id]
+                    [$dc->id],
                 );
             }
         } else {

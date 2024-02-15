@@ -15,15 +15,21 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 
 abstract class AbstractExporter implements ExporterInterface
 {
     private const CHUNK_SIZE = 100;
 
     private array $config;
-    private array|null $ids;
+
+    private array|null $ids = null;
+
     private array|null $columns = null;
 
+    /**
+     * @param ServiceLocator<FormatterInterface> $formatters
+     */
     public function __construct(
         private readonly ServiceLocator $formatters,
         private readonly Connection $connection,
@@ -33,7 +39,7 @@ abstract class AbstractExporter implements ExporterInterface
     ) {
     }
 
-    public function getResponse(array $config, array $ids = null): Response
+    public function getResponse(array $config, array|null $ids = null): Response
     {
         $this->init($config, $ids);
 
@@ -42,7 +48,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $fp = fopen('php://output', 'w');
                 $this->doExport($fp);
                 fclose($fp);
-            }
+            },
         );
 
         $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
@@ -55,7 +61,7 @@ abstract class AbstractExporter implements ExporterInterface
         return $response;
     }
 
-    public function writeToFile(array $config, string $filename, array $ids = null): void
+    public function writeToFile(array $config, string $filename, array|null $ids = null): void
     {
         $this->init($config, $ids);
 
@@ -66,8 +72,37 @@ abstract class AbstractExporter implements ExporterInterface
         $this->finish($config);
     }
 
+    /**
+     * @param resource $stream
+     */
     abstract protected function doExport($stream): void;
 
+    /**
+     * @return array{
+     *     id: int|string,
+     *     pid: int|string,
+     *     tstamp: int|string,
+     *     name: string,
+     *     type: string,
+     *     filename: string,
+     *     headerFields: bool|string,
+     *     export: string,
+     *     output: string,
+     *     fields: string|array,
+     *     tokenFields: string|array,
+     *     csvSeparator: string,
+     *     csvEnclosure: string,
+     *     csvEscape: string,
+     *     eol: string,
+     *     useTemplate: bool|string,
+     *     template: string,
+     *     startIndex: int|string,
+     *     sheetIndex: int|string,
+     *     expression: string,
+     *     lastRun: int|string,
+     *     skipLastRun: bool|string,
+     * }
+     */
     protected function getConfig(): array
     {
         return $this->config;
@@ -122,11 +157,7 @@ abstract class AbstractExporter implements ExporterInterface
 
         $selectQuery = $this->connection->createQueryBuilder();
         $selectQuery
-            ->select([
-                'l.*',
-                "IF(m.id IS NULL, '', CONCAT(m.lastname, ' ', m.firstname)) AS member_name",
-                "IFNULL(f.title, '') AS form_title",
-            ])
+            ->select('l.*', "IF(m.id IS NULL, '', CONCAT(m.lastname, ' ', m.firstname)) AS member_name", "IFNULL(f.title, '') AS form_title")
             ->from('tl_lead', 'l')
             ->leftJoin('l', 'tl_member', 'm', 'l.member_id=m.id')
             ->leftJoin('l', 'tl_form', 'f', 'l.form_id=f.id')
@@ -149,12 +180,13 @@ abstract class AbstractExporter implements ExporterInterface
         $total = (int) $countQuery->fetchOne();
 
         // Split leads fetching into chunks to prevent memory issues. We cannot use
-        // Connection::iterateAssociative because it would lock the connection for additional queries.
+        // Connection::iterateAssociative because it would lock the connection for
+        // additional queries.
         do {
             foreach ($selectQuery->fetchAllAssociative() as $lead) {
                 $cols = $this->connection->fetchAllAssociative(
                     'SELECT * FROM tl_lead_data WHERE pid=? ORDER BY sorting',
-                    [$lead['id']]
+                    [$lead['id']],
                 );
 
                 $data = $lead + ['data' => $cols];
@@ -220,7 +252,7 @@ abstract class AbstractExporter implements ExporterInterface
                     'output' => self::OUTPUT_VALUE,
                     'value' => static fn ($lead) => '',
                     'label' => static fn ($lead) => '',
-                ]
+                ],
             ],
             $this->connection->fetchAllAssociative(
                 <<<'SQL'
@@ -232,8 +264,8 @@ abstract class AbstractExporter implements ExporterInterface
                         GROUP BY d.main_id, ff.label, d.name
                         ORDER BY MIN(d.sorting)
                     SQL,
-                [$this->config['pid']]
-            )
+                [$this->config['pid']],
+            ),
         );
 
         $this->columns = $columns = array_combine(array_column($columns, 'id'), $columns);
@@ -294,7 +326,7 @@ abstract class AbstractExporter implements ExporterInterface
         $filename = $this->parser->recursiveReplaceTokensAndTags(
             $filename,
             $tokens,
-            StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES
+            StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
         );
 
         if (!str_contains($filename, '.')) {

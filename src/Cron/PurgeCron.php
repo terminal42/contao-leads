@@ -37,7 +37,7 @@ class PurgeCron
 
             $leadIds = $this->connection->fetchFirstColumn(
                 'SELECT id FROM tl_lead WHERE main_id=? AND created<?',
-                [$form['id'], $time]
+                [$form['id'], $time],
             );
 
             if (empty($leadIds)) {

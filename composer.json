@@ -33,7 +33,8 @@
         "phpoffice/phpspreadsheet": "^1.26"
     },
     "require-dev": {
-        "contao/manager-plugin": "^2.0"
+        "contao/manager-plugin": "^2.0",
+        "terminal42/contao-build-tools": "dev-main"
     },
     "suggest": {
         "tecnickcom/tcpdf": "Export leads to PDF document (using TCPDF)",
@@ -50,8 +51,5 @@
     },
     "extra": {
         "contao-manager-plugin": "Terminal42\\LeadsBundle\\ContaoManager\\Plugin"
-    },
-    "scripts": {
-        "cs-fixer": "@php tools/ecs/vendor/bin/ecs check src --config tools/ecs/config.php --fix --ansi"
     }
 }

@@ -15,8 +15,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 #[AsCallback('tl_form_field', 'config.onload')]
 class FormFieldConfigListener
 {
-    public function __construct(private readonly Connection $connection, private readonly RequestStack $requestStack)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     public function __invoke(DataContainer $dc): void
@@ -43,11 +45,12 @@ class FormFieldConfigListener
 
         $pm = PaletteManipulator::create()->addField('leadStore', 'type');
 
-        // We have to check a prefix as the palette name can also refer to the subpalette,
-        // for example "rgxp" field of text field could make it "text" but also "textdigit" or "textcustom".
+        // We have to check a prefix as the palette name can also refer to the
+        // subpalette, for example "rgxp" field of text field could make it "text" but
+        // also "textdigit" or "textcustom".
         foreach (array_keys($GLOBALS['TL_DCA']['tl_form_field']['palettes']) as $k) {
             foreach ($types as $type) {
-                if (str_starts_with($k, $type)) {
+                if (str_starts_with($k, (string) $type)) {
                     $pm->applyToPalette($k, 'tl_form_field');
                     break;
                 }
@@ -129,7 +132,7 @@ class FormFieldConfigListener
     {
         $className = $GLOBALS['TL_FFL'][$field['type']] ?? null;
 
-        if ($className === null || !class_exists($className)) {
+        if (null === $className || !class_exists($className)) {
             return false;
         }
 

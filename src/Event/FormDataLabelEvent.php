@@ -10,8 +10,10 @@ class FormDataLabelEvent extends Event
 {
     private mixed $label = '';
 
-    public function __construct(private readonly mixed $value, private readonly array $field)
-    {
+    public function __construct(
+        private readonly mixed $value,
+        private readonly array $field,
+    ) {
     }
 
     public function getField(): array

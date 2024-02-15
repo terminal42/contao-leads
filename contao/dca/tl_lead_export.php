@@ -1,10 +1,13 @@
 <?php
 
+use Contao\DataContainer;
+use Contao\DC_Table;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Terminal42\LeadsBundle\Export\ExporterInterface;
 
 $GLOBALS['TL_DCA']['tl_lead_export'] = [
     'config' => [
-        'dataContainer' => \Contao\DC_Table::class,
+        'dataContainer' => DC_Table::class,
         'ptable' => 'tl_form',
         'enableVersioning' => true,
         'sql' => [
@@ -16,7 +19,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
     ],
     'list' => [
         'sorting' => [
-            'mode' => \Contao\DataContainer::SORT_INITIAL_LETTERS_DESC,
+            'mode' => DataContainer::SORT_INITIAL_LETTERS_DESC,
             'fields' => ['type', 'name'],
             'headerFields' => ['title', 'tstamp', 'leadEnabled', 'leadMaster', 'leadMenuLabel', 'leadLabel'],
             'panelLayout' => 'filter;search,limit',
@@ -169,7 +172,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
                     ],
                 ],
             ],
-            'sql' => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false,],
+            'sql' => ['type' => 'blob', 'length' => AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
         ],
         'tokenFields' => [
             'exclude' => true,
@@ -195,7 +198,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
                     ],
                 ],
             ],
-            'sql' => ['type' => 'blob', 'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
+            'sql' => ['type' => 'blob', 'length' => AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
         ],
 
         'csvSeparator' => [
@@ -237,7 +240,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'filter' => false,
             'inputType' => 'fileTree',
             'eval' => ['filesOnly' => true, 'fieldType' => 'radio', 'mandatory' => true, 'tl_class' => 'clr'],
-            'sql' => "binary(16) NULL"
+            'sql' => 'binary(16) NULL',
         ],
         'startIndex' => [
             'exclude' => true,
@@ -258,7 +261,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'exclude' => true,
             'inputType' => 'textarea',
             'eval' => ['decodeEntities' => true],
-            'sql' => ['type' => 'text', 'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_TEXT, 'notnull' => false],
+            'sql' => ['type' => 'text', 'length' => AbstractMySQLPlatform::LENGTH_LIMIT_TEXT, 'notnull' => false],
         ],
 
         'lastRun' => [
