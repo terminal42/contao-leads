@@ -37,7 +37,7 @@ class PurgeCron
 
             $leadIds = $this->connection->fetchFirstColumn(
                 'SELECT id FROM tl_lead WHERE main_id=? AND created<?',
-                [$form['id'], $time]
+                [$form['id'], $time],
             );
 
             if (empty($leadIds)) {
@@ -55,8 +55,8 @@ class PurgeCron
         $allIds = array_merge(...$allIds);
         $allUploads = array_merge(...$allUploads);
 
-        $deleted = $this->connection->delete('tl_lead', ['id' => $allIds], [ArrayParameterType::INTEGER]);
-        $this->connection->delete('tl_lead_data', ['pid' => $allIds], [ArrayParameterType::INTEGER]);
+        $deleted = $this->connection->executeStatement('DELETE FROM tl_lead WHERE id IN (?)', [$allIds], [ArrayParameterType::INTEGER]);
+        $this->connection->executeStatement('DELETE FROM tl_lead_data WHERE pid IN (?)', [$allIds], [ArrayParameterType::INTEGER]);
 
         /** @var FilesModel $filesModel */
         foreach ($allUploads as $filesModel) {

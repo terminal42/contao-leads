@@ -14,10 +14,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Terminal42\LeadsBundle\Export\ExporterInterface;
 
 #[AsCallback('tl_lead', 'select.buttons')]
 class ExportButtonsListener
 {
+    /**
+     * @param ServiceLocator<ExporterInterface> $exporters
+     */
     public function __construct(
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
@@ -46,23 +50,11 @@ class ExportButtonsListener
                 '<button type="submit" name="export_%s" id="export_%s" class="tl_submit" value="1">%s</button>',
                 $config['id'],
                 $config['id'],
-                $this->translator->trans('tl_lead.export.0', [$config['name']], 'contao_tl_lead')
+                $this->translator->trans('tl_lead.export.0', [$config['name']], 'contao_tl_lead'),
             );
         }
 
         return $buttons;
-    }
-
-    private function export(array $config, array $ids): never
-    {
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $config['pid']);
-
-        if (!$this->exporters->has($config['type'])) {
-            throw new NotFoundHttpException('Leads export type "'.$config['type'].'" not found.');
-        }
-
-        throw new ResponseException($this->exporters->get($config['type'])->getResponse($config));
     }
 
     protected function denyAccessUnlessGranted(mixed $attribute, mixed $subject = null, string $message = 'Access Denied.'): void
@@ -74,5 +66,17 @@ class ExportButtonsListener
 
             throw $exception;
         }
+    }
+
+    private function export(array $config, array $ids): never
+    {
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $config['pid']);
+
+        if (!$this->exporters->has($config['type'])) {
+            throw new NotFoundHttpException('Leads export type "'.$config['type'].'" not found.');
+        }
+
+        throw new ResponseException($this->exporters->get($config['type'])->getResponse($config, $ids));
     }
 }

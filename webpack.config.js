@@ -1,23 +1,8 @@
-const Encore = require('@symfony/webpack-encore');
+const { Encore } = require('@terminal42/contao-build-tools');
 
-Encore
+module.exports = Encore()
     .setOutputPath('public/')
     .setPublicPath('/bundles/terminal42leads')
-    .setManifestKeyPrefix('')
-    .cleanupOutputBeforeBuild()
-    .disableSingleRuntimeChunk()
-
-    .enableSassLoader()
-    .enablePostCssLoader()
-    .enableSourceMaps()
-    .enableVersioning(Encore.isProduction())
-
     .addEntry('leads', './assets/leads.js')
-
-    .addLoader({
-        test: /\.(gif|png|jpe?g|svg)$/i,
-        use: ['image-webpack-loader']
-    })
+    .getWebpackConfig()
 ;
-
-module.exports = Encore.getWebpackConfig();

@@ -12,8 +12,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[AsCallback('tl_lead_export', 'fields.fields.eval.columnFields.field.options')]
 class ExportFieldOptionsListener
 {
-    public function __construct(private readonly Connection $connection, private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     public function __invoke(MultiColumnWizard $mcw): array
@@ -28,7 +30,7 @@ class ExportFieldOptionsListener
 
         $fields = $this->connection->iterateAssociative(
             "SELECT id, name, label FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?) ORDER BY sorting",
-            [(int) $mcw->dataContainer->id]
+            [(int) $mcw->dataContainer->id],
         );
 
         foreach ($fields as $field) {

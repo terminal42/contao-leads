@@ -1,8 +1,11 @@
 <?php
 
+use Contao\DC_Table;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+
 $GLOBALS['TL_DCA']['tl_lead_data'] = [
     'config' => [
-        'dataContainer' => \Contao\DC_Table::class,
+        'dataContainer' => DC_Table::class,
         'ptable' => 'tl_lead',
         'notCreatable' => true,
         'notCopyable' => true,
@@ -73,7 +76,7 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = [
             'inputType' => 'textarea',
             'sql' => [
                 'type' => 'text',
-                'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_TEXT,
+                'length' => AbstractMySQLPlatform::LENGTH_LIMIT_TEXT,
                 'notnull' => false,
             ],
         ],
@@ -81,7 +84,7 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = [
             'inputType' => 'textarea',
             'sql' => [
                 'type' => 'text',
-                'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_TEXT,
+                'length' => AbstractMySQLPlatform::LENGTH_LIMIT_TEXT,
                 'notnull' => false,
             ],
         ],

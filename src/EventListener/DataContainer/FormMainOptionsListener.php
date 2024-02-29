@@ -13,8 +13,10 @@ use Symfony\Component\Security\Core\Security;
 #[AsCallback('tl_form', 'fields.leadMain.options')]
 class FormMainOptionsListener
 {
-    public function __construct(private readonly Connection $connection, private readonly Security $security)
-    {
+    public function __construct(
+        private readonly Connection $connection,
+        private readonly Security $security,
+    ) {
     }
 
     public function __invoke(DataContainer $dc): array
@@ -23,7 +25,7 @@ class FormMainOptionsListener
 
         $forms = $this->connection->fetchAllAssociative(
             "SELECT id, title FROM tl_form WHERE leadEnabled='1' AND leadMain=0 AND id!=?",
-            [$dc->id]
+            [$dc->id],
         );
 
         foreach ($forms as $form) {

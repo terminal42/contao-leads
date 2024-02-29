@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
-use Symfony\Component\DependencyInjection\Attribute\TaggedLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 
 #[AsCallback('tl_lead_export', 'fields.fields.eval.columnFields.format.options')]
 class ExportFormatOptionsListener
 {
+    /**
+     * @param ServiceLocator<FormatterInterface> $formatters
+     */
     public function __construct(
-        #[TaggedLocator('terminal42_leads.formatter', 'type')]
         private readonly ServiceLocator $formatters,
         private readonly TranslatorInterface $translator,
     ) {

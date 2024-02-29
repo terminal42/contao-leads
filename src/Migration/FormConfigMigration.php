@@ -30,11 +30,11 @@ class FormConfigMigration extends AbstractMigration
     public function run(): MigrationResult
     {
         $this->connection->executeStatement(
-            'ALTER TABLE tl_form CHANGE COLUMN `leadMaster` `leadMain` int(10) unsigned NOT NULL DEFAULT 0'
+            'ALTER TABLE tl_form CHANGE COLUMN `leadMaster` `leadMain` int(10) unsigned NOT NULL DEFAULT 0',
         );
 
         $this->connection->executeStatement(
-            "UPDATE tl_form SET leadLabel=REPLACE(leadLabel, '##created##', '##_created##') WHERE leadLabel!=''"
+            "UPDATE tl_form SET leadLabel=REPLACE(leadLabel, '##created##', '##_created##') WHERE leadLabel!=''",
         );
 
         return $this->createResult(true);

@@ -13,8 +13,10 @@ use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
 class LeadSearchListener
 {
-    public function __construct(private readonly RequestStack $requestStack, private readonly Connection $connection)
-    {
+    public function __construct(
+        private readonly RequestStack $requestStack,
+        private readonly Connection $connection,
+    ) {
     }
 
     #[AsCallback('tl_lead', 'config.onload')]
@@ -35,7 +37,7 @@ class LeadSearchListener
                     JOIN tl_lead_data d ON l.id=d.pid
                     WHERE d.value REGEXP ? OR d.label REGEXP ?
                 SQL,
-            [$session['search']['tl_lead']['value'], $session['search']['tl_lead']['value']]
+            [$session['search']['tl_lead']['value'], $session['search']['tl_lead']['value']],
         );
 
         $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] = empty($ids) ? [0] : $ids;

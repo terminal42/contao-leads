@@ -7,6 +7,7 @@ namespace Terminal42\LeadsBundle\Migration;
 use Contao\CoreBundle\Migration\AbstractMigration;
 use Contao\CoreBundle\Migration\MigrationResult;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 
 class LeadDataMigration extends AbstractMigration
@@ -32,13 +33,13 @@ class LeadDataMigration extends AbstractMigration
 
         if ($this->shouldMigrateField('tl_lead', 'master_id', 'main_id', $schemaManager)) {
             $this->connection->executeStatement(
-                'ALTER TABLE tl_lead CHANGE COLUMN `master_id` `main_id` int(10) UNSIGNED NOT NULL DEFAULT 0'
+                'ALTER TABLE tl_lead CHANGE COLUMN `master_id` `main_id` int(10) UNSIGNED NOT NULL DEFAULT 0',
             );
         }
 
         if ($this->shouldMigrateField('tl_lead_data', 'master_id', 'main_id', $schemaManager)) {
             $this->connection->executeStatement(
-                'ALTER TABLE tl_lead_data ADD COLUMN `main_id` int(10) UNSIGNED NOT NULL DEFAULT 0'
+                'ALTER TABLE tl_lead_data ADD COLUMN `main_id` int(10) UNSIGNED NOT NULL DEFAULT 0',
             );
 
             $this->connection->executeStatement('UPDATE tl_lead_data SET main_id = field_id');
@@ -49,6 +50,9 @@ class LeadDataMigration extends AbstractMigration
         return $this->createResult(true);
     }
 
+    /**
+     * @param AbstractSchemaManager<MySQLPlatform> $schemaManager
+     */
     private function shouldMigrateField(string $table, string $oldField, string $newField, AbstractSchemaManager $schemaManager): bool
     {
         if (!$schemaManager->tablesExist([$table])) {

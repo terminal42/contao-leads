@@ -1,8 +1,11 @@
 <?php
 
+use Contao\DC_Table;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+
 $GLOBALS['TL_DCA']['tl_lead'] = [
     'config' => [
-        'dataContainer' => \Contao\DC_Table::class,
+        'dataContainer' => DC_Table::class,
         'enableVersioning' => true,
         'closed' => true,
         'notEditable' => true,
@@ -43,12 +46,6 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
                 'href' => 'act=show',
                 'icon' => 'show.svg',
             ],
-        ],
-    ],
-    'select' => [
-        'buttons_callback' => [
-            // Add export buttons
-            //[Terminal42\LeadsBundle\EventListener\DataContainer\LeadListener::class, 'onSelectButtonsCallback'],
         ],
     ],
     'fields' => [
@@ -93,7 +90,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             'eval' => ['doNotShow' => true],
             'sql' => [
                 'type' => 'blob',
-                'length' => \Doctrine\DBAL\Platforms\AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB,
+                'length' => AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB,
                 'notnull' => false,
             ],
         ],

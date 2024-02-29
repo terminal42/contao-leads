@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\LeadsBundle\DependencyInjection\Attribute\AsLeadsExporter;
+use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 
 #[AsLeadsExporter('xlsx')]
 #[AsLeadsExporter('xls')]
@@ -22,6 +23,9 @@ use Terminal42\LeadsBundle\DependencyInjection\Attribute\AsLeadsExporter;
 #[AsLeadsExporter('html')]
 class PhpSpreadsheetExporter extends AbstractExporter
 {
+    /**
+     * @param ServiceLocator<FormatterInterface> $formatters
+     */
     public function __construct(
         private readonly string $projectDir,
         ServiceLocator $formatters,
@@ -42,7 +46,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
 
         $writer = IOFactory::createWriter(
             $this->generateSpreadsheet(),
-            $writerType
+            $writerType,
         );
 
         if ($writer instanceof Csv) {
@@ -84,7 +88,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
 
                 $sheet->setCellValue(
                     [$isList ? $col + 1 : $col, $row],
-                    $value
+                    $value,
                 );
             }
 

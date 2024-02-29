@@ -8,8 +8,10 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class FormDataValueEvent extends Event
 {
-    public function __construct(private mixed $value, private readonly array $field)
-    {
+    public function __construct(
+        private mixed $value,
+        private readonly array $field,
+    ) {
     }
 
     public function getField(): array

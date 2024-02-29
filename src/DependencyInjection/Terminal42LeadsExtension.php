@@ -26,14 +26,14 @@ class Terminal42LeadsExtension extends Extension
             AsLeadsExporter::class,
             static function (ChildDefinition $definition, AsLeadsExporter $attribute): void {
                 $definition->addTag('terminal42_leads.exporter', get_object_vars($attribute));
-            }
+            },
         );
 
         $container->registerAttributeForAutoconfiguration(
             AsLeadsFormatter::class,
             static function (ChildDefinition $definition, AsLeadsFormatter $attribute): void {
                 $definition->addTag('terminal42_leads.formatter', get_object_vars($attribute));
-            }
+            },
         );
 
         if (ContainerBuilder::willBeAvailable('tecnickcom/tcpdf', \TCPDF::class, [])) {

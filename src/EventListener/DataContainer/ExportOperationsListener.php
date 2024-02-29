@@ -48,7 +48,7 @@ class ExportOperationsListener
                     $class,
                     StringUtil::specialchars($title),
                     $attributes,
-                    $label
+                    $label,
                 ),
                 'icon' => $this->packages->getUrl('images/export.png', 'terminal42_leads'),
             ];
