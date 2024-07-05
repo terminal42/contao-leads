@@ -118,7 +118,16 @@ abstract class AbstractExporter implements ExporterInterface
         $columns = $this->getColumns();
 
         if (!$skipHeaders && $this->includeHeaderFields()) {
-            yield array_column($columns, 'name');
+            $row = [];
+            $i = 0;
+
+            foreach ($columns as $column) {
+                $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
+                $row[$col] = $column['name'];
+                $i++;
+            }
+
+            yield $row;
         }
 
         foreach ($this->iterateLeads() as $lead) {
@@ -298,10 +307,12 @@ abstract class AbstractExporter implements ExporterInterface
             $this->columns = [];
 
             foreach (StringUtil::deserialize($this->config['tokenFields'], true) as $config) {
-                $this->columns[] = $config + [
+                $this->columns[] = [
+                    'name' => $config['headerField'],
                     'value' => fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead)),
                     'label' => static fn () => '',
                     'output' => 'value',
+                    'targetColumn' => $config['targetColumn'],
                 ];
             }
         }
