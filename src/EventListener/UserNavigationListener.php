@@ -142,7 +142,7 @@ class UserNavigationListener
             );
         }
 
-        usort($forms, static fn (array $a, array $b) => ($a['leadMenuLabel'] ?: $a['title']) <=> $b['leadMenuLabel'] ?: $b['title']);
+        usort($forms, static fn (array $a, array $b) => ($a['leadMenuLabel'] ?: $a['title']) <=> ($b['leadMenuLabel'] ?: $b['title']));
 
         return $this->forms = $forms;
     }
