@@ -51,6 +51,7 @@ abstract class AbstractExporter implements ExporterInterface
             },
         );
 
+        $response->headers->set('Content-Type', 'application/octet-stream');
         $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
             $this->getFilename(),
