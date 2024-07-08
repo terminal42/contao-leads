@@ -354,6 +354,9 @@ abstract class AbstractExporter implements ExporterInterface
 
     protected function getOutput(string $value, string $label, string $format): string
     {
+        $value = implode(', ', StringUtil::deserialize($value, true));
+        $label = implode(', ', StringUtil::deserialize($label, true));
+
         switch ($format) {
             case self::OUTPUT_VALUE:
                 return $value;
