@@ -9,10 +9,10 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsHook('initializeSystem')]
@@ -26,7 +26,7 @@ class UserNavigationListener
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
         private readonly ScopeMatcher $scopeMatcher,
-        private readonly Security $security,
+        private readonly AuthorizationCheckerInterface $security,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly TranslatorInterface $translator,
         private readonly Packages $packages,
