@@ -26,7 +26,7 @@ class UserNavigationListener
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
         private readonly ScopeMatcher $scopeMatcher,
-        private readonly AuthorizationCheckerInterface $security,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly TranslatorInterface $translator,
         private readonly Packages $packages,
@@ -120,7 +120,7 @@ class UserNavigationListener
 
         $forms = $this->connection->fetchAllAssociative("SELECT id, title, leadMenuLabel FROM tl_form WHERE leadEnabled='1' AND leadMain=0");
 
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             // Find lead records where the related form has been deleted
             $forms = array_merge($forms, $this->connection->fetchAllAssociative(
                 <<<'SQL'
@@ -138,7 +138,7 @@ class UserNavigationListener
             // Remove forms the user does not have access to
             $forms = array_filter(
                 $forms,
-                fn (array $form) => $this->security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id']),
+                fn (array $form) => $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id']),
             );
         }
 
