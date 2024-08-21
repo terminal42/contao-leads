@@ -12,7 +12,7 @@ use Doctrine\DBAL\Connection;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[AsCallback('tl_lead', 'config.onload')]
 #[AsCallback('tl_lead_data', 'config.onload')]
@@ -22,7 +22,7 @@ class LeadAccessListener
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
         private readonly ScopeMatcher $scopeMatcher,
-        private readonly Security $security,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly Packages $packages,
     ) {
     }
@@ -56,7 +56,7 @@ class LeadAccessListener
             $formId = $request->query->getInt('form');
         }
 
-        if (!$this->security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $formId)) {
+        if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $formId)) {
             $exception = new AccessDeniedException('Not enough permissions to access leads ID "'.$formId.'"');
             $exception->setAttributes(ContaoCorePermissions::USER_CAN_ACCESS_FORM);
             $exception->setSubject($formId);

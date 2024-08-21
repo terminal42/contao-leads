@@ -11,8 +11,8 @@ use Doctrine\DBAL\Connection;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\LeadsBundle\Export\ExporterInterface;
 
@@ -25,7 +25,7 @@ class ExportButtonsListener
     public function __construct(
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
-        private readonly Security $security,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly TranslatorInterface $translator,
         private readonly ServiceLocator $exporters,
     ) {
@@ -59,7 +59,7 @@ class ExportButtonsListener
 
     protected function denyAccessUnlessGranted(mixed $attribute, mixed $subject = null, string $message = 'Access Denied.'): void
     {
-        if (!$this->security->isGranted($attribute, $subject)) {
+        if (!$this->authorizationChecker->isGranted($attribute, $subject)) {
             $exception = new AccessDeniedException($message);
             $exception->setAttributes($attribute);
             $exception->setSubject($subject);
