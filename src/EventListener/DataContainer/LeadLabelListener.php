@@ -60,6 +60,6 @@ class LeadLabelListener
             return (string) $value;
         }
 
-        return sprintf('%s [%s]', $title, $value);
+        return \sprintf('%s [%s]', $title, $value);
     }
 }

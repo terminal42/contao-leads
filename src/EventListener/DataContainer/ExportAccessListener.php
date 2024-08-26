@@ -11,8 +11,8 @@ use Contao\DataContainer;
 use Contao\Input;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[AsCallback('tl_lead_export', 'config.onload')]
 class ExportAccessListener

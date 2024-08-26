@@ -1,0 +1,11 @@
+name: CI
+
+on:
+    push: ~
+    pull_request: ~
+
+permissions: read-all
+
+jobs:
+    ci:
+        uses: 'terminal42/contao-build-tools/.github/workflows/build-tools.yml@main'

@@ -42,7 +42,7 @@ class ExportOperationsListener
             $operations[] = [
                 'label' => $config['name'],
                 'class' => 'leads_export__'.$config['type'],
-                'button_callback' => fn ($href, $label, $title, $class, $attributes) => sprintf(
+                'button_callback' => fn ($href, $label, $title, $class, $attributes) => \sprintf(
                     '<a href="%s" class="%s" title="%s" %s>%s</a> ',
                     $this->urlGenerator->generate('terminal42_leads_export', ['id' => $config['id']]),
                     $class,

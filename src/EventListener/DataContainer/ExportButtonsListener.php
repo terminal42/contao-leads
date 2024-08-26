@@ -46,7 +46,7 @@ class ExportButtonsListener
                 $this->export($config, $request->request->all('IDS'));
             }
 
-            $buttons['export_'.$config['id']] = sprintf(
+            $buttons['export_'.$config['id']] = \sprintf(
                 '<button type="submit" name="export_%s" id="export_%s" class="tl_submit" value="1">%s</button>',
                 $config['id'],
                 $config['id'],

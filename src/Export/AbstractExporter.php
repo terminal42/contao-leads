@@ -125,7 +125,7 @@ abstract class AbstractExporter implements ExporterInterface
             foreach ($columns as $column) {
                 $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
                 $row[$col] = $column['name'];
-                $i++;
+                ++$i;
             }
 
             yield $row;
@@ -367,13 +367,13 @@ abstract class AbstractExporter implements ExporterInterface
 
             case self::OUTPUT_BOTH:
                 if ('' !== $label && '' !== $value && $label !== $value) {
-                    return sprintf('%s [%s]', $label, $value);
+                    return \sprintf('%s [%s]', $label, $value);
                 }
 
                 return '' === $value ? $label : $value;
         }
 
-        throw new \RuntimeException(sprintf('Unknown output format "%s"', $format));
+        throw new \RuntimeException(\sprintf('Unknown output format "%s"', $format));
     }
 
     protected function format(mixed $value, string $type): int|string

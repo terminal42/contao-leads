@@ -11,8 +11,8 @@ use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[AsCallback('tl_lead', 'config.onload')]
 #[AsCallback('tl_lead_data', 'config.onload')]

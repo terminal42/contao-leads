@@ -61,7 +61,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
         $config = $this->getConfig();
 
         if ($config['useTemplate']) {
-            $template = FilesModel::findByPk($config['template']);
+            $template = FilesModel::findById($config['template']);
 
             if (null === $template) {
                 throw new \RuntimeException('Could not find export template.');
