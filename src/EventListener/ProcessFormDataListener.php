@@ -12,7 +12,7 @@ use Contao\StringUtil;
 use Contao\Validator;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Terminal42\LeadsBundle\Event\FormDataLabelEvent;
 use Terminal42\LeadsBundle\Event\FormDataValueEvent;
@@ -23,7 +23,7 @@ class ProcessFormDataListener
     public function __construct(
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
-        private readonly Security $security,
+        private readonly TokenStorageInterface $tokenStorage,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
@@ -45,7 +45,7 @@ class ProcessFormDataListener
     private function saveLead(array $postData, array $formConfig): int
     {
         $request = $this->requestStack->getCurrentRequest();
-        $user = $this->security->getUser();
+        $user = $this->tokenStorage->getToken()?->getUser();
 
         $this->connection->insert('tl_lead', [
             'tstamp' => time(),

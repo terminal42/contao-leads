@@ -12,7 +12,7 @@ use Contao\Input;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[AsCallback('tl_lead_export', 'config.onload')]
 class ExportAccessListener
@@ -21,7 +21,7 @@ class ExportAccessListener
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
         private readonly ScopeMatcher $scopeMatcher,
-        private readonly Security $security,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
     ) {
     }
 
@@ -44,7 +44,7 @@ class ExportAccessListener
 
     protected function denyAccessUnlessGranted(mixed $attribute, mixed $subject = null, string $message = 'Access Denied.'): void
     {
-        if (!$this->security->isGranted($attribute, $subject)) {
+        if (!$this->authorizationChecker->isGranted($attribute, $subject)) {
             $exception = new AccessDeniedException($message);
             $exception->setAttributes($attribute);
             $exception->setSubject($subject);
