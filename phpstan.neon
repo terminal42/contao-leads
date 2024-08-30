@@ -1,3 +1,4 @@
 parameters:
     ignoreErrors:
         - '#no value type specified in iterable type array#'
+        - '#unknown class Haste\\Util\\StringUtil#'
