@@ -30,7 +30,7 @@
         "contao/core-bundle": "^4.13 || ^5.0",
         "codefog/contao-haste": "^4.25 || ^5.0",
         "menatwork/contao-multicolumnwizard-bundle": "^3.6",
-        "phpoffice/phpspreadsheet": "^1.26 || ^2.0",
+        "phpoffice/phpspreadsheet": "^1.29.1 || ^2.2.1",
         "doctrine/dbal": "^3.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
         "symfony/asset": "^5.0 || ^6.0 || ^7.0",
