@@ -45,13 +45,13 @@ class LeadLabelListener
             '_member' => $this->formatToken($lead['member_name'], $row['member_id']),
         ];
 
-        $values = $this->connection->fetchAllKeyValue('SELECT name, value FROM tl_lead_data WHERE pid=?', [$row['id']]);
+        $records = $this->connection->fetchAllAssociative('SELECT name, value, label FROM tl_lead_data WHERE pid=?', [$row['id']]);
 
-        foreach ($values as $name => $value) {
+        foreach ($records as $record) {
             if ($this->stringParser) {
-                $this->stringParser->flatten(StringUtil::deserialize($value), $name, $tokens);
+                $this->stringParser->flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
             } else {
-                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($value), $name, $tokens);
+                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
             }
         }
 
