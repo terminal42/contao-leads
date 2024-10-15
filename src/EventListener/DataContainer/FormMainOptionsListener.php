@@ -8,14 +8,14 @@ use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[AsCallback('tl_form', 'fields.leadMain.options')]
 class FormMainOptionsListener
 {
     public function __construct(
         private readonly Connection $connection,
-        private readonly Security $security,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
     ) {
     }
 
@@ -29,7 +29,7 @@ class FormMainOptionsListener
         );
 
         foreach ($forms as $form) {
-            if (!$this->security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id'])) {
+            if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id'])) {
                 continue;
             }
 

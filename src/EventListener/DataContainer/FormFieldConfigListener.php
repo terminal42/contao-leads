@@ -96,7 +96,7 @@ class FormFieldConfigListener
         $options = [];
 
         foreach ($qb->fetchAllAssociative() as $field) {
-            $options[$field['id']] = empty($field['label']) ? $field['name'] : sprintf('%s (%s)', $field['label'], $field['name']);
+            $options[$field['id']] = empty($field['label']) ? $field['name'] : \sprintf('%s (%s)', $field['label'], $field['name']);
         }
 
         return $options;

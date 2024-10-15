@@ -69,7 +69,7 @@ class PurgeCron
         }
 
         if (null !== $this->contaoCronLogger) {
-            $this->contaoCronLogger->info(sprintf('Purged %s leads from %s forms.', $deleted, \count($forms)));
+            $this->contaoCronLogger->info(\sprintf('Purged %s leads from %s forms.', $deleted, \count($forms)));
         }
     }
 

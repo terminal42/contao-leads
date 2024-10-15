@@ -31,7 +31,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
         ServiceLocator $formatters,
         Connection $connection,
         TranslatorInterface $translator,
-        StringParser $parser,
+        StringParser|null $parser = null,
         ExpressionLanguage|null $expressionLanguage = null,
     ) {
         parent::__construct($formatters, $connection, $translator, $parser, $expressionLanguage);
@@ -61,7 +61,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
         $config = $this->getConfig();
 
         if ($config['useTemplate']) {
-            $template = FilesModel::findByPk($config['template']);
+            $template = FilesModel::findById($config['template']);
 
             if (null === $template) {
                 throw new \RuntimeException('Could not find export template.');

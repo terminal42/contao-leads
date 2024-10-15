@@ -16,7 +16,7 @@ class LeadLabelListener
 {
     public function __construct(
         private readonly Connection $connection,
-        private readonly StringParser $stringParser,
+        private readonly StringParser|null $stringParser = null,
     ) {
     }
 
@@ -45,13 +45,21 @@ class LeadLabelListener
             '_member' => $this->formatToken($lead['member_name'], $row['member_id']),
         ];
 
-        $values = $this->connection->fetchAllKeyValue('SELECT name, value FROM tl_lead_data WHERE pid=?', [$row['id']]);
+        $records = $this->connection->fetchAllAssociative('SELECT name, value, label FROM tl_lead_data WHERE pid=?', [$row['id']]);
 
-        foreach ($values as $name => $value) {
-            $this->stringParser->flatten(StringUtil::deserialize($value), $name, $tokens);
+        foreach ($records as $record) {
+            if ($this->stringParser) {
+                $this->stringParser->flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
+            } else {
+                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
+            }
         }
 
-        return $this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
+        if ($this->stringParser) {
+            return $this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
+        }
+
+        return \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
     }
 
     private function formatToken(string $title, int|string $value): string
@@ -60,6 +68,6 @@ class LeadLabelListener
             return (string) $value;
         }
 
-        return sprintf('%s [%s]', $title, $value);
+        return \sprintf('%s [%s]', $title, $value);
     }
 }

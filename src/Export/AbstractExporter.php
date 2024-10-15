@@ -34,7 +34,7 @@ abstract class AbstractExporter implements ExporterInterface
         private readonly ServiceLocator $formatters,
         private readonly Connection $connection,
         private readonly TranslatorInterface $translator,
-        private readonly StringParser $parser,
+        private readonly StringParser|null $parser,
         private readonly ExpressionLanguage|null $expressionLanguage = null,
     ) {
     }
@@ -51,6 +51,7 @@ abstract class AbstractExporter implements ExporterInterface
             },
         );
 
+        $response->headers->set('Content-Type', 'application/octet-stream');
         $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
             $this->getFilename(),
@@ -124,7 +125,7 @@ abstract class AbstractExporter implements ExporterInterface
             foreach ($columns as $column) {
                 $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
                 $row[$col] = $column['name'];
-                $i++;
+                ++$i;
             }
 
             yield $row;
@@ -307,9 +308,15 @@ abstract class AbstractExporter implements ExporterInterface
             $this->columns = [];
 
             foreach (StringUtil::deserialize($this->config['tokenFields'], true) as $config) {
+                if ($this->parser) {
+                    $value = fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
+                } else {
+                    $value = fn ($lead) => \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
+                }
+
                 $this->columns[] = [
                     'name' => $config['headerField'],
-                    'value' => fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead)),
+                    'value' => $value,
                     'label' => static fn () => '',
                     'output' => 'value',
                     'targetColumn' => $config['targetColumn'],
@@ -334,11 +341,19 @@ abstract class AbstractExporter implements ExporterInterface
             'datim' => Date::parse(Config::get('datimFormat')),
         ];
 
-        $filename = $this->parser->recursiveReplaceTokensAndTags(
-            $filename,
-            $tokens,
-            StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
-        );
+        if ($this->parser) {
+            $filename = $this->parser->recursiveReplaceTokensAndTags(
+                $filename,
+                $tokens,
+                StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
+            );
+        } else {
+            $filename = \Haste\Util\StringUtil::recursiveReplaceTokensAndTags(
+                $filename,
+                $tokens,
+                \Haste\Util\StringUtil::NO_TAGS & \Haste\Util\StringUtil::NO_BREAKS & \Haste\Util\StringUtil::NO_ENTITIES,
+            );
+        }
 
         if (!str_contains($filename, '.')) {
             return $filename.$this->getFileExtension();
@@ -354,6 +369,9 @@ abstract class AbstractExporter implements ExporterInterface
 
     protected function getOutput(string $value, string $label, string $format): string
     {
+        $value = implode(', ', StringUtil::deserialize($value, true));
+        $label = implode(', ', StringUtil::deserialize($label, true));
+
         switch ($format) {
             case self::OUTPUT_VALUE:
                 return $value;
@@ -363,13 +381,13 @@ abstract class AbstractExporter implements ExporterInterface
 
             case self::OUTPUT_BOTH:
                 if ('' !== $label && '' !== $value && $label !== $value) {
-                    return sprintf('%s [%s]', $label, $value);
+                    return \sprintf('%s [%s]', $label, $value);
                 }
 
                 return '' === $value ? $label : $value;
         }
 
-        throw new \RuntimeException(sprintf('Unknown output format "%s"', $format));
+        throw new \RuntimeException(\sprintf('Unknown output format "%s"', $format));
     }
 
     protected function format(mixed $value, string $type): int|string
@@ -387,7 +405,11 @@ abstract class AbstractExporter implements ExporterInterface
         ];
 
         foreach ($lead['data'] as $data) {
-            $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
+            if ($this->parser) {
+                $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
+            } else {
+                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
+            }
         }
 
         return $tokens;

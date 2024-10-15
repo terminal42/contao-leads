@@ -11,7 +11,7 @@ use Doctrine\DBAL\Connection;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsCallback('tl_lead', 'config.onload')]
@@ -20,7 +20,7 @@ class ExportOperationsListener
     public function __construct(
         private readonly Connection $connection,
         private readonly RequestStack $requestStack,
-        private readonly Security $security,
+        private readonly AuthorizationCheckerInterface $authorizationChecker,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly TranslatorInterface $translator,
         private readonly Packages $packages,
@@ -42,7 +42,7 @@ class ExportOperationsListener
             $operations[] = [
                 'label' => $config['name'],
                 'class' => 'leads_export__'.$config['type'],
-                'button_callback' => fn ($href, $label, $title, $class, $attributes) => sprintf(
+                'button_callback' => fn ($href, $label, $title, $class, $attributes) => \sprintf(
                     '<a href="%s" class="%s" title="%s" %s>%s</a> ',
                     $this->urlGenerator->generate('terminal42_leads_export', ['id' => $config['id']]),
                     $class,
@@ -55,8 +55,8 @@ class ExportOperationsListener
         }
 
         if (
-            $this->security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'form')
-            && $this->security->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FIELDS_OF_TABLE, 'tl_lead_export')
+            $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'form')
+            && $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FIELDS_OF_TABLE, 'tl_lead_export')
         ) {
             $operations[] = [
                 'label' => [

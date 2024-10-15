@@ -28,13 +28,30 @@
     "require": {
         "php": "^8.1",
         "contao/core-bundle": "^4.13 || ^5.0",
-        "codefog/contao-haste": "^5.0",
+        "codefog/contao-haste": "^4.25 || ^5.0",
         "menatwork/contao-multicolumnwizard-bundle": "^3.6",
-        "phpoffice/phpspreadsheet": "^1.26"
+        "phpoffice/phpspreadsheet": "^1.26 || ^2.0",
+        "doctrine/dbal": "^3.0",
+        "psr/log": "^1.0 || ^2.0 || ^3.0",
+        "symfony/asset": "^5.0 || ^6.0 || ^7.0",
+        "symfony/config": "^5.0 || ^6.0 || ^7.0",
+        "symfony/dependency-injection": "^5.0 || ^6.0 || ^7.0",
+        "symfony/event-dispatcher-contracts": "^2.0 || ^3.0",
+        "symfony/expression-language": "^5.0 || ^6.0 || ^7.0",
+        "symfony/filesystem": "^5.0 || ^6.0 || ^7.0",
+        "symfony/framework-bundle": "^5.0 || ^6.0 || ^7.0",
+        "symfony/http-foundation": "^5.0 || ^6.0 || ^7.0",
+        "symfony/http-kernel": "^5.0 || ^6.0 || ^7.0",
+        "symfony/routing": "^5.0 || ^6.0 || ^7.0",
+        "symfony/security-core": "^5.0 || ^6.0 || ^7.0",
+        "symfony/translation-contracts": "^2.0 || ^3.0"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.0",
-        "terminal42/contao-build-tools": "dev-main"
+        "terminal42/contao-build-tools": "dev-main",
+        "tecnickcom/tcpdf": "^6.5",
+        "dompdf/dompdf": "^1.0 || ^2.0",
+        "mpdf/mpdf": "^8.1.1"
     },
     "suggest": {
         "tecnickcom/tcpdf": "Export leads to PDF document (using TCPDF)",
@@ -51,5 +68,14 @@
     },
     "extra": {
         "contao-manager-plugin": "Terminal42\\LeadsBundle\\ContaoManager\\Plugin"
+    },
+    "config": {
+        "allow-plugins": {
+            "contao-components/installer": false,
+            "contao-community-alliance/composer-plugin": false,
+            "php-http/discovery": false,
+            "contao/manager-plugin": false,
+            "terminal42/contao-build-tools": true
+        }
     }
 }
