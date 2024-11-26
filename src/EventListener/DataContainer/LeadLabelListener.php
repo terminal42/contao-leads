@@ -47,11 +47,13 @@ class LeadLabelListener
 
         $records = $this->connection->fetchAllAssociative('SELECT name, value, label FROM tl_lead_data WHERE pid=?', [$row['id']]);
 
-        foreach ($records as $record) {
+        foreach ($records as $record) {            
+            $label = StringUtil::deserialize($record['label']);
+            $value = (is_array($label) && array_filter($label)) || (!is_array($label) && !empty($label)) ? $label : StringUtil::deserialize($record['value']);
             if ($this->stringParser) {
-                $this->stringParser->flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
+                $this->stringParser->flatten($value, $record['name'], $tokens);
             } else {
-                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
+                \Haste\Util\StringUtil::flatten($value, $record['name'], $tokens);
             }
         }
 
