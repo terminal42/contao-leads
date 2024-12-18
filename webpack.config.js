@@ -1,4 +1,4 @@
-const { Encore } = require('@terminal42/contao-build-tools');
+const Encore = require('@terminal42/contao-build-tools');
 
 module.exports = Encore()
     .setOutputPath('public/')
