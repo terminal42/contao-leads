@@ -48,10 +48,22 @@ class LeadLabelListener
         $records = $this->connection->fetchAllAssociative('SELECT name, value, label FROM tl_lead_data WHERE pid=?', [$row['id']]);
 
         foreach ($records as $record) {
+            // Try to use label over value if it is a non-empty scalar value or a non-empty array
+            foreach ([$record['label'], $record['value']] as $value) {
+                $value = StringUtil::deserialize($value);
+
+                if (
+                    (!\is_array($value) && '' !== (string) $value)
+                    || (\is_array($value) && [] !== array_filter($value))
+                ) {
+                    break;
+                }
+            }
+
             if ($this->stringParser) {
-                $this->stringParser->flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
+                $this->stringParser->flatten($value, $record['name'], $tokens);
             } else {
-                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($record['label'] ?: $record['value']), $record['name'], $tokens);
+                \Haste\Util\StringUtil::flatten($value, $record['name'], $tokens);
             }
         }
 
