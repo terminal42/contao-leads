@@ -79,6 +79,10 @@ class UserNavigationListener
      */
     public function onGetUserNavigation(array $modules): array
     {
+        if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead')) {
+            return $modules;
+        }
+
         $forms = $this->getForms();
 
         if (empty($forms)) {
