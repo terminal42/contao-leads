@@ -86,6 +86,7 @@ abstract class AbstractExporter implements ExporterInterface
      *     name: string,
      *     type: string,
      *     filename: string,
+     *     valueBinder: string,
      *     headerFields: bool|string,
      *     export: string,
      *     output: string,
@@ -114,7 +115,7 @@ abstract class AbstractExporter implements ExporterInterface
         return (bool) ($this->config['headerFields'] ?? false);
     }
 
-    protected function iterateRows(bool $skipHeaders = false): \Generator
+    protected function iterateRows(bool $skipHeaders = false, bool $withConfig = false): \Generator
     {
         $columns = $this->getColumns();
 
@@ -124,7 +125,11 @@ abstract class AbstractExporter implements ExporterInterface
 
             foreach ($columns as $column) {
                 $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
-                $row[$col] = $column['name'];
+                if ($withConfig) {
+                    $row[$col] = array_merge($column, ['value' => $column['name'], 'label' => $column['name']]);
+                } else {
+                    $row[$col] = $column['name'];
+                }
                 ++$i;
             }
 
@@ -145,7 +150,14 @@ abstract class AbstractExporter implements ExporterInterface
                 }
 
                 $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
-                $row[$col] = $this->getOutput($value, $label, $column['output'] ?? $this->getConfig()['output'] ?? self::OUTPUT_BOTH);
+                $value = $this->getOutput($value, $label, $column['output'] ?? $this->getConfig()['output'] ?? self::OUTPUT_BOTH);
+
+                if ($withConfig) {
+                    $row[$col] = array_merge($column, ['value' => $value, 'label' => $label]);
+                } else {
+                    $row[$col] = $value;
+                }
+
                 ++$i;
             }
 
@@ -288,9 +300,7 @@ abstract class AbstractExporter implements ExporterInterface
                     continue;
                 }
 
-                $col = $columns[$config['field']];
-                $col['output'] = $config['output'];
-                $col['format'] = $config['format'];
+                $col = array_merge($config, $columns[$config['field']]);
 
                 if (!empty($config['name'])) {
                     $col['name'] = $config['name'];
@@ -310,13 +320,12 @@ abstract class AbstractExporter implements ExporterInterface
             foreach (StringUtil::deserialize($this->config['tokenFields'], true) as $config) {
                 $value = fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
 
-                $this->columns[] = [
+                $this->columns[] = array_merge($config, [
                     'name' => $config['headerField'],
                     'value' => $value,
                     'label' => static fn () => '',
                     'output' => 'value',
-                    'targetColumn' => $config['targetColumn'],
-                ];
+                ]);
             }
         }
 

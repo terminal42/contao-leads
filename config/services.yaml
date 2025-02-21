@@ -5,6 +5,7 @@ services:
         bind:
             $exporters: '@terminal42_leads.exporters'
             $formatters: '@terminal42_leads.formatters'
+            $valueBinders: '@terminal42_leads.value_binders'
             $expressionLanguage: '@terminal42_leads.expression_language'
             $projectDir: '%kernel.project_dir%'
 
@@ -21,3 +22,19 @@ services:
     terminal42_leads.formatters:
         class: Symfony\Component\DependencyInjection\ServiceLocator
         arguments: [!tagged_iterator { tag: 'terminal42_leads.formatter', index_by: 'type' }]
+
+    terminal42_leads.value_binders:
+        class: Symfony\Component\DependencyInjection\ServiceLocator
+        arguments: [!tagged_iterator { tag: 'terminal42_leads.value_binder', index_by: 'type' }]
+
+    terminal42_leads.value_binder.default:
+        class: PhpOffice\PhpSpreadsheet\Cell\DefaultValueBinder
+        tags: [{ name: terminal42_leads.value_binder, type: default }]
+
+    terminal42_leads.value_binder.advanced:
+        class: PhpOffice\PhpSpreadsheet\Cell\AdvancedValueBinder
+        tags: [ { name: terminal42_leads.value_binder, type: advanced } ]
+
+    terminal42_leads.value_binder.string:
+        class: PhpOffice\PhpSpreadsheet\Cell\StringValueBinder
+        tags: [ { name: terminal42_leads.value_binder, type: string } ]
