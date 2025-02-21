@@ -34,8 +34,8 @@ abstract class AbstractExporter implements ExporterInterface
         private readonly ServiceLocator $formatters,
         private readonly Connection $connection,
         private readonly TranslatorInterface $translator,
-        private readonly StringParser|null $parser,
-        private readonly ExpressionLanguage|null $expressionLanguage = null,
+        private readonly StringParser $parser,
+        private readonly ExpressionLanguage $expressionLanguage,
     ) {
     }
 
@@ -308,11 +308,7 @@ abstract class AbstractExporter implements ExporterInterface
             $this->columns = [];
 
             foreach (StringUtil::deserialize($this->config['tokenFields'], true) as $config) {
-                if ($this->parser) {
-                    $value = fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
-                } else {
-                    $value = fn ($lead) => \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
-                }
+                $value = fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
 
                 $this->columns[] = [
                     'name' => $config['headerField'],
@@ -341,19 +337,11 @@ abstract class AbstractExporter implements ExporterInterface
             'datim' => Date::parse(Config::get('datimFormat')),
         ];
 
-        if ($this->parser) {
-            $filename = $this->parser->recursiveReplaceTokensAndTags(
-                $filename,
-                $tokens,
-                StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
-            );
-        } else {
-            $filename = \Haste\Util\StringUtil::recursiveReplaceTokensAndTags(
-                $filename,
-                $tokens,
-                \Haste\Util\StringUtil::NO_TAGS & \Haste\Util\StringUtil::NO_BREAKS & \Haste\Util\StringUtil::NO_ENTITIES,
-            );
-        }
+        $filename = $this->parser->recursiveReplaceTokensAndTags(
+            $filename,
+            $tokens,
+            StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
+        );
 
         if (!str_contains($filename, '.')) {
             return $filename.$this->getFileExtension();
@@ -405,11 +393,7 @@ abstract class AbstractExporter implements ExporterInterface
         ];
 
         foreach ($lead['data'] as $data) {
-            if ($this->parser) {
-                $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
-            } else {
-                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
-            }
+            $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
         }
 
         return $tokens;

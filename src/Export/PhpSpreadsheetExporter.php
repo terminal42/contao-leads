@@ -31,8 +31,8 @@ class PhpSpreadsheetExporter extends AbstractExporter
         ServiceLocator $formatters,
         Connection $connection,
         TranslatorInterface $translator,
-        StringParser|null $parser = null,
-        ExpressionLanguage|null $expressionLanguage = null,
+        StringParser $parser,
+        ExpressionLanguage $expressionLanguage,
     ) {
         parent::__construct($formatters, $connection, $translator, $parser, $expressionLanguage);
     }
