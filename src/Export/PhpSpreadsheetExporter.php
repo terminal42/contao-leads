@@ -25,7 +25,7 @@ use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 class PhpSpreadsheetExporter extends AbstractExporter
 {
     /**
-     * @param ServiceLocator<IValueBinder> $valueBinders
+     * @param ServiceLocator<IValueBinder>       $valueBinders
      * @param ServiceLocator<FormatterInterface> $formatters
      */
     public function __construct(
@@ -98,7 +98,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
                 $sheet->setCellValue(
                     [$isList ? $col + 1 : $col, $row],
                     $value,
-                    $this->valueBinders->has($config['valueBinder'] ?? '') ? $this->valueBinders->get($config['valueBinder']) : null
+                    $this->valueBinders->has($config['valueBinder'] ?? '') ? $this->valueBinders->get($config['valueBinder']) : null,
                 );
             }
 

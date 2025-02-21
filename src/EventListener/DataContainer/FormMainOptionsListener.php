@@ -29,7 +29,7 @@ class FormMainOptionsListener
         );
 
         foreach ($forms as $form) {
-            if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id'])) {
+            if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $form['id'])) {
                 continue;
             }
 

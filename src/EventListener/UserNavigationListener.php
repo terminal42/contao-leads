@@ -142,7 +142,7 @@ class UserNavigationListener
             // Remove forms the user does not have access to
             $forms = array_filter(
                 $forms,
-                fn (array $form) => $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $form['id']),
+                fn (array $form) => $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $form['id']),
             );
         }
 
