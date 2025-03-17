@@ -31,8 +31,11 @@ class ExportValueBinderListener
 
         if (
             $data
-            && ($exporter = $this->exporters->get($data['type']))
-            && !$exporter instanceof PhpSpreadsheetExporter
+            && (
+                !$this->exporters->has($data['type'])
+                || !($exporter = $this->exporters->get($data['type']))
+                || !$exporter instanceof PhpSpreadsheetExporter
+            )
         ) {
             return;
         }
