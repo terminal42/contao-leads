@@ -1,5 +1,6 @@
 <?php
 
+use Contao\DataContainer;
 use Contao\DC_Table;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 
@@ -20,9 +21,9 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
     ],
     'list' => [
         'sorting' => [
-            'mode' => 2,
+            'mode' => DataContainer::MODE_SORTABLE,
             'fields' => ['created DESC'],
-            'flag' => 8,
+            'flag' => DataContainer::SORT_MONTH_DESC,
             'panelLayout' => 'filter;data_search,sort,limit',
         ],
         'label' => [
@@ -74,14 +75,14 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
         ],
         'created' => [
             'sorting' => true,
-            'flag' => 8,
+            'flag' => DataContainer::SORT_MONTH_DESC,
             'eval' => ['rgxp' => 'datim'],
             'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ],
         'member_id' => [
             'filter' => true,
             'sorting' => true,
-            'flag' => 12,
+            'flag' => DataContainer::SORT_DESC,
             'foreignKey' => "tl_member.CONCAT(lastname, ' ', firstname)",
             'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
             'relation' => ['table' => 'tl_member', 'type' => 'hasOne'],

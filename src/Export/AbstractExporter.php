@@ -214,8 +214,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $data = $lead + ['data' => $cols];
 
                 if (
-                    null !== $this->expressionLanguage
-                    && !empty($this->config['expression'])
+                    !empty($this->config['expression'])
                     && !$this->expressionLanguage->evaluate($this->config['expression'], $this->getTokens($data))
                 ) {
                     continue;
