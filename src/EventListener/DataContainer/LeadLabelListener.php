@@ -68,10 +68,10 @@ class LeadLabelListener
         }
 
         if ($this->stringParser) {
-            return $this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
+            return StringUtil::specialchars($this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens));
         }
 
-        return \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
+        return StringUtil::specialchars(\Haste\Util\StringUtil::recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens));
     }
 
     private function formatToken(string $title, int|string $value): string
