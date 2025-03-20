@@ -14,6 +14,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\String\UnicodeString;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 
@@ -43,6 +44,7 @@ abstract class AbstractExporter implements ExporterInterface
     {
         $this->init($config, $ids);
 
+        $filename = $this->getFilename();
         $response = new StreamedResponse(
             function (): void {
                 $fp = fopen('php://output', 'w');
@@ -54,7 +56,8 @@ abstract class AbstractExporter implements ExporterInterface
         $response->headers->set('Content-Type', 'application/octet-stream');
         $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            $this->getFilename(),
+            $filename,
+            (new UnicodeString($filename))->ascii()->toString(),
         ));
 
         $this->finish($config);
