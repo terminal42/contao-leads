@@ -9,8 +9,10 @@ use Contao\Config;
 use Contao\Date;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -37,6 +39,7 @@ abstract class AbstractExporter implements ExporterInterface
         private readonly TranslatorInterface $translator,
         private readonly StringParser $parser,
         private readonly ExpressionLanguage $expressionLanguage,
+        private readonly LoggerInterface|null $logger = null,
     ) {
     }
 
@@ -216,11 +219,15 @@ abstract class AbstractExporter implements ExporterInterface
 
                 $data = $lead + ['data' => $cols];
 
-                if (
-                    !empty($this->config['expression'])
-                    && !$this->expressionLanguage->evaluate($this->config['expression'], $this->getTokens($data))
-                ) {
-                    continue;
+                try {
+                    if (
+                        !empty($this->config['expression'])
+                        && !$this->expressionLanguage->evaluate($this->config['expression'], $this->getTokens($data))
+                    ) {
+                        continue;
+                    }
+                } catch (SyntaxError $e) {
+                    $this->logger?->error(\sprintf('Could not evaluate export filter expression for lead %s', $lead['id']), ['exception' => $e]);
                 }
 
                 yield $data;
