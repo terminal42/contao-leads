@@ -11,6 +11,7 @@ use PhpOffice\PhpSpreadsheet\Cell\IValueBinder;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -36,8 +37,9 @@ class PhpSpreadsheetExporter extends AbstractExporter
         TranslatorInterface $translator,
         StringParser $parser,
         ExpressionLanguage $expressionLanguage,
+        LoggerInterface|null $logger = null,
     ) {
-        parent::__construct($formatters, $connection, $translator, $parser, $expressionLanguage);
+        parent::__construct($formatters, $connection, $translator, $parser, $expressionLanguage, $logger);
     }
 
     protected function doExport($stream): void
