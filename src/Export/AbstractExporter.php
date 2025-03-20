@@ -228,6 +228,8 @@ abstract class AbstractExporter implements ExporterInterface
                     }
                 } catch (SyntaxError $e) {
                     $this->logger?->error(\sprintf('Could not evaluate export filter expression for lead %s', $lead['id']), ['exception' => $e]);
+
+                    continue;
                 }
 
                 yield $data;
