@@ -68,10 +68,13 @@ class LeadLabelListener
         }
 
         if ($this->stringParser) {
-            return StringUtil::specialchars($this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens));
+            $return = $this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
+        } else {
+            $return = \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
         }
 
-        return StringUtil::specialchars(\Haste\Util\StringUtil::recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens));
+        // Encode specialchars for the back end view (see terminal42/contao-leads#170)
+        return StringUtil::specialchars($return);
     }
 
     private function formatToken(string $title, int|string $value): string
