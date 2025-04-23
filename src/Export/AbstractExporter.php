@@ -44,12 +44,17 @@ abstract class AbstractExporter implements ExporterInterface
     {
         $this->init($config, $ids);
 
+        $fp = fopen('php://temp', 'w');
+        $this->doExport($fp);
+        rewind($fp);
+
         $filename = $this->getFilename();
         $response = new StreamedResponse(
-            function (): void {
-                $fp = fopen('php://output', 'w');
-                $this->doExport($fp);
+            function () use ($fp): void {
+                $output = fopen('php://output', 'w');
+                stream_copy_to_stream($fp, $output);
                 fclose($fp);
+                fclose($output);
             },
         );
 
