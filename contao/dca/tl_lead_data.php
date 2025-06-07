@@ -1,5 +1,6 @@
 <?php
 
+use Contao\DataContainer;
 use Contao\DC_Table;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 
@@ -21,9 +22,9 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = [
     ],
     'list' => [
         'sorting' => [
-            'mode' => 4,
+            'mode' => DataContainer::MODE_PARENT,
             'fields' => ['sorting'],
-            'flag' => 1,
+            'flag' => DataContainer::SORT_INITIAL_LETTER_ASC,
             'panelLayout' => 'filter;search,limit',
             'headerFields' => ['created', 'form_id'],
         ],

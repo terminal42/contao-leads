@@ -39,7 +39,7 @@ class ExportAccessListener
 
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'form');
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_EDIT_FIELDS_OF_TABLE, 'tl_lead_export');
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $this->getFormId());
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $this->getFormId());
     }
 
     protected function denyAccessUnlessGranted(mixed $attribute, mixed $subject = null, string $message = 'Access Denied.'): void

@@ -62,10 +62,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
     ],
     'palettes' => [
         '__selector__' => ['type', 'useTemplate', 'export'],
-        'default' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
-        'csv' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{csv_legend:hide},csvSeparator,csvEnclosure,csvEscape,eol;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
-        'xls' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:hide},useTemplate;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
-        'xlsx' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:hide},useTemplate;{conditions_legend},expression;{date_legend:hide},lastRun,skipLastRun',
+        'default' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'csv' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{csv_legend:collapsed},csvSeparator,csvEnclosure,csvEscape,eol;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'xls' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'xlsx' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
     ],
     'subpalettes' => [
         'export_all' => 'output',
@@ -110,6 +110,13 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'eval' => ['decodeEntities' => true, 'maxlength' => 128, 'helpwizard' => true, 'tl_class' => 'w50'],
             'explanation' => 'leadsTags',
             'sql' => ['type' => 'string', 'length' => 128, 'default' => ''],
+        ],
+        'valueBinder' => [
+            'exclude' => true,
+            'inputType' => 'select',
+            'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['valueBinders'],
+            'eval' => ['helpwizard' => true, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 32, 'default' => 'default'],
         ],
         'headerFields' => [
             'exclude' => true,

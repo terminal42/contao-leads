@@ -9,7 +9,7 @@ use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Terminal42\LeadsBundle\Export\ExporterInterface;
 
 #[Route(
@@ -38,7 +38,7 @@ class LeadsExportController extends AbstractController
         }
 
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $config['pid']);
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $config['pid']);
 
         if (!$this->exporters->has($config['type'])) {
             throw $this->createNotFoundException('Leads export type "'.$config['type'].'" not found.');

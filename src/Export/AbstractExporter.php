@@ -14,6 +14,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\String\UnicodeString;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 
@@ -34,8 +35,8 @@ abstract class AbstractExporter implements ExporterInterface
         private readonly ServiceLocator $formatters,
         private readonly Connection $connection,
         private readonly TranslatorInterface $translator,
-        private readonly StringParser|null $parser,
-        private readonly ExpressionLanguage|null $expressionLanguage = null,
+        private readonly StringParser $parser,
+        private readonly ExpressionLanguage $expressionLanguage,
     ) {
     }
 
@@ -43,18 +44,25 @@ abstract class AbstractExporter implements ExporterInterface
     {
         $this->init($config, $ids);
 
+        $fp = fopen('php://temp', 'w');
+        $this->doExport($fp);
+        rewind($fp);
+
+        $filename = $this->getFilename();
         $response = new StreamedResponse(
-            function (): void {
-                $fp = fopen('php://output', 'w');
-                $this->doExport($fp);
+            function () use ($fp): void {
+                $output = fopen('php://output', 'w');
+                stream_copy_to_stream($fp, $output);
                 fclose($fp);
+                fclose($output);
             },
         );
 
         $response->headers->set('Content-Type', 'application/octet-stream');
         $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            $this->getFilename(),
+            $filename,
+            (new UnicodeString($filename))->ascii()->toString(),
         ));
 
         $this->finish($config);
@@ -86,6 +94,7 @@ abstract class AbstractExporter implements ExporterInterface
      *     name: string,
      *     type: string,
      *     filename: string,
+     *     valueBinder: string,
      *     headerFields: bool|string,
      *     export: string,
      *     output: string,
@@ -114,7 +123,7 @@ abstract class AbstractExporter implements ExporterInterface
         return (bool) ($this->config['headerFields'] ?? false);
     }
 
-    protected function iterateRows(bool $skipHeaders = false): \Generator
+    protected function iterateRows(bool $skipHeaders = false, bool $withConfig = false): \Generator
     {
         $columns = $this->getColumns();
 
@@ -124,7 +133,11 @@ abstract class AbstractExporter implements ExporterInterface
 
             foreach ($columns as $column) {
                 $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
-                $row[$col] = $column['name'];
+                if ($withConfig) {
+                    $row[$col] = array_merge($column, ['value' => $column['name'], 'label' => $column['name']]);
+                } else {
+                    $row[$col] = $column['name'];
+                }
                 ++$i;
             }
 
@@ -145,7 +158,14 @@ abstract class AbstractExporter implements ExporterInterface
                 }
 
                 $col = empty($column['targetColumn']) ? $i : $column['targetColumn'];
-                $row[$col] = $this->getOutput($value, $label, $column['output'] ?? $this->getConfig()['output'] ?? self::OUTPUT_BOTH);
+                $value = $this->getOutput($value, $label, $column['output'] ?? $this->getConfig()['output'] ?? self::OUTPUT_BOTH);
+
+                if ($withConfig) {
+                    $row[$col] = array_merge($column, ['value' => $value, 'label' => $label]);
+                } else {
+                    $row[$col] = $value;
+                }
+
                 ++$i;
             }
 
@@ -202,8 +222,7 @@ abstract class AbstractExporter implements ExporterInterface
                 $data = $lead + ['data' => $cols];
 
                 if (
-                    null !== $this->expressionLanguage
-                    && !empty($this->config['expression'])
+                    !empty($this->config['expression'])
                     && !$this->expressionLanguage->evaluate($this->config['expression'], $this->getTokens($data))
                 ) {
                     continue;
@@ -288,9 +307,7 @@ abstract class AbstractExporter implements ExporterInterface
                     continue;
                 }
 
-                $col = $columns[$config['field']];
-                $col['output'] = $config['output'];
-                $col['format'] = $config['format'];
+                $col = array_merge($config, $columns[$config['field']]);
 
                 if (!empty($config['name'])) {
                     $col['name'] = $config['name'];
@@ -308,19 +325,14 @@ abstract class AbstractExporter implements ExporterInterface
             $this->columns = [];
 
             foreach (StringUtil::deserialize($this->config['tokenFields'], true) as $config) {
-                if ($this->parser) {
-                    $value = fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
-                } else {
-                    $value = fn ($lead) => \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
-                }
+                $value = fn ($lead) => $this->parser->recursiveReplaceTokensAndTags($config['tokensValue'], $this->getTokens($lead));
 
-                $this->columns[] = [
+                $this->columns[] = array_merge($config, [
                     'name' => $config['headerField'],
                     'value' => $value,
                     'label' => static fn () => '',
                     'output' => 'value',
-                    'targetColumn' => $config['targetColumn'],
-                ];
+                ]);
             }
         }
 
@@ -341,19 +353,11 @@ abstract class AbstractExporter implements ExporterInterface
             'datim' => Date::parse(Config::get('datimFormat')),
         ];
 
-        if ($this->parser) {
-            $filename = $this->parser->recursiveReplaceTokensAndTags(
-                $filename,
-                $tokens,
-                StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
-            );
-        } else {
-            $filename = \Haste\Util\StringUtil::recursiveReplaceTokensAndTags(
-                $filename,
-                $tokens,
-                \Haste\Util\StringUtil::NO_TAGS & \Haste\Util\StringUtil::NO_BREAKS & \Haste\Util\StringUtil::NO_ENTITIES,
-            );
-        }
+        $filename = $this->parser->recursiveReplaceTokensAndTags(
+            $filename,
+            $tokens,
+            StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
+        );
 
         if (!str_contains($filename, '.')) {
             return $filename.$this->getFileExtension();
@@ -405,11 +409,7 @@ abstract class AbstractExporter implements ExporterInterface
         ];
 
         foreach ($lead['data'] as $data) {
-            if ($this->parser) {
-                $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
-            } else {
-                \Haste\Util\StringUtil::flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
-            }
+            $this->parser->flatten(StringUtil::deserialize($data['value']), $data['name'], $tokens);
         }
 
         return $tokens;

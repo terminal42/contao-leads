@@ -1,4 +1,4 @@
-import './styles/leads.scss'
+import './styles/leads.scss';
 import './images/field.png';
 import './images/export.png';
 

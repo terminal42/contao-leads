@@ -56,9 +56,9 @@ class LeadAccessListener
             $formId = $request->query->getInt('form');
         }
 
-        if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_FORM, $formId)) {
+        if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $formId)) {
             $exception = new AccessDeniedException('Not enough permissions to access leads ID "'.$formId.'"');
-            $exception->setAttributes(ContaoCorePermissions::USER_CAN_ACCESS_FORM);
+            $exception->setAttributes(ContaoCorePermissions::USER_CAN_EDIT_FORM);
             $exception->setSubject($formId);
 
             throw $exception;

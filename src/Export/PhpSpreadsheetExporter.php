@@ -7,6 +7,7 @@ namespace Terminal42\LeadsBundle\Export;
 use Codefog\HasteBundle\StringParser;
 use Contao\FilesModel;
 use Doctrine\DBAL\Connection;
+use PhpOffice\PhpSpreadsheet\Cell\IValueBinder;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -24,15 +25,17 @@ use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 class PhpSpreadsheetExporter extends AbstractExporter
 {
     /**
+     * @param ServiceLocator<IValueBinder>       $valueBinders
      * @param ServiceLocator<FormatterInterface> $formatters
      */
     public function __construct(
         private readonly string $projectDir,
+        private readonly ServiceLocator $valueBinders,
         ServiceLocator $formatters,
         Connection $connection,
         TranslatorInterface $translator,
-        StringParser|null $parser = null,
-        ExpressionLanguage|null $expressionLanguage = null,
+        StringParser $parser,
+        ExpressionLanguage $expressionLanguage,
     ) {
         parent::__construct($formatters, $connection, $translator, $parser, $expressionLanguage);
     }
@@ -77,10 +80,16 @@ class PhpSpreadsheetExporter extends AbstractExporter
 
         $sheet = $spreadsheet->getActiveSheet();
 
-        foreach ($this->iterateRows() as $data) {
+        if ($this->valueBinders->has($config['valueBinder'])) {
+            $spreadsheet->setValueBinder($this->valueBinders->get($config['valueBinder']));
+        }
+
+        foreach ($this->iterateRows(false, true) as $data) {
             $isList = array_is_list($data);
 
-            foreach ($data as $col => $value) {
+            foreach ($data as $col => $config) {
+                $value = $config['value'];
+
                 // Do not write empty string so columns in Excel can be skipped
                 if ('' === $value) {
                     continue;
@@ -89,6 +98,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
                 $sheet->setCellValue(
                     [$isList ? $col + 1 : $col, $row],
                     $value,
+                    $this->valueBinders->has($config['valueBinder'] ?? '') ? $this->valueBinders->get($config['valueBinder']) : null,
                 );
             }
 
