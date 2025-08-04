@@ -2,7 +2,7 @@ const fetchColumnDisplayElements = (mcw) => mcw.querySelectorAll('td.column_disp
 
 const convertIndexToExcelColumn = (i) => {
     const alpha = parseInt(i / 27, 10);
-    const remainder = i - (alpha * 26);
+    const remainder = i - alpha * 26;
     let column = '';
 
     if (alpha > 0) {
@@ -20,9 +20,11 @@ const updateColumnDisplays = (elements) => {
     elements.forEach((el, index) => {
         const humanReadableIndex = index + 1;
 
-        el.set('html', `
-        <div class="index">${humanReadableIndex}</div>
-        <div class="excel">${convertIndexToExcelColumn(humanReadableIndex)}</div>`);
+        el.set(
+            'html',
+            `<div class="index">${humanReadableIndex}</div>
+            <div class="excel">${convertIndexToExcelColumn(humanReadableIndex)}</div>`,
+        );
     });
 };
 
@@ -30,7 +32,7 @@ export default function () {
     const mcws = document.querySelectorAll('table.multicolumnwizard');
 
     // Cannot use regular click events because of MCW
-    const MutationObserver = (function () {
+    const detectMutationObserver = function () {
         const prefixes = ['WebKit', 'Moz', 'O', 'Ms', ''];
         for (let i = 0; i < prefixes.length; i += 1) {
             if (`${prefixes[i]}MutationObserver` in window) {
@@ -38,7 +40,8 @@ export default function () {
             }
         }
         return false;
-    }());
+    };
+    const MutationObserver = detectMutationObserver();
 
     mcws.forEach((mcw) => {
         let elements = fetchColumnDisplayElements(mcw);

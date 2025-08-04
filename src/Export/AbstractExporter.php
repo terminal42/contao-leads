@@ -50,7 +50,7 @@ abstract class AbstractExporter implements ExporterInterface
 
         $filename = $this->getFilename();
         $response = new StreamedResponse(
-            function () use ($fp): void {
+            static function () use ($fp): void {
                 $output = fopen('php://output', 'w');
                 stream_copy_to_stream($fp, $output);
                 fclose($fp);
