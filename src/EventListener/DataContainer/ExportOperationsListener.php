@@ -39,7 +39,7 @@ class ExportOperationsListener
         $exports = $this->connection->iterateAssociative('SELECT * FROM tl_lead_export WHERE pid=? AND tstamp!=0 ORDER BY name', [$formId]);
 
         foreach ($exports as $config) {
-            $operations[] = [
+            $operations['export_'.$config['id']] = [
                 'label' => $config['name'],
                 'class' => 'leads_export__'.$config['type'],
                 'button_callback' => fn ($href, $label, $title, $class, $attributes) => \sprintf(
@@ -58,7 +58,7 @@ class ExportOperationsListener
             $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'form')
             && $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FIELDS_OF_TABLE, 'tl_lead_export')
         ) {
-            $operations[] = [
+            $operations['export_config'] = [
                 'label' => [
                     $this->translator->trans('tl_lead.export_config.0', [], 'contao_tl_lead'),
                     $this->translator->trans('tl_lead.export_config.1', [], 'contao_tl_lead'),
