@@ -68,6 +68,6 @@ class ExportOperationsListener
             ];
         }
 
-        array_unshift($GLOBALS['TL_DCA']['tl_lead']['list']['global_operations'], ...$operations);
+        $GLOBALS['TL_DCA']['tl_lead']['list']['global_operations'] = $operations + ($GLOBALS['TL_DCA']['tl_lead']['list']['global_operations'] ?? []);
     }
 }
