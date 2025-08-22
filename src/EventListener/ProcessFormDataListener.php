@@ -16,6 +16,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Terminal42\LeadsBundle\Event\FormDataLabelEvent;
 use Terminal42\LeadsBundle\Event\FormDataValueEvent;
+use Terminal42\LeadsBundle\Event\LeadsSaveEvent;
 
 #[AsHook('processFormData')]
 class ProcessFormDataListener
@@ -40,6 +41,9 @@ class ProcessFormDataListener
         foreach ($fields as $field) {
             $this->saveFormField($leadId, $field, $postData, $files);
         }
+
+        $this->eventDispatcher->dispatch(new LeadsSaveEvent($leadId, $postData, $formConfig, $files), LeadsSaveEvent::NAME);
+
     }
 
     private function saveLead(array $postData, array $formConfig): int
