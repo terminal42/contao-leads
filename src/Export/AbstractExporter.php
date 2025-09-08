@@ -356,7 +356,7 @@ abstract class AbstractExporter implements ExporterInterface
         $filename = $this->parser->recursiveReplaceTokensAndTags(
             $filename,
             $tokens,
-            StringParser::NO_TAGS & StringParser::NO_BREAKS & StringParser::NO_ENTITIES,
+            StringParser::NO_TAGS | StringParser::NO_BREAKS | StringParser::NO_ENTITIES,
         );
 
         if (!str_contains($filename, '.')) {
