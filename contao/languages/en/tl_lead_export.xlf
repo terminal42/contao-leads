@@ -8,6 +8,12 @@
             <trans-unit id="tl_lead_export.name.1">
                 <source>Please enter the config name.</source>
             </trans-unit>
+            <trans-unit id="tl_lead_export.primary.0">
+                <source>Primary operation</source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.primary.1">
+                <source>Check here to show the export in the leads header and not just the dropdown menu.</source>
+            </trans-unit>
             <trans-unit id="tl_lead_export.type.0">
                 <source>File type</source>
             </trans-unit>

@@ -3,6 +3,7 @@
 use Contao\DataContainer;
 use Contao\DC_Table;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Types\Types;
 use Terminal42\LeadsBundle\Export\ExporterInterface;
 
 $GLOBALS['TL_DCA']['tl_lead_export'] = [
@@ -62,10 +63,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
     ],
     'palettes' => [
         '__selector__' => ['type', 'useTemplate', 'export'],
-        'default' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
-        'csv' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{csv_legend:collapsed},csvSeparator,csvEnclosure,csvEscape,eol;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
-        'xls' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
-        'xlsx' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'default' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'csv' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{csv_legend:collapsed},csvSeparator,csvEnclosure,csvEscape,eol;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'xls' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'xlsx' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
     ],
     'subpalettes' => [
         'export_all' => 'output',
@@ -87,8 +88,13 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         'name' => [
             'search' => true,
             'inputType' => 'text',
-            'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
+            'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w25'],
             'sql' => ['type' => 'string', 'default' => ''],
+        ],
+        'primary' => [
+            'inputType' => 'checkbox',
+            'eval' => ['tl_class' => 'w25'],
+            'sql' => ['type' => Types::BOOLEAN, 'default' => true],
         ],
         'type' => [
             'filter' => true,

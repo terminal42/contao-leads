@@ -51,6 +51,7 @@ class ExportOperationsListener
                     $label,
                 ),
                 'icon' => $this->packages->getUrl('images/export.png', 'terminal42_leads'),
+                'primary' => (bool) ($config['primary'] ?? false),
             ];
         }
 
