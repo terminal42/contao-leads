@@ -29,6 +29,17 @@
             <trans-unit id="tl_lead_export.valueBinder.2">
                 <source>Inherit</source>
             </trans-unit>
+            <trans-unit id="tl_lead_export.valueBinders.0.0">
+                <source><![CDATA[<i>empty</i>]]></source>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.valueBinders.0.1">
+                <source>
+                    <![CDATA[
+                    If the value looks like a formula (starts with "="), it enforces the <code>String</code> type to prevent user input from
+                    being parsed as Excel formula. For all other values, it uses the <code>Default</code> type.
+                    ]]>
+                </source>
+            </trans-unit>
             <trans-unit id="tl_lead_export.valueBinders.default.0">
                 <source>Default</source>
             </trans-unit>

@@ -115,8 +115,8 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'exclude' => true,
             'inputType' => 'select',
             'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['valueBinders'],
-            'eval' => ['helpwizard' => true, 'tl_class' => 'w50'],
-            'sql' => ['type' => 'string', 'length' => 32, 'default' => 'default'],
+            'eval' => ['includeBlankOption' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 32, 'default' => ''],
         ],
         'headerFields' => [
             'exclude' => true,

@@ -80,25 +80,31 @@ class PhpSpreadsheetExporter extends AbstractExporter
 
         $sheet = $spreadsheet->getActiveSheet();
 
-        if ($this->valueBinders->has($config['valueBinder'])) {
+        if ($config['valueBinder'] && $this->valueBinders->has($config['valueBinder'])) {
             $spreadsheet->setValueBinder($this->valueBinders->get($config['valueBinder']));
         }
 
         foreach ($this->iterateRows(false, true) as $data) {
             $isList = array_is_list($data);
 
-            foreach ($data as $col => $config) {
-                $value = $config['value'];
+            foreach ($data as $col => $colConfig) {
+                $value = $colConfig['value'];
 
                 // Do not write empty string so columns in Excel can be skipped
                 if ('' === $value) {
                     continue;
                 }
 
+                $valueBinder = $colConfig['valueBinder'] ?? '';
+
+                if (!$valueBinder && !($config['valueBinder'] ?? '')) {
+                    $valueBinder = \is_string($value) && \strlen($value) > 1 && '=' === $value[0] ? 'string' : 'default';
+                }
+
                 $sheet->setCellValue(
                     [$isList ? $col + 1 : $col, $row],
                     $value,
-                    $this->valueBinders->has($config['valueBinder'] ?? '') ? $this->valueBinders->get($config['valueBinder']) : null,
+                    $this->valueBinders->has($valueBinder) ? $this->valueBinders->get($valueBinder) : null,
                 );
             }
 
