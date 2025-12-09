@@ -8,7 +8,6 @@ PaletteManipulator::create()
 ;
 
 $GLOBALS['TL_DCA']['tl_user']['fields']['leadp'] = [
-    'exclude' => true,
     'inputType' => 'checkbox',
     'options' => ['edit', 'delete'],
     'reference' => &$GLOBALS['TL_LANG']['tl_user']['leadp'],

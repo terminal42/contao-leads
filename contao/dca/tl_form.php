@@ -13,14 +13,12 @@ $GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'leadEnabled';
 $GLOBALS['TL_DCA']['tl_form']['subpalettes']['leadEnabled'] = 'leadMain';
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadEnabled'] = [
-    'exclude' => true,
     'inputType' => 'checkbox',
     'eval' => ['tl_class' => 'clr', 'submitOnChange' => true],
     'sql' => "char(1) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadMain'] = [
-    'exclude' => true,
     'inputType' => 'select',
     'eval' => [
         'submitOnChange' => true,
@@ -32,14 +30,12 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMain'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadMenuLabel'] = [
-    'exclude' => true,
     'inputType' => 'text',
     'eval' => ['maxlength' => 64, 'tl_class' => 'w50', 'decodeEntities' => true],
     'sql' => "varchar(64) NOT NULL default ''",
 ];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = [
-    'exclude' => true,
     'inputType' => 'textarea',
     'eval' => [
         'mandatory' => true,
@@ -52,7 +48,6 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = [
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadPeriod'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_form']['leadPeriod'],
-    'exclude' => true,
     'inputType' => 'timePeriod',
     'options' => ['days', 'weeks', 'months', 'years'],
     'reference' => &$GLOBALS['TL_LANG']['tl_form']['leadPeriod'],
@@ -62,7 +57,6 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadPeriod'] = [
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadPurgeUploads'] = [
     'label' => &$GLOBALS['TL_LANG']['tl_form']['leadPurgeUploads'],
-    'exclude' => true,
     'inputType' => 'checkbox',
     'eval' => ['tl_class' => 'w50 m12'],
     'sql' => "char(1) NOT NULL default ''",
