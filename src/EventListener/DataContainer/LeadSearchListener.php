@@ -7,6 +7,7 @@ namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception\DriverException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
@@ -30,6 +31,15 @@ class LeadSearchListener
             return;
         }
 
+        $searchValue = $session['search']['tl_lead']['value'];
+
+        try {
+            $this->connection->executeStatement("SELECT '' REGEXP ?", [$searchValue]);
+        } catch (DriverException) {
+            // Quote search string if it is not a valid regular expression
+            $searchValue = preg_quote($searchValue, null);
+        }
+
         $ids = $this->connection->fetchFirstColumn(
             <<<'SQL'
                     SELECT DISTINCT l.id
@@ -37,7 +47,7 @@ class LeadSearchListener
                     JOIN tl_lead_data d ON l.id=d.pid
                     WHERE d.value REGEXP ? OR d.label REGEXP ?
                 SQL,
-            [$session['search']['tl_lead']['value'], $session['search']['tl_lead']['value']],
+            [$searchValue, $searchValue],
         );
 
         $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['root'] = empty($ids) ? [0] : $ids;
