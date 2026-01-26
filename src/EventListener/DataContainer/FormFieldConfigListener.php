@@ -50,7 +50,7 @@ class FormFieldConfigListener
         // also "textdigit" or "textcustom".
         foreach (array_keys($GLOBALS['TL_DCA']['tl_form_field']['palettes']) as $k) {
             foreach ($types as $type) {
-                if (str_starts_with($k, (string) $type)) {
+                if (str_starts_with((string) $k, (string) $type)) {
                     $pm->applyToPalette($k, 'tl_form_field');
                     break;
                 }

@@ -37,7 +37,7 @@ class LeadSearchListener
             $this->connection->executeStatement("SELECT '' REGEXP ?", [$searchValue]);
         } catch (DriverException) {
             // Quote search string if it is not a valid regular expression
-            $searchValue = preg_quote($searchValue, null);
+            $searchValue = preg_quote((string) $searchValue);
         }
 
         $ids = $this->connection->fetchFirstColumn(
