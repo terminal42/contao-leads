@@ -44,11 +44,11 @@ export default function () {
     const MutationObserver = detectMutationObserver();
 
     mcws.forEach((mcw) => {
-        if (mcw._leadsColumnDisplayHelperInitialized) {
+        if (mcw.leadsColumnDisplayHelperInitialized) {
             return;
         }
 
-        mcw._leadsColumnDisplayHelperInitialized = true;
+        mcw.leadsColumnDisplayHelperInitialized = true;
 
         let elements = fetchColumnDisplayElements(mcw);
 
@@ -70,7 +70,7 @@ export default function () {
                 });
             });
 
-            mcw._leadsColumnDisplayHelperObserver = observer;
+            mcw.leadsColumnDisplayHelperObserver = observer;
             observer.observe(mcw, observerConfig);
         } else {
             elements.forEach((el) => {

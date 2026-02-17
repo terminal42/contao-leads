@@ -10,11 +10,11 @@ document.addEventListener('turbo:render', ColumnDisplayHelper);
 
 document.addEventListener('turbo:before-cache', () => {
     document.querySelectorAll('table.multicolumnwizard').forEach((mcw) => {
-        if (mcw._leadsColumnDisplayHelperObserver) {
-            mcw._leadsColumnDisplayHelperObserver.disconnect();
-            mcw._leadsColumnDisplayHelperObserver = null;
+        if (mcw.leadsColumnDisplayHelperObserver) {
+            mcw.leadsColumnDisplayHelperObserver.disconnect();
+            mcw.leadsColumnDisplayHelperObserver = null;
         }
 
-        mcw._leadsColumnDisplayHelperInitialized = false;
+        mcw.leadsColumnDisplayHelperInitialized = false;
     });
 });
