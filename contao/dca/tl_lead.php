@@ -30,23 +30,9 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             'fields' => ['created'],
             'format' => &$GLOBALS['TL_LANG']['tl_lead']['label_format'],
         ],
-        'global_operations' => [
-            'all' => [
-                'href' => 'act=select',
-                'class' => 'header_edit_all',
-                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-            ],
-        ],
         'operations' => [
-            'delete' => [
-                'href' => 'act=delete',
-                'icon' => 'delete.svg',
-                'attributes' => 'onclick="if (!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? '').'\')) return false; Backend.getScrollOffset();"',
-            ],
-            'show' => [
-                'href' => 'act=show',
-                'icon' => 'show.svg',
-            ],
+            'delete',
+            'show',
         ],
     ],
     'fields' => [

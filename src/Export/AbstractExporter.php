@@ -8,6 +8,7 @@ use Codefog\HasteBundle\StringParser;
 use Contao\Config;
 use Contao\Date;
 use Contao\StringUtil;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -200,8 +201,8 @@ abstract class AbstractExporter implements ExporterInterface
         ;
 
         if (null !== $this->ids) {
-            $countQuery->andWhere('l.id IN (:leadIds)')->setParameter('leadIds', $this->ids, Connection::PARAM_INT_ARRAY);
-            $selectQuery->andWhere('l.id IN (:leadIds)')->setParameter('leadIds', $this->ids, Connection::PARAM_INT_ARRAY);
+            $countQuery->andWhere('l.id IN (:leadIds)')->setParameter('leadIds', $this->ids, ArrayParameterType::INTEGER);
+            $selectQuery->andWhere('l.id IN (:leadIds)')->setParameter('leadIds', $this->ids, ArrayParameterType::INTEGER);
         } elseif ($this->config['skipLastRun'] && $this->config['lastRun']) {
             $countQuery->andWhere('l.created > :lastRun')->setParameter('lastRun', $this->config['lastRun']);
             $selectQuery->andWhere('l.created > :lastRun')->setParameter('lastRun', $this->config['lastRun']);

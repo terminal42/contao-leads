@@ -66,8 +66,9 @@ class LeadAccessListener
 
         $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['filter'][] = ['main_id=?', $formId];
         $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['data'] = [
+            'label' => &$GLOBALS['TL_LANG']['tl_lead']['data'],
             'href' => 'table=tl_lead_data',
-            'icon' => $this->packages->getUrl('images/field.png', 'terminal42_leads'),
+            'icon' => $this->packages->getUrl('images/data.svg', 'terminal42_leads'),
         ];
     }
 }

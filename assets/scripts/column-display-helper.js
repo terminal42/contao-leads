@@ -44,6 +44,12 @@ export default function () {
     const MutationObserver = detectMutationObserver();
 
     mcws.forEach((mcw) => {
+        if (mcw._leadsColumnDisplayHelperInitialized) {
+            return;
+        }
+
+        mcw._leadsColumnDisplayHelperInitialized = true;
+
         let elements = fetchColumnDisplayElements(mcw);
 
         if (MutationObserver) {
@@ -64,6 +70,7 @@ export default function () {
                 });
             });
 
+            mcw._leadsColumnDisplayHelperObserver = observer;
             observer.observe(mcw, observerConfig);
         } else {
             elements.forEach((el) => {

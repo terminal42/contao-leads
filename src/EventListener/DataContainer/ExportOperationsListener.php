@@ -50,7 +50,7 @@ class ExportOperationsListener
                     $attributes,
                     $label,
                 ),
-                'icon' => $this->packages->getUrl('images/export.png', 'terminal42_leads'),
+                'icon' => $this->packages->getUrl('images/export.svg', 'terminal42_leads'),
                 'primary' => (bool) ($config['primary'] ?? false),
             ];
         }

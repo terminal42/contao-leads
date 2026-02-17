@@ -33,14 +33,8 @@ $GLOBALS['TL_DCA']['tl_lead_data'] = [
             'format' => '<div style="display:flex"><span style="width:20%%;margin-right:10px;font-weight:500">%s</span><span style="width:50%%;margin-right:10px">%s</span><span style="width:20%%;color:#b3b3b3;">%s</span></div>',
         ],
         'operations' => [
-            'edit' => [
-                'href' => 'act=edit',
-                'icon' => 'edit.svg',
-            ],
-            'show' => [
-                'href' => 'act=show',
-                'icon' => 'show.svg',
-            ],
+            '!edit',
+            '!show',
         ],
     ],
     'palettes' => [
