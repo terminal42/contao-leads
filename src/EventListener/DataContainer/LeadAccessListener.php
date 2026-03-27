@@ -9,7 +9,6 @@ use Contao\CoreBundle\Routing\ScopeMatcher;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -23,7 +22,6 @@ class LeadAccessListener
         private readonly RequestStack $requestStack,
         private readonly ScopeMatcher $scopeMatcher,
         private readonly AuthorizationCheckerInterface $authorizationChecker,
-        private readonly Packages $packages,
     ) {
     }
 
@@ -65,10 +63,5 @@ class LeadAccessListener
         }
 
         $GLOBALS['TL_DCA']['tl_lead']['list']['sorting']['filter'][] = ['main_id=?', $formId];
-        $GLOBALS['TL_DCA']['tl_lead']['list']['operations']['data'] = [
-            'label' => &$GLOBALS['TL_LANG']['tl_lead']['data'],
-            'href' => 'table=tl_lead_data',
-            'icon' => $this->packages->getUrl('images/data.svg', 'terminal42_leads'),
-        ];
     }
 }

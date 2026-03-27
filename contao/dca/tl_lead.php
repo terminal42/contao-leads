@@ -30,10 +30,6 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             'fields' => ['created'],
             'format' => &$GLOBALS['TL_LANG']['tl_lead']['label_format'],
         ],
-        'operations' => [
-            'delete',
-            'show',
-        ],
     ],
     'fields' => [
         'id' => [

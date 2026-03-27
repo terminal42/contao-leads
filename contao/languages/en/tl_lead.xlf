@@ -30,10 +30,10 @@
             <trans-unit id="tl_lead.export_config.1">
                 <source>Define export configuration</source>
             </trans-unit>
-            <trans-unit id="tl_lead.data.0">
+            <trans-unit id="tl_lead.children.0">
                 <source>View data</source>
             </trans-unit>
-            <trans-unit id="tl_lead.data.1">
+            <trans-unit id="tl_lead.children.1">
                 <source>View data of lead ID %d</source>
             </trans-unit>
         </body>
