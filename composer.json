@@ -29,7 +29,6 @@
         "php": "^8.3",
         "contao/core-bundle": "^5.7",
         "codefog/contao-haste": "^5.0",
-        "menatwork/contao-multicolumnwizard-bundle": "^3.6",
         "phpoffice/phpspreadsheet": "^3.4 || ^4.0 || ^5.0",
         "doctrine/dbal": "^3.6 || ^4.3",
         "psr/log": "^1.0 || ^2.0 || ^3.0",

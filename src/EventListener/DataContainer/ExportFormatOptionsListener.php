@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 
-#[AsCallback('tl_lead_export', 'fields.fields.eval.columnFields.format.options')]
+#[AsCallback('tl_lead_export', 'fields.fields.fields.format.options')]
 class ExportFormatOptionsListener
 {
     /**
