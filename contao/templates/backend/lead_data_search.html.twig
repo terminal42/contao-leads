@@ -1,0 +1,14 @@
+{% trans_default_domain 'contao_default' %}
+<fieldset class="tl_search tl_subpanel">
+    <legend>{{ 'MSC.search'|trans }}</legend>
+    <label for="tl_search_term">{{ 'MSC.keyword'|trans }}</label>
+    {% set input_attributes = attrs()
+        .set('type', 'search')
+        .set('id', 'tl_search_term')
+        .set('name', 'tl_value')
+        .addClass('tl_text')
+        .addClass('active', value)
+        .set('value', value)
+    %}
+    <input{{ input_attributes }}>
+</fieldset>

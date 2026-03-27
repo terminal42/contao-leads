@@ -24,7 +24,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             'mode' => DataContainer::MODE_SORTABLE,
             'fields' => ['created DESC'],
             'flag' => DataContainer::SORT_MONTH_DESC,
-            'panelLayout' => 'filter;data_search,sort,limit',
+            'panelLayout' => 'data_search,filter,sort,limit',
         ],
         'label' => [
             'fields' => ['created'],

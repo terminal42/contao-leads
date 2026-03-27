@@ -5,23 +5,25 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
-use Contao\StringUtil;
+use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\DriverException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
+use Twig\Environment;
 
 class LeadSearchListener
 {
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly Connection $connection,
+        private readonly Environment $twig,
     ) {
     }
 
     #[AsCallback('tl_lead', 'config.onload')]
-    public function applySearch(): void
+    public function applySearch(DataContainer $dc): void
     {
         /** @var AttributeBagInterface $sessionBag */
         $sessionBag = $this->requestStack->getSession()->getBag('contao_backend');
@@ -32,12 +34,13 @@ class LeadSearchListener
         }
 
         $searchValue = $session['search']['tl_lead']['value'];
+        $dc->setPanelState(true);
 
         try {
             $this->connection->executeStatement("SELECT '' REGEXP ?", [$searchValue]);
         } catch (DriverException) {
             // Quote search string if it is not a valid regular expression
-            $searchValue = preg_quote((string) $searchValue);
+            $searchValue = preg_quote((string) $searchValue, null);
         }
 
         $ids = $this->connection->fetchFirstColumn(
@@ -71,12 +74,8 @@ class LeadSearchListener
             $sessionBag->replace($session);
         }
 
-        $active = isset($session['search']['tl_lead']['value']) && '' !== (string) $session['search']['tl_lead']['value'];
-
-        return '
-<div class="tl_search tl_subpanel">
-<strong>'.$GLOBALS['TL_LANG']['MSC']['search'].':</strong>
-<input type="search" name="tl_value" class="tl_text'.($active ? ' active' : '').'" value="'.StringUtil::specialchars($session['search']['tl_lead']['value'] ?? '').'">
-</div>';
+        return $this->twig->render('@Contao/backend/lead_data_search.html.twig', [
+            'value' => $session['search']['tl_lead']['value'] ?? '',
+        ]);
     }
 }
