@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
+use Contao\CoreBundle\DataContainer\DataContainerOperation;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
-use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -40,20 +40,16 @@ class ExportOperationsListener
 
         foreach ($exports as $config) {
             $operations['export_'.$config['id']] = [
-                'label' => $config['name'],
-                'class' => 'leads_export__'.$config['type'],
-                'button_callback' => fn ($href, $label, $title, $class, $attributes) => \sprintf(
-                    '<a href="%s" class="%s" title="%s" %s>%s</a> ',
-                    $this->urlGenerator->generate('terminal42_leads_export', ['id' => $config['id']]),
-                    $class,
-                    StringUtil::specialchars($title),
-                    $attributes,
-                    $label,
-                ),
+                'label' => [$config['name']],
+                'button_callback' => function (DataContainerOperation $operation) use ($config) {
+                    $operation->setUrl($this->urlGenerator->generate('terminal42_leads_export', ['id' => $config['id']]));
+                },
                 'icon' => $this->packages->getUrl('images/export.svg', 'terminal42_leads'),
                 'primary' => (bool) ($config['primary'] ?? false),
             ];
         }
+
+        $operations[] = '-';
 
         if (
             $this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'form')
@@ -65,7 +61,7 @@ class ExportOperationsListener
                     $this->translator->trans('tl_lead.export_config.1', [], 'contao_tl_lead'),
                 ],
                 'href' => 'do=form&table=tl_lead_export&id='.$formId,
-                'icon' => 'modules',
+                'icon' => 'wrench.svg',
             ];
         }
 
