@@ -24,7 +24,7 @@ class LeadAccessVoter extends AbstractDataContainerVoter
         return 'tl_lead';
     }
 
-    protected function hasAccess(TokenInterface $token, UpdateAction|CreateAction|ReadAction|DeleteAction $action): bool
+    protected function hasAccess(TokenInterface $token, CreateAction|DeleteAction|ReadAction|UpdateAction $action): bool
     {
         // Cannot create leads through the backend
         if ($action instanceof CreateAction) {

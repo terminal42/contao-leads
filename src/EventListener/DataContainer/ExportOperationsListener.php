@@ -41,7 +41,7 @@ class ExportOperationsListener
         foreach ($exports as $config) {
             $operations['export_'.$config['id']] = [
                 'label' => [$config['name']],
-                'button_callback' => function (DataContainerOperation $operation) use ($config) {
+                'button_callback' => function (DataContainerOperation $operation) use ($config): void {
                     $operation->setUrl($this->urlGenerator->generate('terminal42_leads_export', ['id' => $config['id']]));
                 },
                 'icon' => $this->packages->getUrl('images/export.svg', 'terminal42_leads'),

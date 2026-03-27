@@ -35,7 +35,7 @@ class LeadDataAccessVoter extends AbstractDataContainerVoter implements ResetInt
         return 'tl_lead_data';
     }
 
-    protected function hasAccess(TokenInterface $token, UpdateAction|CreateAction|ReadAction|DeleteAction $action): bool
+    protected function hasAccess(TokenInterface $token, CreateAction|DeleteAction|ReadAction|UpdateAction $action): bool
     {
         // Cannot add lead data through the backend
         if ($action instanceof CreateAction || $action instanceof DeleteAction) {
@@ -46,7 +46,7 @@ class LeadDataAccessVoter extends AbstractDataContainerVoter implements ResetInt
         if (
             $action instanceof UpdateAction
             && (
-                array_key_exists('sorting', $action->getNew() ?? [])
+                \array_key_exists('sorting', $action->getNew() ?? [])
                 || (
                     null !== $action->getNewPid()
                     && $action->getCurrentPid() !== $action->getNewPid()

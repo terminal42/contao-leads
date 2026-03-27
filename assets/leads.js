@@ -8,22 +8,22 @@ application.debug = process.env.NODE_ENV === 'development';
 application.register(
     'terminal42--column-display',
     class extends Controller {
-        connect () {
+        connect() {
             this.dispatch('change');
         }
 
-        disconnect () {
+        disconnect() {
             this.element.innerHTML = '';
         }
 
-        update () {
+        update() {
             const index = this.element.closest('tr').rowIndex;
 
             this.element.innerHTML = `<div class="index">${index}</div>
             <div class="excel">${this.#convertIndexToExcelColumn(index)}</div>`;
         }
 
-        #convertIndexToExcelColumn (i) {
+        #convertIndexToExcelColumn(i) {
             const alpha = parseInt(i / 27, 10);
             const remainder = i - alpha * 26;
             let column = '';

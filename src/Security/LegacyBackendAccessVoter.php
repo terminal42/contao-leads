@@ -9,6 +9,7 @@ use Contao\CoreBundle\Security\Voter\AbstractBackendAccessVoter;
 
 class LegacyBackendAccessVoter extends AbstractBackendAccessVoter
 {
+    #[\Override]
     public function supportsAttribute(string $attribute): bool
     {
         return str_starts_with($attribute, 'contao_user.leadp');
@@ -31,12 +32,12 @@ class LegacyBackendAccessVoter extends AbstractBackendAccessVoter
         }
 
         $subject = array_map(
-            static fn ($v) => match($v) {
+            static fn ($v) => match ($v) {
                 'edit' => 'tl_lead_data::update',
                 'delete' => 'tl_lead::delete',
                 default => throw new \RuntimeException('Unsupported "contao_user.leadp" permission.'),
             },
-            $subject
+            $subject,
         );
 
         return \is_array($user->cud) && array_intersect($subject, $user->cud);

@@ -28,7 +28,7 @@ class LeadUrlListener
                 break;
 
             case 'tl_lead_data':
-                $GLOBALS['TL_DCA']['tl_lead_data']['config']['backlink'] = 'do=lead&form='.$this->connection->fetchOne("SELECT main_id FROM tl_lead WHERE id=?", [$dc->currentPid]);
+                $GLOBALS['TL_DCA']['tl_lead_data']['config']['backlink'] = 'do=lead&form='.$this->connection->fetchOne('SELECT main_id FROM tl_lead WHERE id=?', [$dc->currentPid]);
                 break;
 
             case 'tl_lead_export':

@@ -21,7 +21,7 @@ use Terminal42\LeadsBundle\Export\Format\FormatterInterface;
 
 abstract class AbstractExporter implements ExporterInterface
 {
-    private const CHUNK_SIZE = 100;
+    private const int CHUNK_SIZE = 100;
 
     private array $config;
 
