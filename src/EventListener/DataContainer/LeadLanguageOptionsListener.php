@@ -10,9 +10,8 @@ use Contao\CoreBundle\Intl\Locales;
 #[AsCallback('tl_lead', 'fields.language.options')]
 class LeadLanguageOptionsListener
 {
-    public function __construct(
-        private readonly Locales $locales,
-    ) {
+    public function __construct(private readonly Locales $locales)
+    {
     }
 
     public function __invoke(): array
