@@ -26,26 +26,28 @@
         "forum": "https://community.contao.org"
     },
     "require": {
-        "php": "^8.1",
-        "contao/core-bundle": "^5.3",
+        "php": "^8.3",
+        "contao/core-bundle": "^5.7",
         "codefog/contao-haste": "^5.0",
-        "menatwork/contao-multicolumnwizard-bundle": "^3.6",
         "phpoffice/phpspreadsheet": "^3.4 || ^4.0 || ^5.0",
-        "doctrine/dbal": "^3.0",
+        "doctrine/dbal": "^3.6 || ^4.3",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
-        "symfony/asset": "^6.0 || ^7.0",
-        "symfony/config": "^6.0 || ^7.0",
-        "symfony/dependency-injection": "^6.0 || ^7.0",
+        "symfony/asset": "^7.4",
+        "symfony/config": "^7.4",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/deprecation-contracts": "^3",
         "symfony/event-dispatcher-contracts": "^2.0 || ^3.0",
-        "symfony/expression-language": "^6.0 || ^7.0",
-        "symfony/filesystem": "^6.0 || ^7.0",
-        "symfony/framework-bundle": "^6.0 || ^7.0",
+        "symfony/expression-language": "^7.4",
+        "symfony/filesystem": "^7.4",
+        "symfony/framework-bundle": "^7.4",
         "symfony/http-foundation": "^6.0 || ^7.0",
-        "symfony/http-kernel": "^6.0 || ^7.0",
-        "symfony/routing": "^6.0 || ^7.0",
-        "symfony/security-core": "^6.0 || ^7.0",
-        "symfony/string": "^6.0 || ^7.0",
-        "symfony/translation-contracts": "^2.0 || ^3.0"
+        "symfony/http-kernel": "^7.4",
+        "symfony/routing": "^7.4",
+        "symfony/security-core": "^7.4",
+        "symfony/service-contracts": "^3",
+        "symfony/string": "^7.4",
+        "symfony/translation-contracts": "^3.0",
+        "twig/twig": "^3.21"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.0",
@@ -60,7 +62,10 @@
         "mpdf/mpdf": "Export leads to PDF document (using mPDF)"
     },
     "conflict": {
-        "contao/manager-plugin": "<2.0 || >=3.0"
+        "contao/manager-plugin": "<2.0 || >=3.0",
+        "tecnickcom/tcpdf": "< 6.5 || >= 7.0",
+        "dompdf/dompdf": ">= 3.0",
+        "mpdf/mpdf": "< 8.1.1 || >= 9.0"
     },
     "autoload": {
         "psr-4": {

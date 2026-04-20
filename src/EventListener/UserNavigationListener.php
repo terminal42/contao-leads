@@ -15,9 +15,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[AsHook('initializeSystem')]
-#[AsHook('loadLanguageFile')]
-#[AsHook('getUserNavigation')]
 class UserNavigationListener
 {
     private array|null $forms = null;
@@ -36,6 +33,7 @@ class UserNavigationListener
     /**
      * Load the CSS file for the back end navigation group icon.
      */
+    #[AsHook('initializeSystem')]
     public function onInitializeSystem(): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -51,6 +49,7 @@ class UserNavigationListener
     /**
      * Set the translation to the currently active lead for the breadcrumb.
      */
+    #[AsHook('loadLanguageFile')]
     public function onLoadLanguageFile(string $name): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -77,6 +76,7 @@ class UserNavigationListener
     /**
      * Add leads to the backend navigation.
      */
+    #[AsHook('getUserNavigation')]
     public function onGetUserNavigation(array $modules): array
     {
         if (!$this->authorizationChecker->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead')) {

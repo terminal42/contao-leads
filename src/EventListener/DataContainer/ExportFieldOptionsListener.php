@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
+use Contao\DataContainer;
 use Doctrine\DBAL\Connection;
-use MenAtWork\MultiColumnWizardBundle\Contao\Widgets\MultiColumnWizard;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[AsCallback('tl_lead_export', 'fields.fields.eval.columnFields.field.options')]
+#[AsCallback('tl_lead_export', 'fields.fields.fields.field.options')]
 class ExportFieldOptionsListener
 {
     public function __construct(
@@ -18,7 +18,7 @@ class ExportFieldOptionsListener
     ) {
     }
 
-    public function __invoke(MultiColumnWizard $mcw): array
+    public function __invoke(DataContainer $dc): array
     {
         $options = [
             '_id' => $this->translator->trans('tl_lead_export._id', [], 'contao_tl_lead_export'),
@@ -30,7 +30,7 @@ class ExportFieldOptionsListener
 
         $fields = $this->connection->iterateAssociative(
             "SELECT id, name, label FROM tl_form_field WHERE leadStore!='' AND pid=(SELECT pid FROM tl_lead_export WHERE id=?) ORDER BY sorting",
-            [(int) $mcw->dataContainer->id],
+            [$dc->id],
         );
 
         foreach ($fields as $field) {

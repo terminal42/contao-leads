@@ -38,6 +38,14 @@
                 <source>Define export configuration</source>
                 <target>Definieren Sie Export-Konfigurationen</target>
             </trans-unit>
+            <trans-unit id="tl_lead.children.0">
+                <source>View data</source>
+                <target>Daten anzeigen</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.children.1">
+                <source>View data of lead ID %d</source>
+                <target>Daten des Leads mit der ID %d anzeigen</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

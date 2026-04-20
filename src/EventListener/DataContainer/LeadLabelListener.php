@@ -16,7 +16,7 @@ class LeadLabelListener
 {
     public function __construct(
         private readonly Connection $connection,
-        private readonly StringParser|null $stringParser = null,
+        private readonly StringParser $stringParser,
     ) {
     }
 
@@ -60,18 +60,10 @@ class LeadLabelListener
                 }
             }
 
-            if ($this->stringParser) {
-                $this->stringParser->flatten($value, $record['name'], $tokens);
-            } else {
-                \Haste\Util\StringUtil::flatten($value, $record['name'], $tokens);
-            }
+            $this->stringParser->flatten($value, $record['name'], $tokens);
         }
 
-        if ($this->stringParser) {
-            $return = $this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
-        } else {
-            $return = \Haste\Util\StringUtil::recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
-        }
+        $return = $this->stringParser->recursiveReplaceTokensAndTags($lead['leadLabel'], $tokens);
 
         // Encode specialchars for the back end view (see terminal42/contao-leads#170)
         return StringUtil::specialchars($return);

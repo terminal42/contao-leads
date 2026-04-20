@@ -20,12 +20,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadEnabled'] = [
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadMain'] = [
     'inputType' => 'select',
-    'eval' => [
-        'submitOnChange' => true,
-        'includeBlankOption' => true,
-        'blankOptionLabel' => &$GLOBALS['TL_LANG']['tl_form']['leadMain'][2],
-        'tl_class' => 'w50',
-    ],
+    'eval' => ['submitOnChange' => true, 'includeBlankOption' => true, 'blankOptionLabel' => &$GLOBALS['TL_LANG']['tl_form']['leadMain'][2], 'tl_class' => 'w50'],
     'sql' => 'int(10) unsigned NOT NULL default 0',
 ];
 
@@ -37,12 +32,7 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['leadMenuLabel'] = [
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['leadLabel'] = [
     'inputType' => 'textarea',
-    'eval' => [
-        'mandatory' => true,
-        'decodeEntities' => true,
-        'allowHtml' => true,
-        'tl_class' => 'clr',
-    ],
+    'eval' => ['mandatory' => true, 'decodeEntities' => true, 'allowHtml' => true, 'tl_class' => 'clr'],
     'sql' => 'text NULL',
 ];
 

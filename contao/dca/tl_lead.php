@@ -10,8 +10,8 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
         'enableVersioning' => true,
         'closed' => true,
         'notEditable' => true,
-        'notCopyable' => true,
         'ctable' => ['tl_lead_data'],
+        'permissions' => ['delete'],
         'sql' => [
             'keys' => [
                 'id' => 'primary',
@@ -24,29 +24,11 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
             'mode' => DataContainer::MODE_SORTABLE,
             'fields' => ['created DESC'],
             'flag' => DataContainer::SORT_MONTH_DESC,
-            'panelLayout' => 'filter;data_search,sort,limit',
+            'panelLayout' => 'data_search,filter,sort,limit',
         ],
         'label' => [
             'fields' => ['created'],
             'format' => &$GLOBALS['TL_LANG']['tl_lead']['label_format'],
-        ],
-        'global_operations' => [
-            'all' => [
-                'href' => 'act=select',
-                'class' => 'header_edit_all',
-                'attributes' => 'onclick="Backend.getScrollOffset();" accesskey="e"',
-            ],
-        ],
-        'operations' => [
-            'delete' => [
-                'href' => 'act=delete',
-                'icon' => 'delete.svg',
-                'attributes' => 'onclick="if (!confirm(\''.($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? '').'\')) return false; Backend.getScrollOffset();"',
-            ],
-            'show' => [
-                'href' => 'act=show',
-                'icon' => 'show.svg',
-            ],
         ],
     ],
     'fields' => [

@@ -114,6 +114,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
         return $spreadsheet;
     }
 
+    #[\Override]
     protected function getFileExtension(): string
     {
         $type = $this->getConfig()['type'];
