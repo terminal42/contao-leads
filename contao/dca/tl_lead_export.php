@@ -89,7 +89,7 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'search' => true,
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w25'],
-            'sql' => ['type' => 'string', 'default' => ''],
+            'sql' => ['type' => 'string', 'length' => 255, 'default' => ''],
         ],
         'primary' => [
             'inputType' => 'checkbox',
