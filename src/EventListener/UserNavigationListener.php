@@ -98,7 +98,7 @@ class UserNavigationListener
             $formTitle = StringUtil::decodeEntities($form['title']);
 
             $modules['leads']['modules']['lead_'.$form['id']] = [
-                'title' => StringUtil::specialchars($this->translator->trans('MOD.leads.1', [$formTitle], 'contao_modules')),
+                'title' => $this->translator->trans('MOD.leads.1', [$formTitle], 'contao_modules'),
                 'label' => $form['leadMenuLabel'] ?: $formTitle,
                 'class' => 'navigation leads',
                 'href' => $this->urlGenerator->generate('contao_backend', ['do' => 'lead', 'form' => $form['id']]),
