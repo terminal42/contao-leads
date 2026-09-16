@@ -11,5 +11,3 @@ ArrayUtil::arrayInsert($GLOBALS['BE_MOD'], 1, [
 ]);
 
 $GLOBALS['BE_MOD']['content']['form']['tables'][] = 'tl_lead_export';
-
-$GLOBALS['TL_PERMISSIONS'][] = 'leadp';

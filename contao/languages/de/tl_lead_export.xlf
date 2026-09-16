@@ -10,6 +10,14 @@
                 <source>Please enter the config name.</source>
                 <target>Bitte geben Sie hier einen Konfigurationsnamen ein.</target>
             </trans-unit>
+            <trans-unit id="tl_lead_export.primary.0">
+                <source>Primary operation</source>
+                <target>Primär-Aktion</target>
+            </trans-unit>
+            <trans-unit id="tl_lead_export.primary.1">
+                <source>Check here to show the export in the leads header and not just the dropdown menu.</source>
+                <target>Klicken Sie hier wenn die Export-Option direkt im Header und nicht nur im Dropdown angezeigt werden soll.</target>
+            </trans-unit>
             <trans-unit id="tl_lead_export.type.0">
                 <source>File type</source>
                 <target>Dateityp</target>

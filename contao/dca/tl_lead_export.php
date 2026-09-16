@@ -3,6 +3,7 @@
 use Contao\DataContainer;
 use Contao\DC_Table;
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Types\Types;
 use Terminal42\LeadsBundle\Export\ExporterInterface;
 
 $GLOBALS['TL_DCA']['tl_lead_export'] = [
@@ -62,10 +63,10 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
     ],
     'palettes' => [
         '__selector__' => ['type', 'useTemplate', 'export'],
-        'default' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
-        'csv' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{csv_legend:collapsed},csvSeparator,csvEnclosure,csvEscape,eol;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
-        'xls' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
-        'xlsx' => '{name_legend},name,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'default' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'csv' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{csv_legend:collapsed},csvSeparator,csvEnclosure,csvEscape,eol;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'xls' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
+        'xlsx' => '{name_legend},name,primary,type,filename;{data_legend},headerFields,export;{excel_legend:collapsed},useTemplate;{conditions_legend},expression;{date_legend:collapsed},lastRun,skipLastRun',
     ],
     'subpalettes' => [
         'export_all' => 'output',
@@ -85,14 +86,17 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ],
         'name' => [
-            'exclude' => true,
             'search' => true,
             'inputType' => 'text',
-            'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w50'],
-            'sql' => ['type' => 'string', 'default' => ''],
+            'eval' => ['mandatory' => true, 'maxlength' => 255, 'tl_class' => 'w25'],
+            'sql' => ['type' => 'string', 'length' => 255, 'default' => ''],
+        ],
+        'primary' => [
+            'inputType' => 'checkbox',
+            'eval' => ['tl_class' => 'w25'],
+            'sql' => ['type' => Types::BOOLEAN, 'default' => true],
         ],
         'type' => [
-            'exclude' => true,
             'filter' => true,
             'inputType' => 'select',
             'eval' => [
@@ -104,7 +108,6 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'sql' => ['type' => 'string', 'length' => 32, 'default' => ''],
         ],
         'filename' => [
-            'exclude' => true,
             'search' => true,
             'inputType' => 'text',
             'eval' => ['decodeEntities' => true, 'maxlength' => 128, 'helpwizard' => true, 'tl_class' => 'w50'],
@@ -112,21 +115,18 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'sql' => ['type' => 'string', 'length' => 128, 'default' => ''],
         ],
         'valueBinder' => [
-            'exclude' => true,
             'inputType' => 'select',
             'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['valueBinders'],
-            'eval' => ['helpwizard' => true, 'tl_class' => 'w50'],
-            'sql' => ['type' => 'string', 'length' => 32, 'default' => 'default'],
+            'eval' => ['includeBlankOption' => true, 'helpwizard' => true, 'tl_class' => 'w50'],
+            'sql' => ['type' => 'string', 'length' => 32, 'default' => ''],
         ],
         'headerFields' => [
-            'exclude' => true,
             'filter' => true,
             'inputType' => 'checkbox',
             'eval' => ['tl_class' => 'clr'],
             'sql' => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => ''],
         ],
         'export' => [
-            'exclude' => true,
             'filter' => true,
             'inputType' => 'radio',
             'options' => [ExporterInterface::EXPORT_ALL, ExporterInterface::EXPORT_FIELDS, ExporterInterface::EXPORT_TOKENS],
@@ -136,7 +136,6 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         ],
         'output' => [
             'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
-            'exclude' => true,
             'inputType' => 'select',
             'default' => ExporterInterface::OUTPUT_BOTH,
             'options' => [ExporterInterface::OUTPUT_BOTH, ExporterInterface::OUTPUT_LABEL, ExporterInterface::OUTPUT_VALUE],
@@ -145,89 +144,72 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
             'sql' => ['type' => 'string', 'length' => 8, 'default' => ExporterInterface::OUTPUT_BOTH],
         ],
         'fields' => [
-            'exclude' => true,
-            'inputType' => 'multiColumnWizard',
-            'eval' => [
-                'mandatory' => true,
-                'dragAndDrop' => true,
-                'columnFields' => [
-                    'column_display' => [
-                        'input_field_callback' => static fn () => '',
-                        'eval' => ['tl_class' => 'column_display', 'hideHead' => true],
-                    ],
-                    'field' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['field'],
-                        'inputType' => 'select',
-                        'eval' => ['mandatory' => true, 'style' => 'width:150px;'],
-                    ],
-                    'name' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['name'],
-                        'inputType' => 'text',
-                        'eval' => ['style' => 'width:150px;'],
-                    ],
-                    'output' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
-                        'inputType' => 'select',
-                        'options' => [ExporterInterface::OUTPUT_BOTH, ExporterInterface::OUTPUT_LABEL, ExporterInterface::OUTPUT_VALUE],
-                        'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
-                        'eval' => ['style' => 'width:125px;'],
-                    ],
-                    'format' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['format'],
-                        'inputType' => 'select',
-                        'eval' => ['includeBlankOption' => true, 'blankOptionLabel' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['format'][2], 'style' => 'width:150px;'],
-                    ],
+            'inputType' => 'rowWizard',
+            'fields' => [
+                'column_display' => [
+                    'input_field_callback' => static fn () => '<span class="column_display" data-controller="terminal42--column-display" data-action="terminal42--column-display:change@window->terminal42--column-display#update"></span>',
+                ],
+                'field' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['field'],
+                    'inputType' => 'select',
+                    'eval' => ['mandatory' => true],
+                ],
+                'name' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['name'],
+                    'inputType' => 'text',
+                ],
+                'output' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
+                    'inputType' => 'select',
+                    'options' => [ExporterInterface::OUTPUT_BOTH, ExporterInterface::OUTPUT_LABEL, ExporterInterface::OUTPUT_VALUE],
+                    'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['output'],
+                ],
+                'format' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['format'],
+                    'inputType' => 'select',
+                    'eval' => ['includeBlankOption' => true, 'blankOptionLabel' => &$GLOBALS['TL_LANG']['tl_lead_export']['fields']['format'][2]],
                 ],
             ],
+            'eval' => ['mandatory' => true],
             'sql' => ['type' => 'blob', 'length' => AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
         ],
         'tokenFields' => [
-            'exclude' => true,
-            'inputType' => 'multiColumnWizard',
-            'eval' => [
-                'mandatory' => true,
-                'dragAndDrop' => true,
-                'columnFields' => [
-                    'targetColumn' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['targetColumn'],
-                        'inputType' => 'text',
-                        'eval' => ['style' => 'width:50px;'],
-                    ],
-                    'headerField' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['headerField'],
-                        'inputType' => 'text',
-                        'eval' => ['style' => 'width:100px;'],
-                    ],
-                    'tokensValue' => [
-                        'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['tokensValue'],
-                        'inputType' => 'textarea',
-                        'eval' => ['decodeEntities' => true, 'style' => 'width:420px;'],
-                    ],
+            'inputType' => 'rowWizard',
+            'fields' => [
+                'targetColumn' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['targetColumn'],
+                    'inputType' => 'text',
+                ],
+                'headerField' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['headerField'],
+                    'inputType' => 'text',
+                ],
+                'tokensValue' => [
+                    'label' => &$GLOBALS['TL_LANG']['tl_lead_export']['tokenFields']['tokensValue'],
+                    'inputType' => 'textarea',
+                    'eval' => ['decodeEntities' => true],
                 ],
             ],
+            'eval' => ['mandatory' => true],
             'sql' => ['type' => 'blob', 'length' => AbstractMySQLPlatform::LENGTH_LIMIT_MEDIUMBLOB, 'notnull' => false],
         ],
 
         'csvSeparator' => [
-            'exclude' => true,
             'inputType' => 'text',
             'eval' => ['maxlength' => 4, 'decodeEntities' => true, 'tl_class' => 'w50'],
             'sql' => ['type' => 'string', 'length' => 4, 'default' => ','],
         ],
         'csvEnclosure' => [
-            'exclude' => true,
             'inputType' => 'text',
             'eval' => ['maxlength' => 4, 'decodeEntities' => true, 'tl_class' => 'w50'],
             'sql' => ['type' => 'string', 'length' => 4, 'default' => '"'],
         ],
         'csvEscape' => [
-            'exclude' => true,
             'inputType' => 'text',
             'eval' => ['maxlength' => 4, 'decodeEntities' => true, 'tl_class' => 'w50'],
             'sql' => ['type' => 'string', 'length' => 4, 'default' => '\\'],
         ],
         'eol' => [
-            'exclude' => true,
             'inputType' => 'select',
             'options' => ['n', 'rn', 'r'],
             'reference' => &$GLOBALS['TL_LANG']['tl_lead_export']['eol'],
@@ -236,28 +218,24 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         ],
 
         'useTemplate' => [
-            'exclude' => true,
             'filter' => true,
             'inputType' => 'checkbox',
             'eval' => ['tl_class' => 'clr', 'submitOnChange' => true],
             'sql' => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => ''],
         ],
         'template' => [
-            'exclude' => true,
             'filter' => false,
             'inputType' => 'fileTree',
             'eval' => ['filesOnly' => true, 'fieldType' => 'radio', 'mandatory' => true, 'tl_class' => 'clr'],
             'sql' => 'binary(16) NULL',
         ],
         'startIndex' => [
-            'exclude' => true,
             'filter' => true,
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'tl_class' => 'w50', 'rgxp' => 'digit'],
             'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
         ],
         'sheetIndex' => [
-            'exclude' => true,
             'filter' => true,
             'inputType' => 'text',
             'eval' => ['mandatory' => true, 'tl_class' => 'w50', 'rgxp' => 'digit'],
@@ -265,20 +243,17 @@ $GLOBALS['TL_DCA']['tl_lead_export'] = [
         ],
 
         'expression' => [
-            'exclude' => true,
             'inputType' => 'textarea',
             'eval' => ['decodeEntities' => true],
             'sql' => ['type' => 'text', 'length' => AbstractMySQLPlatform::LENGTH_LIMIT_TEXT, 'notnull' => false],
         ],
 
         'lastRun' => [
-            'exclude' => true,
             'inputType' => 'text',
             'eval' => ['rgxp' => 'datim', 'datepicker' => true, 'nullIfEmpty' => true, 'tl_class' => 'w50 wizard'],
             'sql' => ['type' => 'integer', 'notnull' => false],
         ],
         'skipLastRun' => [
-            'exclude' => true,
             'filter' => true,
             'inputType' => 'checkbox',
             'eval' => ['tl_class' => 'w50 m12'],

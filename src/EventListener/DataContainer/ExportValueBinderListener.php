@@ -50,11 +50,10 @@ class ExportValueBinderListener
 
         $GLOBALS['TL_DCA']['tl_lead_export']['fields']['valueBinder']['options'] = array_keys($this->valueBinders->getProvidedServices());
 
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['valueBinder'] = $GLOBALS['TL_DCA']['tl_lead_export']['fields']['valueBinder'];
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['valueBinder']['eval']['includeBlankOption'] = true;
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['valueBinder']['eval']['blankOptionLabel'] = $GLOBALS['TL_LANG']['tl_lead_export']['valueBinder'][2];
-        unset($GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFieds']['valueBinder']['sql']);
+        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder'] = $GLOBALS['TL_DCA']['tl_lead_export']['fields']['valueBinder'];
+        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder']['eval']['includeBlankOption'] = true;
+        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder']['eval']['blankOptionLabel'] = $GLOBALS['TL_LANG']['tl_lead_export']['valueBinder'][2];
 
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['tokenFields']['eval']['columnFields']['valueBinder'] = $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['eval']['columnFields']['valueBinder'];
+        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['tokenFields']['fields']['valueBinder'] = $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder'];
     }
 }

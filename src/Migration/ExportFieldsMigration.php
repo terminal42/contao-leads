@@ -21,7 +21,7 @@ class ExportFieldsMigration extends AbstractMigration
         $schemaManager = $this->connection->createSchemaManager();
 
         if (
-            !$schemaManager->tablesExist('tl_lead_export')
+            !$schemaManager->tablesExist(['tl_lead_export'])
             || !\array_key_exists('fields', $schemaManager->listTableColumns('tl_lead_export'))
         ) {
             return false;

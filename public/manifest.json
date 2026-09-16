@@ -1,11 +1,8 @@
 {
-  "leads.css": "/bundles/terminal42leads/leads.e542ac03.css",
-  "leads.js": "/bundles/terminal42leads/leads.e4242972.js",
-  "images/export_excel.png": "/bundles/terminal42leads/images/export_excel.885a70aa.png",
-  "images/export_csv.png": "/bundles/terminal42leads/images/export_csv.d1855189.png",
-  "images/export.png": "/bundles/terminal42leads/images/export.cd5af4b8.png",
+  "leads.css": "/bundles/terminal42leads/leads.ab2eca6b.css",
+  "leads.js": "/bundles/terminal42leads/leads.74949fb8.js",
+  "images/export.svg": "/bundles/terminal42leads/images/export.17395a5d.svg",
   "images/inbox.svg": "/bundles/terminal42leads/images/inbox.712f2eab.svg",
-  "images/field.png": "/bundles/terminal42leads/images/field.cf990cc4.png",
-  "leads.e542ac03.css.map": "/bundles/terminal42leads/leads.e542ac03.css.map",
-  "leads.e4242972.js.map": "/bundles/terminal42leads/leads.e4242972.js.map"
+  "leads.ab2eca6b.css.map": "/bundles/terminal42leads/leads.ab2eca6b.css.map",
+  "leads.74949fb8.js.map": "/bundles/terminal42leads/leads.74949fb8.js.map"
 }
