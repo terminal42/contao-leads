@@ -7,6 +7,7 @@ namespace Terminal42\LeadsBundle\Controller;
 use Contao\Backend;
 use Contao\BackendTemplate;
 use Contao\Controller;
+use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\DataContainer;
 use Contao\DC_Table;
@@ -93,7 +94,12 @@ class LeadsDeleteAllController extends AbstractController
 
             foreach ($leadIds as $leadId) {
                 $dc->id = $leadId;
-                $dc->delete(true);
+
+                try {
+                    $dc->delete(true);
+                } catch (AccessDeniedException) {
+                    continue;
+                }
             }
 
             Message::addConfirmation($this->translator->trans('tl_lead.deleteAllConfirm', [count($leadIds)], 'contao_tl_lead'));
