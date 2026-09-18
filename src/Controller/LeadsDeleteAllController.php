@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\Controller;
 
-use Contao\Backend;
-use Contao\BackendTemplate;
 use Contao\Controller;
+use Contao\CoreBundle\Controller\Backend\AbstractBackendController;
 use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\DataContainer;
 use Contao\DC_Table;
 use Contao\Message;
 use Contao\StringUtil;
-use Contao\System;
 use Doctrine\DBAL\Connection;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,7 +25,7 @@ use Terminal42\LeadsBundle\Security\Terminal42LeadsPermissions;
     requirements: ['id' => '\d+'],
     defaults: ['_scope' => 'backend'],
 )]
-class LeadsDeleteAllController extends AbstractController
+class LeadsDeleteAllController extends AbstractBackendController
 {
     public function __construct(
         private readonly Connection $connection,
@@ -60,23 +57,17 @@ class LeadsDeleteAllController extends AbstractController
             return $this->handleFormSubmit($request, $form);
         }
 
-        $template = new BackendTemplate('backend/lead_delete_all');
-        $template->explain = $this->translator->trans('tl_lead.deleteAllExplain', [], 'contao_tl_lead');
-        $template->cancel = $this->translator->trans('MSC.cancelBT', [], 'contao_default');
-        $template->continue = $this->translator->trans('MSC.delete', [], 'contao_default');
-        $template->theme = Backend::getTheme();
-        $template->language = $GLOBALS['TL_LANGUAGE'];
-        $template->h1 = $this->translator->trans('tl_lead.deleteAllTitle', [], 'contao_tl_lead');
-        $template->title = StringUtil::specialchars($this->translator->trans('tl_lead.deleteAllTitle', [], 'contao_tl_lead'));
-        $template->host = Backend::getDecodedHostname();
-        $template->charset = System::getContainer()->getParameter('kernel.charset');
-        $template->info = [
-            $this->translator->trans('tl_lead.deleteAllFormId', [], 'contao_tl_lead') => $form['id'],
-            $this->translator->trans('tl_lead.deleteAllFormTitle', [], 'contao_tl_lead') => $form['title'],
-            $this->translator->trans('tl_lead.deleteAllLeadsCount', [], 'contao_tl_lead') => $leadsCount,
-        ];
-
-        return $template->getResponse();
+        return $this->render(
+            '@Contao/backend/terminal42_leads/delete_all.html.twig',
+            [
+                'title' => StringUtil::specialchars($this->translator->trans('tl_lead.deleteAllTitle', [], 'contao_tl_lead')),
+                'info' => [
+                    $this->translator->trans('tl_lead.deleteAllFormId', [], 'contao_tl_lead') => $form['id'],
+                    $this->translator->trans('tl_lead.deleteAllFormTitle', [], 'contao_tl_lead') => $form['title'],
+                    $this->translator->trans('tl_lead.deleteAllLeadsCount', [], 'contao_tl_lead') => $leadsCount,
+                ],
+            ]
+        );
     }
 
     private function handleFormSubmit(Request $request, array $form): Response
