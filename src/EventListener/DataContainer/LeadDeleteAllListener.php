@@ -57,9 +57,9 @@ readonly class LeadDeleteAllListener
             return null;
         }
 
-        $leadsCount = $this->connection->fetchOne('SELECT COUNT(*) FROM tl_lead WHERE form_id=?', [$formId]);
+        $hasLeads = $this->connection->fetchOne('SELECT TRUE FROM tl_lead WHERE form_id=? LIMIT 1', [$formId]);
 
-        if (0 === $leadsCount) {
+        if (false === $hasLeads) {
             return null;
         }
 
