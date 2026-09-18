@@ -46,7 +46,7 @@
                 <source>Delete all leads</source>
             </trans-unit>
             <trans-unit id="tl_lead.deleteAllExplain">
-                <source>The action you are about to perform will permanently delete all leads for this form. If you are certain this is what you intend to do and understand the consequences, you can confirm the process below. This action cannot be undone.</source>
+                <source>The action you are about to perform will delete all leads for this form. If you are certain this is what you intend to do and understand the consequences, you can confirm the process below.</source>
             </trans-unit>
             <trans-unit id="tl_lead.deleteAllConfirm">
                 <source>%s leads have been successfully deleted.</source>
