@@ -11,7 +11,7 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
         'closed' => true,
         'notEditable' => true,
         'ctable' => ['tl_lead_data'],
-        'permissions' => ['delete'],
+        'permissions' => ['delete', 'deleteAll'],
         'sql' => [
             'keys' => [
                 'id' => 'primary',
@@ -29,6 +29,14 @@ $GLOBALS['TL_DCA']['tl_lead'] = [
         'label' => [
             'fields' => ['created'],
             'format' => &$GLOBALS['TL_LANG']['tl_lead']['label_format'],
+        ],
+        'global_operations' => [
+            'all',
+            'deleteAll' => [
+                'href' => 'key=deleteAll',
+                'icon' => 'delete.svg',
+                'attributes' => 'onclick="Backend.getScrollOffset()"',
+            ],
         ],
     ],
     'fields' => [

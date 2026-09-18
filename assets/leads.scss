@@ -7,3 +7,18 @@
     color: #ccc;
     font-size: 8px;
 }
+
+.delete-all-button {
+    background-color: #c9473d;
+    border-color: #c9473d;
+    color: #fff;
+
+    &:hover {
+        background-color: #a63027;
+        color: #fff;
+    }
+
+    &:active {
+        color: #fff;
+    }
+}

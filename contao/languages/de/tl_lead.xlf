@@ -46,6 +46,38 @@
                 <source>View data of lead ID %d</source>
                 <target>Daten des Leads mit der ID %d anzeigen</target>
             </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.0">
+                <source>Delete all</source>
+                <target>Alle löschen</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.1">
+                <source>Delete all elements at once</source>
+                <target>Alle Elemente auf einmal löschen</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAllTitle">
+                <source>Delete all leads</source>
+                <target>Alle Datensätze löschen</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAllExplain">
+                <source>The action you are about to perform will permanently delete all leads for this form. If you are certain this is what you intend to do and understand the consequences, you can confirm the process below. This action cannot be undone.</source>
+                <target>Die Aktion, die Sie ausführen möchten, löscht alle Datensätze für dieses Formular unwiderruflich. Wenn Sie sicher sind, dass Sie dies beabsichtigen, und die Konsequenzen verstehen, können Sie den Vorgang unten bestätigen. Diese Aktion kann nicht rückgängig gemacht werden.</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAllConfirm">
+                <source>%s leads have been successfully deleted.</source>
+                <target>%s Datensätze wurden erfolgreich gelöscht.</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAllFormId">
+                <source>Form ID</source>
+                <target>Formular-ID</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAllFormTitle">
+                <source>Form title</source>
+                <target>Formulartitel</target>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAllLeadsCount">
+                <source>Number of leads</source>
+                <target>Anzahl Datensätze</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
