@@ -15,4 +15,9 @@ final class Terminal42LeadsPermissions
      * Access is granted if the current user can delete leads.
      */
     public const string USER_CAN_DELETE_LEADS = 'contao_user.cud.tl_lead::delete';
+
+    /**
+     * Access is granted if the current user can delete all leads.
+     */
+    public const string USER_CAN_DELETE_ALL_LEADS = 'contao_user.cud.tl_lead::deleteAll';
 }

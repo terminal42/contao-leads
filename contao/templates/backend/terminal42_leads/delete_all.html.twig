@@ -1,0 +1,42 @@
+{% extends "@Contao/be_main" %}
+{% set renderMainOnly = true %}
+
+{% block head %}
+    <meta charset="{{ charset }}">
+    <title>{{ title }} | {{ host }}</title>
+    <meta name="generator" content="Contao Open Source CMS">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,shrink-to-fit=no">
+    <meta name="referrer" content="origin">
+
+    <link rel="stylesheet" href="{{ asset('confirm.css', 'system/themes/' ~ theme) }}">
+    <link rel="stylesheet" href="{{ asset('leads.css', 'terminal42_leads') }}">
+    {{ stylesheets|default|raw }}
+
+    <script>{{ getLocaleString.invoke()|raw }}</script>
+    <script src="{{ asset('js/mootools.min.js', 'contao-components/mootools') }}"></script>
+    <script src="{{ asset('backend.js', 'contao_core') }}"></script>
+    {{ javascripts|default|raw }}
+{% endblock %}
+
+{% block main %}
+    <form class="tl_form" method="post">
+        <div class="tl_formbody_edit">
+            <input type="hidden" name="FORM_SUBMIT" value="lead_delete_all">
+            <input type="hidden" name="REQUEST_TOKEN" value="{{ contao.request_token }}">
+            <h1>{{ 'tl_lead.deleteAllTitle'|trans([], 'contao_tl_lead') }}</h1>
+            <table>
+                {% for key, info in info %}
+                    <tr>
+                        <th scope="row">{{ labels[key]|default(key) }}:</th>
+                        <td>{{ info }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <p>{{ 'tl_lead.deleteAllExplain'|trans([], 'contao_tl_lead') }}</p>
+            <div class="submit_container cf">
+                <button type="submit" name="cancel" class="tl_submit" accesskey="c">{{ 'MSC.cancelBT'|trans([], 'contao_default') }}</button>
+                <button type="submit" name="delete" class="tl_submit delete-all-button" accesskey="d">{{ 'MSC.delete'|trans([], 'contao_default') }}</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

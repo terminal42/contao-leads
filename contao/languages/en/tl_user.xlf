@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.1">
+    <file datatype="php" original="tl_user" source-language="en">
+        <body>
+            <trans-unit id="tl_user.cud.tl_lead.deleteAll">
+                <source>Delete all</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
