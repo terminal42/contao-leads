@@ -37,16 +37,17 @@ class LeadsDeleteAllController extends AbstractController
 
     public function __invoke(Request $request, int $id): Response
     {
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
+        $this->denyAccessUnlessGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_LEADS);
+        $this->denyAccessUnlessGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_ALL_LEADS);
+
         $form = $this->connection->fetchAssociative('SELECT * FROM tl_form WHERE id=? AND leadEnabled=?', [$id, 1]);
 
         if (false === $form) {
             throw $this->createNotFoundException(sprintf('Form ID "%s" not found.', $id));
         }
 
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $form['id']);
-        $this->denyAccessUnlessGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_LEADS);
-        $this->denyAccessUnlessGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_ALL_LEADS);
 
         $leadsCount = $this->connection->fetchOne('SELECT COUNT(*) FROM tl_lead WHERE form_id=?', [$form['id']]);
 
