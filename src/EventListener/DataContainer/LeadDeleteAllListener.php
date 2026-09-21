@@ -20,8 +20,7 @@ readonly class LeadDeleteAllListener
         private RequestStack $requestStack,
         private RouterInterface $router,
         private Security $security,
-    )
-    {
+    ) {
     }
 
     public function __invoke(DataContainerOperation $operation): void
@@ -51,7 +50,8 @@ readonly class LeadDeleteAllListener
             return null;
         }
 
-        if (!$this->security->isGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_LEADS)
+        if (
+            !$this->security->isGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_LEADS)
              || !$this->security->isGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_ALL_LEADS)
         ) {
             return null;
