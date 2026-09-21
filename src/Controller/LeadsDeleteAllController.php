@@ -38,23 +38,23 @@ class LeadsDeleteAllController extends AbstractBackendController
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'lead');
         $this->denyAccessUnlessGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_LEADS);
         $this->denyAccessUnlessGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_ALL_LEADS);
+        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $id);
 
-        $form = $this->connection->fetchAssociative('SELECT * FROM tl_form WHERE id=? AND leadEnabled=?', [$id, 1]);
+        $form = $this->connection->fetchAssociative(
+            'SELECT f.*, (SELECT COUNT(*) FROM tl_lead l WHERE l.form_id = f.id) AS leadsCount FROM tl_form f WHERE f.id = ? AND f.leadEnabled = ?',
+            [$id, 1],
+        );
 
         if (false === $form) {
             throw $this->createNotFoundException(sprintf('Form ID "%s" not found.', $id));
         }
 
-        $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $form['id']);
-
-        $leadsCount = $this->connection->fetchOne('SELECT COUNT(*) FROM tl_lead WHERE form_id=?', [$form['id']]);
-
-        if (0 === $leadsCount) {
+        if (0 === (int) $form['leadsCount']) {
             throw $this->createNotFoundException(sprintf('No leads found for form ID "%s".', $id));
         }
 
         if ($request->request->getString('FORM_SUBMIT') === 'lead_delete_all') {
-            return $this->handleFormSubmit($request, $form);
+            return $this->handleFormSubmit($request, (int) $form['id']);
         }
 
         return $this->render(
@@ -64,13 +64,13 @@ class LeadsDeleteAllController extends AbstractBackendController
                 'info' => [
                     $this->translator->trans('tl_lead.deleteAllFormId', [], 'contao_tl_lead') => $form['id'],
                     $this->translator->trans('tl_lead.deleteAllFormTitle', [], 'contao_tl_lead') => $form['title'],
-                    $this->translator->trans('tl_lead.deleteAllLeadsCount', [], 'contao_tl_lead') => $leadsCount,
+                    $this->translator->trans('tl_lead.deleteAllLeadsCount', [], 'contao_tl_lead') => $form['leadsCount'],
                 ],
             ]
         );
     }
 
-    private function handleFormSubmit(Request $request, array $form): Response
+    private function handleFormSubmit(Request $request, int $formId): Response
     {
         if ($request->request->has('delete')) {
             Controller::loadDataContainer('tl_lead');
@@ -81,7 +81,7 @@ class LeadsDeleteAllController extends AbstractBackendController
                 throw new \RuntimeException(sprintf('The data container driver "%s" must implement "%s".', $driverClass, DC_Table::class));
             }
 
-            $leadIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_lead WHERE form_id=?', [$form['id']]);
+            $leadIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_lead WHERE form_id=?', [$formId]);
 
             foreach ($leadIds as $leadId) {
                 $dc->id = $leadId;
@@ -96,6 +96,6 @@ class LeadsDeleteAllController extends AbstractBackendController
             Message::addConfirmation($this->translator->trans('tl_lead.deleteAllConfirm', [count($leadIds)], 'contao_tl_lead'));
         }
 
-        return $this->redirectToRoute('contao_backend', ['do' => 'lead', 'form' => $form['id']]);
+        return $this->redirectToRoute('contao_backend', ['do' => 'lead', 'form' => $formId]);
     }
 }
