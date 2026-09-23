@@ -57,7 +57,7 @@ class LeadsDeleteAllController extends AbstractBackendController
         }
 
         return $this->render('@Contao/backend/terminal42_leads/delete_all.html.twig', [
-            'form' => $form
+            'form' => $form,
         ]);
     }
 
