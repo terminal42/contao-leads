@@ -44,7 +44,7 @@
             </trans-unit>
             <trans-unit id="tl_lead.children.1">
                 <source>View data of lead ID %d</source>
-                <target>Daten des Leads mit der ID %d anzeigen</target>
+                <target>Daten der Anfrage mit der ID %d anzeigen</target>
             </trans-unit>
             <trans-unit id="tl_lead.deleteAll.0">
                 <source>Delete all</source>
@@ -54,27 +54,27 @@
                 <source>Delete all elements at once</source>
                 <target>Alle Elemente auf einmal löschen</target>
             </trans-unit>
-            <trans-unit id="tl_lead.deleteAllTitle">
+            <trans-unit id="tl_lead.deleteAll.title">
                 <source>Delete all leads</source>
                 <target>Alle Datensätze löschen</target>
             </trans-unit>
-            <trans-unit id="tl_lead.deleteAllExplain">
-                <source>The action you are about to perform will delete all leads for this form. If you are certain this is what you intend to do and understand the consequences, you can confirm the process below.</source>
-                <target>Die Aktion, die Sie ausführen möchten, löscht alle Leads für dieses Formular. Wenn Sie sicher sind, dass Sie dies beabsichtigen, und die Konsequenzen verstehen, können Sie den Vorgang unten bestätigen.</target>
+            <trans-unit id="tl_lead.deleteAll.explain">
+                <source>The action you are about to perform will delete all leads for this form. If you are certain this is what you intend to do, confirm the process below.</source>
+                <target>Die Aktion, die Sie ausführen möchten, löscht alle Anfragen für dieses Formular. Wenn Sie sicher sind, dass Sie dies beabsichtigen, können Sie den Vorgang unten bestätigen.</target>
             </trans-unit>
-            <trans-unit id="tl_lead.deleteAllConfirm">
+            <trans-unit id="tl_lead.deleteAll.confirm">
                 <source>%s leads have been successfully deleted.</source>
-                <target>%s Datensätze wurden erfolgreich gelöscht.</target>
+                <target>%s Anfragen wurden erfolgreich gelöscht.</target>
             </trans-unit>
-            <trans-unit id="tl_lead.deleteAllFormId">
+            <trans-unit id="tl_lead.deleteAll.formId">
                 <source>Form ID</source>
                 <target>Formular-ID</target>
             </trans-unit>
-            <trans-unit id="tl_lead.deleteAllFormTitle">
+            <trans-unit id="tl_lead.deleteAll.formTitle">
                 <source>Form title</source>
                 <target>Formulartitel</target>
             </trans-unit>
-            <trans-unit id="tl_lead.deleteAllLeadsCount">
+            <trans-unit id="tl_lead.deleteAll.leadsCount">
                 <source>Number of leads</source>
                 <target>Anzahl Datensätze</target>
             </trans-unit>

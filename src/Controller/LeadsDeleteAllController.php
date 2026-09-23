@@ -11,7 +11,6 @@ use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\DataContainer;
 use Contao\DC_Table;
 use Contao\Message;
-use Contao\StringUtil;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,12 +57,7 @@ class LeadsDeleteAllController extends AbstractBackendController
         }
 
         return $this->render('@Contao/backend/terminal42_leads/delete_all.html.twig', [
-            'title' => StringUtil::specialchars($this->translator->trans('tl_lead.deleteAllTitle', [], 'contao_tl_lead')),
-            'info' => [
-                $this->translator->trans('tl_lead.deleteAllFormId', [], 'contao_tl_lead') => $form['id'],
-                $this->translator->trans('tl_lead.deleteAllFormTitle', [], 'contao_tl_lead') => $form['title'],
-                $this->translator->trans('tl_lead.deleteAllLeadsCount', [], 'contao_tl_lead') => $form['leadsCount'],
-            ],
+            'form' => $form
         ]);
     }
 
@@ -90,7 +84,7 @@ class LeadsDeleteAllController extends AbstractBackendController
                 }
             }
 
-            Message::addConfirmation($this->translator->trans('tl_lead.deleteAllConfirm', [\count($leadIds)], 'contao_tl_lead'));
+            Message::addConfirmation($this->translator->trans('tl_lead.deleteAll.confirm', [\count($leadIds)], 'contao_tl_lead'));
         }
 
         return $this->redirectToRoute('contao_backend', ['do' => 'lead', 'form' => $formId]);
