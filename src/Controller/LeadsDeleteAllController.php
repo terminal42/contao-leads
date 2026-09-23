@@ -53,7 +53,7 @@ class LeadsDeleteAllController extends AbstractBackendController
         }
 
         if ('lead_delete_all' === $request->request->getString('FORM_SUBMIT')) {
-            return $this->handleFormSubmit($request, (int) $form['id']);
+            return $this->handleFormSubmit($id);
         }
 
         return $this->render('@Contao/backend/terminal42_leads/delete_all.html.twig', [
@@ -61,31 +61,29 @@ class LeadsDeleteAllController extends AbstractBackendController
         ]);
     }
 
-    private function handleFormSubmit(Request $request, int $formId): Response
+    private function handleFormSubmit(int $formId): Response
     {
-        if ($request->request->has('delete')) {
-            Controller::loadDataContainer('tl_lead');
-            $driverClass = DataContainer::getDriverForTable('tl_lead');
-            $dc = new $driverClass('tl_lead');
+        Controller::loadDataContainer('tl_lead');
+        $driverClass = DataContainer::getDriverForTable('tl_lead');
+        $dc = new $driverClass('tl_lead');
 
-            if (!$dc instanceof DC_Table) {
-                throw new \RuntimeException(\sprintf('The data container driver "%s" must implement "%s".', $driverClass, DC_Table::class));
-            }
-
-            $leadIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_lead WHERE form_id=?', [$formId]);
-
-            foreach ($leadIds as $leadId) {
-                $dc->id = $leadId;
-
-                try {
-                    $dc->delete(true);
-                } catch (AccessDeniedException) {
-                    continue;
-                }
-            }
-
-            Message::addConfirmation($this->translator->trans('tl_lead.deleteAll.confirm', [\count($leadIds)], 'contao_tl_lead'));
+        if (!$dc instanceof DC_Table) {
+            throw new \RuntimeException(\sprintf('The data container driver "%s" must implement "%s".', $driverClass, DC_Table::class));
         }
+
+        $leadIds = $this->connection->fetchFirstColumn('SELECT id FROM tl_lead WHERE form_id=?', [$formId]);
+
+        foreach ($leadIds as $leadId) {
+            $dc->id = $leadId;
+
+            try {
+                $dc->delete(true);
+            } catch (AccessDeniedException) {
+                continue;
+            }
+        }
+
+        Message::addConfirmation($this->translator->trans('tl_lead.deleteAll.confirm', [\count($leadIds)], 'contao_tl_lead'));
 
         return $this->redirectToRoute('contao_backend', ['do' => 'lead', 'form' => $formId]);
     }
