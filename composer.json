@@ -83,6 +83,11 @@
             "php-http/discovery": false,
             "contao/manager-plugin": false,
             "terminal42/contao-build-tools": true
+        },
+        "policy": {
+            "advisories": {
+                "block": false
+            }
         }
     }
 }
