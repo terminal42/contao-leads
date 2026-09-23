@@ -1,3 +1,5 @@
+{%- trans_default_domain 'contao_tl_lead' -%}
+
 <!DOCTYPE html>
 <html lang="{{ language }}">
 <head>
@@ -27,7 +29,7 @@
             <div class="tl_formbody_edit">
                 <input type="hidden" name="FORM_SUBMIT" value="lead_delete_all">
                 <input type="hidden" name="REQUEST_TOKEN" value="{{ contao.request_token }}">
-                <h1>{{ 'tl_lead.deleteAllTitle'|trans([], 'contao_tl_lead') }}</h1>
+                <h1>{{ 'tl_lead.deleteAllTitle'|trans }}</h1>
                 <table>
                     {% for key, info in info %}
                         <tr>
@@ -36,7 +38,7 @@
                         </tr>
                     {% endfor %}
                 </table>
-                <p>{{ 'tl_lead.deleteAllExplain'|trans([], 'contao_tl_lead') }}</p>
+                <p>{{ 'tl_lead.deleteAllExplain'|trans }}</p>
                 <div class="submit_container cf">
                     <button type="submit" name="cancel" class="tl_submit" accesskey="c">{{ 'MSC.cancelBT'|trans([], 'contao_default') }}</button>
                     <button type="submit" name="delete" class="tl_submit delete-all-button" accesskey="d">{{ 'MSC.delete'|trans([], 'contao_default') }}</button>
