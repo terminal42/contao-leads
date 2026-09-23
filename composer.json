@@ -43,6 +43,7 @@
         "symfony/http-foundation": "^6.0 || ^7.0",
         "symfony/http-kernel": "^7.4",
         "symfony/routing": "^7.4",
+        "symfony/security-bundle": "^7.4",
         "symfony/security-core": "^7.4",
         "symfony/service-contracts": "^3",
         "symfony/string": "^7.4",
@@ -82,6 +83,11 @@
             "php-http/discovery": false,
             "contao/manager-plugin": false,
             "terminal42/contao-build-tools": true
+        },
+        "policy": {
+            "advisories": {
+                "block": false
+            }
         }
     }
 }

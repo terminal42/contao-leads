@@ -56,9 +56,7 @@ class LeadDataAccessVoter extends AbstractDataContainerVoter implements ResetInt
             return false;
         }
 
-        if (!isset($this->formCache[$action->getCurrentPid()])) {
-            $this->formCache[$action->getCurrentPid()] = $this->connection->fetchOne('SELECT main_id FROM tl_lead WHERE id=?', [$action->getCurrentPid()]);
-        }
+        $this->formCache[$action->getCurrentPid()] ??= $this->connection->fetchOne('SELECT main_id FROM tl_lead WHERE id=?', [$action->getCurrentPid()]);
 
         return $this->accessDecisionManager->decide($token, [ContaoCorePermissions::USER_CAN_EDIT_FORM], $this->formCache[$action->getCurrentPid()]);
     }

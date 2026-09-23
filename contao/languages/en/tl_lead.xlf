@@ -36,6 +36,30 @@
             <trans-unit id="tl_lead.children.1">
                 <source>View data of lead ID %d</source>
             </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.0">
+                <source>Delete all</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.1">
+                <source>Delete all elements at once</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.title">
+                <source>Delete all leads</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.explain">
+                <source>The action you are about to perform will delete all leads for this form. If you are certain this is what you intend to do and understand the consequences, you can confirm the process below.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.confirm">
+                <source>%s leads have been successfully deleted.</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.formId">
+                <source>Form ID</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.formTitle">
+                <source>Form title</source>
+            </trans-unit>
+            <trans-unit id="tl_lead.deleteAll.leadsCount">
+                <source>Number of leads</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
