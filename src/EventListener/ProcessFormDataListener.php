@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener;
 
+use Codefog\HasteBundle\FileUploadNormalizer;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Date;
 use Contao\FilesModel;
@@ -25,6 +26,7 @@ class ProcessFormDataListener
         private readonly RequestStack $requestStack,
         private readonly TokenStorageInterface $tokenStorage,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly FileUploadNormalizer $fileUploadNormalizer,
     ) {
     }
 
@@ -36,9 +38,10 @@ class ProcessFormDataListener
 
         $leadId = $this->saveLead($postData, $formConfig);
         $fields = $this->getFormFields((int) $formConfig['id'], (int) $formConfig['leadMain']);
+        $normalizedFiles = $this->fileUploadNormalizer->normalize($files ?? []);
 
         foreach ($fields as $field) {
-            $this->saveFormField($leadId, $field, $postData, $files);
+            $this->saveFormField($leadId, $field, $postData, $normalizedFiles);
         }
     }
 
@@ -99,12 +102,19 @@ class ProcessFormDataListener
         );
     }
 
-    private function saveFormField(int $leadId, array $field, array $postData, array|null $files): void
+    private function saveFormField(int $leadId, array $field, array $postData, array $normalizedFiles): void
     {
         $value = null;
 
-        if (null !== $files && isset($files[$field['postName']]) && ($files[$field['postName']]['uploaded'] ?? false)) {
-            $value = $this->prepareValue($files[$field['postName']], $field);
+        if (isset($normalizedFiles[$field['postName']])) {
+            $uploads = array_filter(
+                $normalizedFiles[$field['postName']],
+                static fn (array $file) => Validator::isUuid($file['uuid'] ?? null),
+            );
+
+            if ([] !== $uploads) {
+                $value = $this->prepareValue(array_values($uploads), $field);
+            }
         } elseif (isset($postData[$field['postName']])) {
             $value = $this->prepareValue($postData[$field['postName']], $field);
         }
