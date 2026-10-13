@@ -33,20 +33,20 @@
                 <table>
                     <tr>
                         <th scope="row">{{ 'tl_lead.deleteAll.formId'|trans }}:</th>
-                        <td>{{ form.id }}</td>
+                        <td>{{ form_id }}</td>
                     </tr>
                     <tr>
                         <th scope="row">{{ 'tl_lead.deleteAll.formTitle'|trans }}:</th>
-                        <td>{{ form.title }}</td>
+                        <td>{{ form.title|default('-') }}</td>
                     </tr>
                     <tr>
                         <th scope="row">{{ 'tl_lead.deleteAll.leadsCount'|trans }}:</th>
-                        <td>{{ form.leadsCount }}</td>
+                        <td>{{ leads_count }}</td>
                     </tr>
                 </table>
                 <p>{{ 'tl_lead.deleteAll.explain'|trans }}</p>
                 <div class="submit_container cf">
-                    <a href="{{ path('contao_backend', {do: 'lead', form: form.id}) }}" class="tl_submit" accesskey="c">{{ 'MSC.cancelBT'|trans([], 'contao_default') }}</a>
+                    <a href="{{ path('contao_backend', {do: 'lead', form: form_id}) }}" class="tl_submit" accesskey="c">{{ 'MSC.cancelBT'|trans([], 'contao_default') }}</a>
                     <button type="submit" name="delete" class="tl_submit delete-all-button" accesskey="d">{{ 'MSC.delete'|trans([], 'contao_default') }}</button>
                 </div>
             </div>
