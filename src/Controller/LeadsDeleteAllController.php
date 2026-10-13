@@ -39,9 +39,12 @@ class LeadsDeleteAllController extends AbstractBackendController
         $this->denyAccessUnlessGranted(Terminal42LeadsPermissions::USER_CAN_DELETE_ALL_LEADS);
         $this->denyAccessUnlessGranted(ContaoCorePermissions::USER_CAN_EDIT_FORM, $id);
 
-        $leadsCount = (int) $this->connection->fetchOne('SELECT COUNT(*) FROM tl_lead WHERE form_id = ?', [$id]);
+        $form = $this->connection->fetchAssociative(
+            'SELECT COUNT(l.id) AS leads_count, MAX(f.title) AS form_title FROM tl_lead l LEFT JOIN tl_form f ON f.id = l.form_id WHERE l.form_id = ?',
+            [$id],
+        );
 
-        if (0 === $leadsCount) {
+        if (0 === (int) $form['leads_count']) {
             throw $this->createNotFoundException(\sprintf('No leads found for form ID "%s".', $id));
         }
 
@@ -51,7 +54,8 @@ class LeadsDeleteAllController extends AbstractBackendController
 
         return $this->render('@Contao/backend/terminal42_leads/delete_all.html.twig', [
             'form_id' => $id,
-            'leads_count' => $leadsCount,
+            'form_title' => $form['form_title'],
+            'leads_count' => $form['leads_count'],
         ]);
     }
 
