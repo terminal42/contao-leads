@@ -7,6 +7,7 @@ namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
 use Contao\DataContainer;
+use Contao\Input;
 use PhpOffice\PhpSpreadsheet\Cell\IValueBinder;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Terminal42\LeadsBundle\Export\ExporterInterface;
@@ -27,7 +28,7 @@ class ExportValueBinderListener
 
     public function __invoke(DataContainer $dc): void
     {
-        $data = $dc->getCurrentRecord();
+        $data = ('edit' === Input::get('act')) ? $dc->getCurrentRecord() : null;
 
         if (
             $data
