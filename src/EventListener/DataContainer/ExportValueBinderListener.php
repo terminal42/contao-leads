@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Terminal42\LeadsBundle\EventListener\DataContainer;
 
-use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsCallback;
+use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\DataContainer;
 use PhpOffice\PhpSpreadsheet\Cell\IValueBinder;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Terminal42\LeadsBundle\Export\ExporterInterface;
 use Terminal42\LeadsBundle\Export\PhpSpreadsheetExporter;
 
-#[AsCallback('tl_lead_export', 'config.onload')]
 class ExportValueBinderListener
 {
     /**
@@ -25,35 +24,33 @@ class ExportValueBinderListener
     ) {
     }
 
-    public function __invoke(DataContainer $dc): void
+    #[AsCallback('tl_lead_export', 'fields.fields.attributes')]
+    #[AsCallback('tl_lead_export', 'fields.tokenFields.attributes')]
+    public function getAttributes(array $attributes, DataContainer|null $dc = null): array
     {
-        $data = $dc->getCurrentRecord();
+        try {
+            $type = $dc?->getCurrentRecord()['type'] ?? null;
+        } catch (AccessDeniedException) {
+            return $attributes;
+        }
 
         if (
-            $data
+            null !== $type
             && (
-                !$this->exporters->has($data['type'])
-                || !($exporter = $this->exporters->get($data['type']))
-                || !$exporter instanceof PhpSpreadsheetExporter
+                !$this->exporters->has($type)
+                || !$this->exporters->get($type) instanceof PhpSpreadsheetExporter
             )
         ) {
-            return;
+            unset($attributes['fields']['valueBinder']);
         }
 
-        $pm = PaletteManipulator::create()->addField('valueBinder', 'filename');
+        return $attributes;
+    }
 
-        foreach ($GLOBALS['TL_DCA']['tl_lead_export']['palettes'] as $k => $v) {
-            if (!\is_array($v)) {
-                $pm->applyToPalette($k, 'tl_lead_export');
-            }
-        }
-
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['valueBinder']['options'] = array_keys($this->valueBinders->getProvidedServices());
-
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder'] = $GLOBALS['TL_DCA']['tl_lead_export']['fields']['valueBinder'];
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder']['eval']['includeBlankOption'] = true;
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder']['eval']['blankOptionLabel'] = $GLOBALS['TL_LANG']['tl_lead_export']['valueBinder'][2];
-
-        $GLOBALS['TL_DCA']['tl_lead_export']['fields']['tokenFields']['fields']['valueBinder'] = $GLOBALS['TL_DCA']['tl_lead_export']['fields']['fields']['fields']['valueBinder'];
+    #[AsCallback('tl_lead_export', 'fields.fields.fields.valueBinder.options')]
+    #[AsCallback('tl_lead_export', 'fields.tokenFields.fields.valueBinder.options')]
+    public function getOptions(): array
+    {
+        return array_keys($this->valueBinders->getProvidedServices());
     }
 }
