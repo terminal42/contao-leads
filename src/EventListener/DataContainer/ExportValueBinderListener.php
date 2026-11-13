@@ -28,7 +28,7 @@ class ExportValueBinderListener
 
     public function __invoke(DataContainer $dc): void
     {
-        $data = 'edit' === Input::get('act') ? $dc->getCurrentRecord() : null;
+        $data = ('edit' === Input::get('act')) ? $dc->getCurrentRecord() : null;
 
         if (
             $data
