@@ -72,6 +72,7 @@ class PhpSpreadsheetExporter extends AbstractExporter
 
             $spreadsheet = IOFactory::load($this->projectDir.'/'.$template->path);
             $spreadsheet->setActiveSheetIndex((int) $config['sheetIndex']);
+
             $row = (int) $config['startIndex'] ?: 1;
         } else {
             $spreadsheet = new Spreadsheet();

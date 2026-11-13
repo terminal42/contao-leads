@@ -34,6 +34,7 @@ class FormDataLabelEvent extends Event
     public function setLabel(mixed $label): self
     {
         $this->label = $label;
+
         $this->stopPropagation();
 
         return $this;
