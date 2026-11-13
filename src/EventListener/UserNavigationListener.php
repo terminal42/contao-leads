@@ -126,18 +126,21 @@ class UserNavigationListener
 
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             // Find lead records where the related form has been deleted
-            $forms = array_merge($forms, $this->connection->fetchAllAssociative(
-                <<<'SQL'
-                        SELECT
-                            l.main_id AS id,
-                            CONCAT('ID ', l.main_id) AS title,
-                            CONCAT('ID ', l.main_id) AS leadMenuLabel
-                        FROM tl_lead l
-                            LEFT JOIN tl_form f ON l.main_id=f.id
-                        WHERE f.id IS NULL
-                        GROUP BY l.main_id
-                    SQL,
-            ));
+            $forms = array_merge(
+                $forms,
+                $this->connection->fetchAllAssociative(
+                    <<<'SQL'
+                            SELECT
+                                l.main_id AS id,
+                                CONCAT('ID ', l.main_id) AS title,
+                                CONCAT('ID ', l.main_id) AS leadMenuLabel
+                            FROM tl_lead l
+                                LEFT JOIN tl_form f ON l.main_id=f.id
+                            WHERE f.id IS NULL
+                            GROUP BY l.main_id
+                        SQL,
+                ),
+            );
         } else {
             // Remove forms the user does not have access to
             $forms = array_filter(

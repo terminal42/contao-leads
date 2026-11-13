@@ -62,6 +62,7 @@ class LeadsDeleteAllController extends AbstractBackendController
     private function handleFormSubmit(int $formId): Response
     {
         Controller::loadDataContainer('tl_lead');
+
         $driverClass = DataContainer::getDriverForTable('tl_lead');
         $dc = new $driverClass('tl_lead');
 

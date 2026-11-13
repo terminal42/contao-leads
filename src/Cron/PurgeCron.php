@@ -87,12 +87,17 @@ class PurgeCron
     private function getUploads(array $leadIds): array
     {
         $uploads = [];
-        $rows = $this->connection->fetchAllAssociative("
+
+        $rows = $this->connection->fetchAllAssociative(
+            "
             SELECT *
             FROM tl_lead_data
             WHERE pid IN (?)
               AND value REGEXP '[a-f0-9]{8}-[a-f0-9]{4}-1[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}'
-        ", [$leadIds], [ArrayParameterType::INTEGER]);
+        ",
+            [$leadIds],
+            [ArrayParameterType::INTEGER],
+        );
 
         foreach ($rows as $row) {
             foreach (StringUtil::deserialize($row['value'], true) as $uuid) {

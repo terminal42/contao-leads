@@ -50,6 +50,7 @@ abstract class AbstractExporter implements ExporterInterface
         rewind($fp);
 
         $filename = $this->getFilename();
+
         $response = new StreamedResponse(
             static function () use ($fp): void {
                 $output = fopen('php://output', 'w');
@@ -60,11 +61,14 @@ abstract class AbstractExporter implements ExporterInterface
         );
 
         $response->headers->set('Content-Type', 'application/octet-stream');
-        $response->headers->set('Content-Disposition', HeaderUtils::makeDisposition(
-            HeaderUtils::DISPOSITION_ATTACHMENT,
-            $filename,
-            (new UnicodeString($filename))->ascii()->toString(),
-        ));
+        $response->headers->set(
+            'Content-Disposition',
+            HeaderUtils::makeDisposition(
+                HeaderUtils::DISPOSITION_ATTACHMENT,
+                $filename,
+                (new UnicodeString($filename))->ascii()->toString(),
+            ),
+        );
 
         $this->finish($config);
 

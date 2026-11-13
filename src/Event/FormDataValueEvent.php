@@ -27,6 +27,7 @@ class FormDataValueEvent extends Event
     public function setValue(mixed $value): self
     {
         $this->value = $value;
+
         $this->stopPropagation();
 
         return $this;
